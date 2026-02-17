@@ -1,0 +1,144 @@
+.servicios-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.header-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.page-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+.servicios-container {
+  padding: 60px 40px;
+  background-color: #f5f5f5;
+}
+
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.servicio-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+}
+
+.servicio-image {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.servicio-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+}
+
+mat-card-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.servicio-descripcion {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.servicio-precio {
+  color: #667eea;
+  font-size: 1.1rem;
+  margin-top: 8px;
+}
+
+mat-card-actions {
+  padding: 16px;
+  margin-top: auto;
+  
+  button {
+    width: 100%;
+  }
+}
+
+.cta-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 32px;
+    opacity: 0.9;
+  }
+}
+
+.cta-button-large {
+  font-size: 1.2rem;
+  padding: 16px 40px;
+  
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .servicios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .servicios-container {
+    padding: 40px 20px;
+  }
+
+  .cta-content h2 {
+    font-size: 2rem;
+  }
+}
+

@@ -1,0 +1,50 @@
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.menu-button {
+  margin-right: 16px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.active-link {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidenav-container {
+  height: calc(100vh - 64px);
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.nav-item-text {
+  margin-left: 16px;
+}
+
+.main-content {
+  min-height: calc(100vh - 64px);
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    button {
+      span {
+        display: none;
+      }
+    }
+  }
+}
+

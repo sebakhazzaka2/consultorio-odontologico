@@ -1,0 +1,42 @@
+<div class="servicios-header">
+  <div class="header-content">
+    <h1 class="page-title">Nuestros Servicios Odontológicos</h1>
+    <p class="page-subtitle">Ofrecemos una amplia gama de tratamientos para cuidar tu salud bucal</p>
+  </div>
+</div>
+
+<div class="servicios-container">
+  <div class="servicios-grid">
+    <mat-card *ngFor="let servicio of servicios" class="servicio-card">
+      <img mat-card-image [src]="servicio.imagen" [alt]="servicio.nombre" class="servicio-image">
+      <mat-card-header>
+        <mat-icon class="servicio-icon" color="primary">{{ servicio.icono }}</mat-icon>
+        <mat-card-title>{{ servicio.nombre }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="servicio-descripcion">{{ servicio.descripcion }}</p>
+        <p class="servicio-precio" *ngIf="servicio.precio">
+          <strong>{{ servicio.precio }}</strong>
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/registro" [queryParams]="{servicio: servicio.id}">
+          <mat-icon>event</mat-icon>
+          Agendar Cita
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
+
+<div class="cta-section">
+  <div class="cta-content">
+    <h2>¿Listo para mejorar tu sonrisa?</h2>
+    <p>Agenda una consulta y descubre cómo podemos ayudarte</p>
+    <button mat-raised-button color="accent" routerLink="/registro" class="cta-button-large">
+      <mat-icon>event</mat-icon>
+      Agendar Consulta Ahora
+    </button>
+  </div>
+</div>
+
