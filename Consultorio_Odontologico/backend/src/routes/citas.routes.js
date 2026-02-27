@@ -6,4 +6,6 @@ router.get('/', citasController.obtenerCitas);
 router.get('/:id', citasController.obtenerCitaPorId);
 router.post('/', citasController.crearCita);
 router.put('/:id', citasController.actualizarCita);
+router.delete('/:id', citasController.eliminarCita);
+
 module.exports = router;
