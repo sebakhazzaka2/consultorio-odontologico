@@ -81,7 +81,8 @@ export class CitasListadoComponent implements OnInit {
           this.cargarCitas();
         },
         error: (res: ResultadoCita) => {
-          const msg = res.detalles?.length ? res.mensaje + ' ' + res.detalles.join('. ') : res.mensaje;
+          // Mostrar mensaje y detalles del backend cuando rechace la operación
+          const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
           this.snackBar.open(msg || 'Error al eliminar', 'Cerrar', {
             duration: 6000,
             horizontalPosition: 'center',

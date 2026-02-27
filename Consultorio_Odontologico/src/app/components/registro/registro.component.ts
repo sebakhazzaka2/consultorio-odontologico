@@ -195,6 +195,7 @@ export class RegistroComponent implements OnInit {
       },
       error: (res: ResultadoCita) => {
         this.enviando = false;
+        // Mostrar mensaje y detalles del backend cuando rechace (validación, horario ocupado, etc.)
         const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
         this.snackBar.open(msg || 'Error al guardar la cita', 'Cerrar', { duration: 6000 });
       }
