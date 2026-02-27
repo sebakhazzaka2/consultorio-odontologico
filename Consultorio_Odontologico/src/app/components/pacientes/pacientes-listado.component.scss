@@ -1,0 +1,93 @@
+.pacientes-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-content {
+  max-width: 900px;
+  width: 100%;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.btn-nueva mat-icon {
+  margin-right: 8px;
+}
+
+.pacientes-container {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.list-card {
+  padding: 24px;
+}
+
+.loading, .error-box, .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  color: #666;
+}
+
+.empty .hint {
+  font-size: 0.9rem;
+  margin-top: -8px;
+}
+
+.error-box mat-icon, .empty mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.pacientes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paciente-card mat-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.paciente-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.paciente-info .nombre {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.paciente-info .detalle {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.paciente-actions {
+  display: flex;
+  gap: 4px;
+}

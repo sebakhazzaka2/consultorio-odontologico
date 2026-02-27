@@ -56,6 +56,13 @@ mat-card-header {
   }
 }
 
+.btn-nuevo-paciente {
+  margin-bottom: 16px;
+}
+.btn-nuevo-paciente mat-icon {
+  margin-right: 8px;
+}
+
 .registro-form {
   display: flex;
   flex-direction: column;

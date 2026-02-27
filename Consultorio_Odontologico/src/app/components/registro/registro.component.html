@@ -1,7 +1,7 @@
 <div class="registro-header">
   <div class="header-content">
-    <h1 class="page-title">Agendar una Cita</h1>
-    <p class="page-subtitle">Completa el formulario y nos pondremos en contacto contigo</p>
+    <h1 class="page-title">{{ esEdicion ? 'Editar cita' : 'Agendar una Cita' }}</h1>
+    <p class="page-subtitle">{{ esEdicion ? 'Modifica los datos y guarda los cambios' : 'Selecciona el paciente y el horario' }}</p>
   </div>
 </div>
 
@@ -16,58 +16,23 @@
       </mat-card-header>
       <mat-card-content>
         <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Nombre</mat-label>
-              <input matInput formControlName="nombre" placeholder="Ingresa tu nombre">
-              <mat-icon matPrefix>person</mat-icon>
-              <mat-error *ngIf="registroForm.get('nombre')?.invalid && registroForm.get('nombre')?.touched">
-                {{ getErrorMessage('nombre') }}
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Apellido</mat-label>
-              <input matInput formControlName="apellido" placeholder="Ingresa tu apellido">
-              <mat-icon matPrefix>person</mat-icon>
-              <mat-error *ngIf="registroForm.get('apellido')?.invalid && registroForm.get('apellido')?.touched">
-                {{ getErrorMessage('apellido') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" placeholder="tu@email.com">
-              <mat-icon matPrefix>email</mat-icon>
-              <mat-error *ngIf="registroForm.get('email')?.invalid && registroForm.get('email')?.touched">
-                {{ getErrorMessage('email') }}
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Teléfono</mat-label>
-              <input matInput type="tel" formControlName="telefono" placeholder="1234567890">
-              <mat-icon matPrefix>phone</mat-icon>
-              <mat-error *ngIf="registroForm.get('telefono')?.invalid && registroForm.get('telefono')?.touched">
-                {{ getErrorMessage('telefono') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-
           <mat-form-field appearance="outline" class="form-field-full">
-            <mat-label>Servicio</mat-label>
-            <mat-select formControlName="servicio">
-              <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
-                {{ servicio.nombre }}
+            <mat-label>Paciente</mat-label>
+            <mat-select formControlName="paciente_id" placeholder="Selecciona un paciente">
+              <mat-option *ngFor="let p of pacientes" [value]="p.id">
+                {{ p.nombre }} {{ p.apellido }} — {{ p.telefono }}
               </mat-option>
             </mat-select>
-            <mat-icon matPrefix>medical_services</mat-icon>
-            <mat-error *ngIf="registroForm.get('servicio')?.invalid && registroForm.get('servicio')?.touched">
-              {{ getErrorMessage('servicio') }}
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="registroForm.get('paciente_id')?.invalid && registroForm.get('paciente_id')?.touched">
+              {{ getErrorMessage('paciente_id') }}
             </mat-error>
           </mat-form-field>
+
+          <button mat-stroked-button type="button" (click)="abrirNuevoPaciente()" class="btn-nuevo-paciente">
+            <mat-icon>person_add</mat-icon>
+            Crear paciente nuevo
+          </button>
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
@@ -102,11 +67,11 @@
           </mat-form-field>
 
           <div class="form-actions">
-            <button mat-raised-button color="primary" type="submit" [disabled]="registroForm.invalid" class="submit-button">
-              <mat-icon>send</mat-icon>
-              Agendar Cita
+            <button mat-raised-button color="primary" type="submit" [disabled]="registroForm.invalid || enviando" class="submit-button">
+              <mat-icon>{{ esEdicion ? 'save' : 'send' }}</mat-icon>
+              {{ esEdicion ? 'Guardar cambios' : 'Agendar Cita' }}
             </button>
-            <button mat-button type="button" routerLink="/" class="cancel-button">
+            <button mat-button type="button" [routerLink]="esEdicion ? ['/citas'] : ['/']" class="cancel-button">
               Cancelar
             </button>
           </div>
@@ -156,4 +121,3 @@
     </div>
   </div>
 </div>
-

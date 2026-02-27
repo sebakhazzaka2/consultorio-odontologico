@@ -16,6 +16,14 @@
     <mat-icon>event</mat-icon>
     Agendar Cita
   </button>
+  <button mat-button routerLink="/citas" routerLinkActive="active-link">
+    <mat-icon>list</mat-icon>
+    Ver Citas
+  </button>
+  <button mat-button routerLink="/pacientes" routerLinkActive="active-link">
+    <mat-icon>people</mat-icon>
+    Pacientes
+  </button>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
@@ -32,6 +40,14 @@
       <a mat-list-item routerLink="/registro" (click)="sidenav.close()">
         <mat-icon>event</mat-icon>
         <span class="nav-item-text">Agendar Cita</span>
+      </a>
+      <a mat-list-item routerLink="/citas" (click)="sidenav.close()">
+        <mat-icon>list</mat-icon>
+        <span class="nav-item-text">Ver Citas</span>
+      </a>
+      <a mat-list-item routerLink="/pacientes" (click)="sidenav.close()">
+        <mat-icon>people</mat-icon>
+        <span class="nav-item-text">Pacientes</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>

@@ -1,0 +1,96 @@
+.citas-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-content {
+  max-width: 900px;
+  width: 100%;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.btn-nueva mat-icon {
+  margin-right: 8px;
+}
+
+.citas-container {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.list-card {
+  padding: 24px;
+}
+
+.loading, .error-box, .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  color: #666;
+}
+
+.error-box mat-icon, .empty mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.citas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cita-card mat-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cita-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cita-info .nombre {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.cita-info .detalle {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.cita-info .motivo {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.cita-actions {
+  display: flex;
+  gap: 4px;
+}
