@@ -1,36 +1,67 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { DatosCita } from '../models/cita.model';
+import { Cita, CitaPayload } from '../models/cita.model';
 
-/**
- * Servicio para gestionar citas contra el backend.
- * Cuando el backend exista, las llamadas se harán a environment.apiUrl.
- * Mientras no haya backend, devuelve éxito simulado para no romper el flujo.
- */
+export interface RespuestaBackend {
+  message?: string;
+  error?: string;
+  detalles?: string[];
+}
+
+export interface ResultadoCita {
+  ok: boolean;
+  mensaje?: string;
+  detalles?: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class CitaService {
-  private readonly apiUrl = `${environment.apiUrl}/api`;
+  private readonly apiUrl = `${environment.apiUrl}/api/citas`;
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Guarda una cita en el backend.
-   * Cuando tengas el API: POST {apiUrl}/api/citas
-   */
-  guardarCita(datos: DatosCita): Observable<{ ok: boolean; mensaje?: string }> {
-    const url = `${this.apiUrl}/citas`;
-    return this.http.post<{ ok: boolean; mensaje?: string }>(url, datos).pipe(
-      map(() => ({ ok: true })),
-      catchError((err) => {
-        console.warn('Backend no disponible o error:', err?.message || err);
-        // Mientras no haya backend, no fallar: el registro puede seguir usando EmailJS
-        return of({ ok: false, mensaje: 'Servicio temporalmente no disponible' });
-      })
+  private extraerMensajeError(err: HttpErrorResponse): ResultadoCita {
+    const body = err.error as RespuestaBackend | undefined;
+    const mensaje = body?.error || err.message || 'Error de conexión';
+    const detalles = body?.detalles;
+    return { ok: false, mensaje, detalles };
+  }
+
+  listarCitas(): Observable<Cita[]> {
+    return this.http.get<Cita[]>(this.apiUrl).pipe(
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
+    );
+  }
+
+  obtenerCita(id: number): Observable<Cita> {
+    return this.http.get<Cita>(`${this.apiUrl}/${id}`).pipe(
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
+    );
+  }
+
+  guardarCita(payload: CitaPayload): Observable<ResultadoCita> {
+    return this.http.post<{ message?: string }>(this.apiUrl, payload).pipe(
+      map((res) => ({ ok: true, mensaje: res.message })),
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
+    );
+  }
+
+  actualizarCita(id: number, payload: CitaPayload): Observable<ResultadoCita> {
+    return this.http.put<{ message?: string }>(`${this.apiUrl}/${id}`, payload).pipe(
+      map((res) => ({ ok: true, mensaje: res.message })),
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
+    );
+  }
+
+  eliminarCita(id: number): Observable<ResultadoCita> {
+    return this.http.delete<{ message?: string }>(`${this.apiUrl}/${id}`).pipe(
+      map((res) => ({ ok: true, mensaje: res.message })),
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
     );
   }
 }

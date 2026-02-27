@@ -1,13 +1,26 @@
+import type { Paciente } from './paciente.model';
+
 /**
- * Modelo de cita para reutilizar en formularios y servicios.
+ * Cita tal como la devuelve el backend (con paciente anidado).
  */
-export interface DatosCita {
-  nombre: string;
-  apellido: string;
-  email: string;
-  telefono: string;
-  servicio: string;
+export interface Cita {
+  id: number;
+  paciente_id: number;
   fecha: string;
-  horario: string;
-  motivo?: string;
+  hora: string;
+  motivo: string | null;
+  estado: string;
+  created_at?: string;
+  paciente?: Paciente;
+}
+
+/**
+ * Payload para crear/actualizar cita en el API.
+ */
+export interface CitaPayload {
+  paciente_id: number;
+  fecha: string;
+  hora: string;
+  motivo?: string | null;
+  estado?: string;
 }
