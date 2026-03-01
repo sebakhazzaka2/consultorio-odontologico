@@ -82,12 +82,24 @@ npm start
 
 Queda en http://localhost:4200
 
+### Tests
+
+Backend:
+
+```bash
+cd backend
+npm test
+```
+
+Prueba que GET / responde bien. Frontend tiene `app.component.spec.ts`; para correrlo hace falta configurar el target test en angular.json (Karma o Jest).
+
 ### Resumen
 
 | Dónde | Comando | URL |
 |-------|---------|-----|
 | Raíz | `npm start` | :4200 |
 | backend/ | `npm run dev` | :3000 |
+| backend/ | `npm test` | tests |
 
 ---
 
