@@ -1,4 +1,4 @@
-package com.consultorio.entities;
+package com.consultorio.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
@@ -16,7 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "pacientes")
-public class PacienteEntity {
+public class Paciente {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +49,9 @@ public class PacienteEntity {
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
-  public PacienteEntity() {}
+  public Paciente() {}
 
-  public PacienteEntity(String nombre, String apellido, String telefono, String email, LocalDate fechaNacimiento) {
+  public Paciente(String nombre, String apellido, String telefono, String email, LocalDate fechaNacimiento) {
     this.nombre = nombre;
     this.apellido = apellido;
     this.telefono = telefono;
@@ -115,4 +115,3 @@ public class PacienteEntity {
     this.createdAt = createdAt;
   }
 }
-
