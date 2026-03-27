@@ -1,6 +1,5 @@
 package com.consultorio.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,11 +39,9 @@ public class Paciente {
   @Column(nullable = false, length = 255)
   private String email;
 
-  @JsonProperty("fecha_nacimiento")
   @Column(name = "fecha_nacimiento")
   private LocalDate fechaNacimiento;
 
-  @JsonProperty("created_at")
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;

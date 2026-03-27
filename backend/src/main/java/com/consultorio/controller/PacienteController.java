@@ -1,7 +1,9 @@
 package com.consultorio.controller;
 
-import com.consultorio.model.Paciente;
+import com.consultorio.dto.PacienteRequest;
+import com.consultorio.dto.PacienteResponse;
 import com.consultorio.service.PacienteService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,23 +27,24 @@ public class PacienteController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Paciente>> findAll() {
+  public ResponseEntity<List<PacienteResponse>> findAll() {
     return new ResponseEntity<>(pacienteService.findAll(), HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Paciente> findById(@PathVariable Long id) {
+  public ResponseEntity<PacienteResponse> findById(@PathVariable Long id) {
     return new ResponseEntity<>(pacienteService.findById(id), HttpStatus.OK);
   }
 
   @PostMapping
-  public ResponseEntity<Paciente> create(@RequestBody Paciente paciente) {
-    return new ResponseEntity<>(pacienteService.create(paciente), HttpStatus.CREATED);
+  public ResponseEntity<PacienteResponse> create(@Valid @RequestBody PacienteRequest pacienteRequest) {
+    return new ResponseEntity<>(pacienteService.create(pacienteRequest), HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Paciente> update(@PathVariable Long id, @RequestBody Paciente paciente) {
-    return new ResponseEntity<>(pacienteService.update(id, paciente), HttpStatus.OK);
+  public ResponseEntity<PacienteResponse> update(
+      @PathVariable Long id, @Valid @RequestBody PacienteRequest pacienteRequest) {
+    return new ResponseEntity<>(pacienteService.update(id, pacienteRequest), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
