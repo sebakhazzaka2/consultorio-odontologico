@@ -12,7 +12,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { EmailNotificationService } from '../../services/email-notification.service';
 import { CitaService } from '../../services/cita.service';
 import { PacienteService } from '../../services/paciente.service';
 import { Cita } from '../../models/cita.model';
@@ -61,7 +60,6 @@ export class RegistroComponent implements OnInit {
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute,
-    private emailService: EmailNotificationService,
     private citaService: CitaService,
     private pacienteService: PacienteService,
     private dialog: MatDialog
@@ -175,21 +173,6 @@ export class RegistroComponent implements OnInit {
       next: (res) => {
         this.enviando = false;
         this.snackBar.open(res.mensaje || 'Cita guardada correctamente', 'Cerrar', { duration: 4000 });
-        if (!this.idEdicion) {
-          const pac = this.pacientes.find((p) => p.id === Number(v.paciente_id));
-          if (pac) {
-            this.emailService.enviarNotificacionCita({
-              nombre: pac.nombre,
-              apellido: pac.apellido,
-              email: pac.email,
-              telefono: pac.telefono,
-              servicio: '1',
-              fecha: fechaStr,
-              horario: v.horario,
-              motivo: v.motivo || ''
-            }).then(() => {});
-          }
-        }
         this.registroForm.reset();
         this.router.navigate(['/citas']);
       },
