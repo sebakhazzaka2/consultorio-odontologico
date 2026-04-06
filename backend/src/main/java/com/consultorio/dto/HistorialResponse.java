@@ -2,6 +2,7 @@ package com.consultorio.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -15,4 +16,8 @@ public record HistorialResponse(
     LocalDateTime fechaHora,
     String procedimiento,
     String notas,
+    Long tratamientoId,
+    String nombreTratamiento,
+    BigDecimal precioAplicado,
+    String fotoUrl,
     Instant createdAt) {}

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,6 +37,16 @@ public class HistorialClinico {
 
   @Column(nullable = true, length = 2000)
   private String notas;
+
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "tratamiento_id", nullable = true)
+  private Tratamiento tratamiento;
+
+  @Column(name = "precio_aplicado", nullable = true, precision = 10, scale = 2)
+  private BigDecimal precioAplicado;
+
+  @Column(name = "foto_url", nullable = true, length = 500)
+  private String fotoUrl;
 
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
@@ -97,5 +108,29 @@ public class HistorialClinico {
 
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public Tratamiento getTratamiento() {
+    return tratamiento;
+  }
+
+  public void setTratamiento(Tratamiento tratamiento) {
+    this.tratamiento = tratamiento;
+  }
+
+  public BigDecimal getPrecioAplicado() {
+    return precioAplicado;
+  }
+
+  public void setPrecioAplicado(BigDecimal precioAplicado) {
+    this.precioAplicado = precioAplicado;
+  }
+
+  public String getFotoUrl() {
+    return fotoUrl;
+  }
+
+  public void setFotoUrl(String fotoUrl) {
+    this.fotoUrl = fotoUrl;
   }
 }

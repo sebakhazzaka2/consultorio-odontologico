@@ -22,6 +22,10 @@ public class HistorialRequest {
 
   private String notas;
 
+  private Long tratamientoId;
+
+  private String fotoUrl;
+
   public HistorialRequest() {}
 
   public Long getPacienteId() {
@@ -62,5 +66,21 @@ public class HistorialRequest {
 
   public void setNotas(String notas) {
     this.notas = notas;
+  }
+
+  public Long getTratamientoId() {
+    return tratamientoId;
+  }
+
+  public void setTratamientoId(Long tratamientoId) {
+    this.tratamientoId = tratamientoId;
+  }
+
+  public String getFotoUrl() {
+    return fotoUrl;
+  }
+
+  public void setFotoUrl(String fotoUrl) {
+    this.fotoUrl = fotoUrl;
   }
 }

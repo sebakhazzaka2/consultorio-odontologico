@@ -6,9 +6,11 @@ import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Cita;
 import com.consultorio.model.HistorialClinico;
 import com.consultorio.model.Paciente;
+import com.consultorio.model.Tratamiento;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.HistorialRepository;
 import com.consultorio.repository.PacienteRepository;
+import com.consultorio.repository.TratamientoRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +20,17 @@ public class HistorialService {
   private final HistorialRepository historialRepository;
   private final PacienteRepository pacienteRepository;
   private final CitaRepository citaRepository;
+  private final TratamientoRepository tratamientoRepository;
 
   public HistorialService(
       HistorialRepository historialRepository,
       PacienteRepository pacienteRepository,
-      CitaRepository citaRepository) {
+      CitaRepository citaRepository,
+      TratamientoRepository tratamientoRepository) {
     this.historialRepository = historialRepository;
     this.pacienteRepository = pacienteRepository;
     this.citaRepository = citaRepository;
+    this.tratamientoRepository = tratamientoRepository;
   }
 
   public List<HistorialResponse> findAll() {
@@ -83,12 +88,30 @@ public class HistorialService {
                   () -> new ResourceNotFoundException("Cita no encontrada con id: " + citaId));
     }
 
+    Tratamiento tratamiento = null;
+    if (request.getTratamientoId() != null) {
+      Long tratamientoId = request.getTratamientoId();
+      tratamiento =
+          tratamientoRepository
+              .findById(tratamientoId)
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          "Tratamiento no encontrado con id: " + tratamientoId));
+      if (!tratamiento.getActivo()) {
+        throw new IllegalArgumentException("El tratamiento no está disponible");
+      }
+    }
+
     HistorialClinico historial = new HistorialClinico();
     historial.setPaciente(paciente);
     historial.setCita(cita);
     historial.setFechaHora(request.getFechaHora());
     historial.setProcedimiento(request.getProcedimiento());
     historial.setNotas(request.getNotas());
+    historial.setTratamiento(tratamiento);
+    historial.setPrecioAplicado(tratamiento != null ? tratamiento.getPrecio() : null);
+    historial.setFotoUrl(request.getFotoUrl());
 
     HistorialClinico creado = historialRepository.save(historial);
     return toResponse(creado);
@@ -118,11 +141,29 @@ public class HistorialService {
                   () -> new ResourceNotFoundException("Cita no encontrada con id: " + citaId));
     }
 
+    Tratamiento tratamiento = null;
+    if (request.getTratamientoId() != null) {
+      Long tratamientoId = request.getTratamientoId();
+      tratamiento =
+          tratamientoRepository
+              .findById(tratamientoId)
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          "Tratamiento no encontrado con id: " + tratamientoId));
+      if (!tratamiento.getActivo()) {
+        throw new IllegalArgumentException("El tratamiento no está disponible");
+      }
+    }
+
     existente.setPaciente(paciente);
     existente.setCita(cita);
     existente.setFechaHora(request.getFechaHora());
     existente.setProcedimiento(request.getProcedimiento());
     existente.setNotas(request.getNotas());
+    existente.setTratamiento(tratamiento);
+    existente.setPrecioAplicado(tratamiento != null ? tratamiento.getPrecio() : null);
+    existente.setFotoUrl(request.getFotoUrl());
 
     HistorialClinico actualizado = historialRepository.save(existente);
     return toResponse(actualizado);
@@ -136,6 +177,9 @@ public class HistorialService {
   private HistorialResponse toResponse(HistorialClinico h) {
     Paciente paciente = h.getPaciente();
     Long citaId = h.getCita() != null ? h.getCita().getId() : null;
+    Long tratamientoId = h.getTratamiento() != null ? h.getTratamiento().getId() : null;
+    String nombreTratamiento =
+        h.getTratamiento() != null ? h.getTratamiento().getNombre() : null;
     return new HistorialResponse(
         h.getId(),
         paciente.getId(),
@@ -145,6 +189,10 @@ public class HistorialService {
         h.getFechaHora(),
         h.getProcedimiento(),
         h.getNotas(),
+        tratamientoId,
+        nombreTratamiento,
+        h.getPrecioAplicado(),
+        h.getFotoUrl(),
         h.getCreatedAt());
   }
 }
