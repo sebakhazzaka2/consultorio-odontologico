@@ -59,8 +59,8 @@ export class CitaService {
   }
 
   eliminarCita(id: number): Observable<ResultadoCita> {
-    return this.http.delete<{ message?: string }>(`${this.apiUrl}/${id}`).pipe(
-      map((res) => ({ ok: true, mensaje: res.message })),
+    return this.http.delete<{ message?: string } | null>(`${this.apiUrl}/${id}`).pipe(
+      map((res) => ({ ok: true, mensaje: res?.message ?? 'Cita eliminada correctamente' })),
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
     );
   }
