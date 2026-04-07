@@ -34,9 +34,8 @@
           <mat-card class="cita-card">
             <mat-card-content>
               <div class="cita-info">
-                <span class="nombre">{{ cita.paciente ? (cita.paciente.nombre + ' ' + cita.paciente.apellido) : 'Paciente' }}</span>
-                <span class="detalle">{{ formatearFecha(cita.fecha) }} · {{ cita.hora }}</span>
-                <span class="detalle">{{ cita.paciente?.email }} · {{ cita.paciente?.telefono }}</span>
+                <span class="nombre">{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}</span>
+                <span class="detalle">{{ formatearFecha(cita.fecha_hora_inicio) }} · {{ cita.duracion_minutos }} min</span>
                 @if (cita.motivo) {
                   <span class="motivo">{{ cita.motivo }}</span>
                 }

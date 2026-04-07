@@ -47,10 +47,18 @@ export class CitaFormComponent implements OnInit {
   enviando = false;
   pacientes: Paciente[] = [];
 
-  horarios = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
-  ];
+  horarios: string[] = (() => {
+    const slots: string[] = [];
+    for (let h = 9; h <= 18; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        if (h === 18 && m > 0) break;
+        slots.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+      }
+    }
+    return slots;
+  })();
+
+  duraciones = [15, 30, 45, 60, 90];
 
   minDate = new Date();
 
@@ -66,8 +74,10 @@ export class CitaFormComponent implements OnInit {
     this.registroForm = this.fb.group({
       paciente_id: ['', Validators.required],
       fecha: ['', Validators.required],
-      horario: ['', Validators.required],
-      motivo: ['']
+      hora: ['', Validators.required],
+      duracion_minutos: ['', Validators.required],
+      motivo: ['', Validators.required],
+      notas: ['']
     });
   }
 
@@ -105,12 +115,13 @@ export class CitaFormComponent implements OnInit {
     if (this.idEdicion == null) return;
     this.citaService.obtenerCita(this.idEdicion).subscribe({
       next: (cita: Cita) => {
-        const fechaDate = cita.fecha ? new Date(cita.fecha + 'T12:00:00') : null;
         this.registroForm.patchValue({
           paciente_id: cita.paciente_id,
-          fecha: fechaDate,
-          horario: cita.hora || '',
-          motivo: cita.motivo || ''
+          fecha: new Date(cita.fecha_hora_inicio),
+          hora: cita.fecha_hora_inicio.slice(11, 16),
+          duracion_minutos: cita.duracion_minutos,
+          motivo: cita.motivo || '',
+          notas: cita.notas || ''
         });
       },
       error: (res: ResultadoCita) => {
@@ -149,19 +160,20 @@ export class CitaFormComponent implements OnInit {
 
   onSubmit(): void {
     if (!this.registroForm.valid) {
-      this.snackBar.open('Selecciona un paciente, fecha y horario.', 'Cerrar', { duration: 4000 });
+      this.snackBar.open('Completá todos los campos requeridos.', 'Cerrar', { duration: 4000 });
       return;
     }
 
     this.enviando = true;
     const v = this.registroForm.value;
-    const fechaStr = typeof v.fecha === 'string' ? v.fecha.slice(0, 10) : (v.fecha as Date).toISOString().slice(0, 10);
+    const fechaStr = (v.fecha as Date).toISOString().slice(0, 10);
+    const fechaHoraInicio = `${fechaStr}T${v.hora}:00`;
     const payload: CitaPayload = {
       paciente_id: Number(v.paciente_id),
-      fecha: fechaStr,
-      hora: v.horario,
-      motivo: v.motivo || null,
-      estado: 'pendiente'
+      fecha_hora_inicio: fechaHoraInicio,
+      duracion_minutos: Number(v.duracion_minutos),
+      motivo: v.motivo,
+      notas: v.notas || null
     };
 
     const request = this.idEdicion

@@ -1,26 +1,20 @@
-import type { Paciente } from './paciente.model';
-
-/**
- * Cita tal como la devuelve el backend (con paciente anidado).
- */
 export interface Cita {
   id: number;
   paciente_id: number;
-  fecha: string;
-  hora: string;
-  motivo: string | null;
+  nombre_paciente: string;
+  apellido_paciente: string;
+  fecha_hora_inicio: string;
+  duracion_minutos: number;
   estado: string;
+  motivo: string | null;
+  notas: string | null;
   created_at?: string;
-  paciente?: Paciente;
 }
 
-/**
- * Payload para crear/actualizar cita en el API.
- */
 export interface CitaPayload {
   paciente_id: number;
-  fecha: string;
-  hora: string;
-  motivo?: string | null;
-  estado?: string;
+  fecha_hora_inicio: string;
+  duracion_minutos: number;
+  motivo: string;
+  notas?: string | null;
 }

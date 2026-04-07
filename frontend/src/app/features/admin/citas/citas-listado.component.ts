@@ -92,9 +92,11 @@ export class CitasListadoComponent implements OnInit {
     });
   }
 
-  formatearFecha(fecha: string): string {
-    if (!fecha) return '';
-    const d = new Date(fecha + 'T12:00:00');
-    return isNaN(d.getTime()) ? fecha : d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  formatearFecha(fechaHoraInicio: string): string {
+    if (!fechaHoraInicio) return '';
+    const d = new Date(fechaHoraInicio);
+    return isNaN(d.getTime()) ? fechaHoraInicio :
+      d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+      + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   }
 }

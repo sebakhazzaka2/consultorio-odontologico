@@ -14,8 +14,8 @@ export interface ConfirmarBorradoData {
   template: `
     <h2 mat-dialog-title>Confirmar eliminación</h2>
     <mat-dialog-content>
-      <p>¿Está seguro que desea eliminar la cita de <strong>{{ data.cita.paciente ? (data.cita.paciente.nombre + ' ' + data.cita.paciente.apellido) : 'Paciente' }}</strong>?</p>
-      <p class="detalle">Fecha: {{ data.cita.fecha }} · Hora: {{ data.cita.hora }}</p>
+      <p>¿Está seguro que desea eliminar la cita de <strong>{{ data.cita.nombre_paciente }} {{ data.cita.apellido_paciente }}</strong>?</p>
+      <p class="detalle">{{ data.cita.fecha_hora_inicio }} · {{ data.cita.duracion_minutos }} min</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="cancelar()">Cancelar</button>
