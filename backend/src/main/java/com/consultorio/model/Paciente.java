@@ -32,8 +32,8 @@ public class Paciente {
   private String apellido;
 
   @NotBlank
-  @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe tener 10 dígitos")
-  @Column(nullable = false, length = 10)
+  @Pattern(regexp = "^[0-9]{7,15}$", message = "El teléfono debe tener entre 7 y 15 dígitos")
+  @Column(nullable = false, length = 15)
   private String telefono;
 
   @NotBlank

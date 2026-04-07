@@ -46,7 +46,7 @@ export interface PacienteFormDialogData {
           <mat-label>Teléfono</mat-label>
           <input matInput type="tel" formControlName="telefono" />
           <mat-error *ngIf="form.get('telefono')?.hasError('required')">Requerido</mat-error>
-          <mat-error *ngIf="form.get('telefono')?.hasError('pattern')">10 dígitos</mat-error>
+          <mat-error *ngIf="form.get('telefono')?.hasError('pattern')">Entre 7 y 15 dígitos</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
@@ -86,7 +86,7 @@ export class PacienteFormDialogComponent {
     this.form = this.fb.group({
       nombre: [p?.nombre ?? '', [Validators.required, Validators.minLength(2)]],
       apellido: [p?.apellido ?? '', [Validators.required, Validators.minLength(2)]],
-      telefono: [p?.telefono ?? '', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      telefono: [p?.telefono ?? '', [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)]],
       email: [p?.email ?? '', [Validators.required, Validators.email]],
       fecha_nacimiento: [p?.fecha_nacimiento ? new Date(p.fecha_nacimiento + 'T12:00:00') : null]
     });
