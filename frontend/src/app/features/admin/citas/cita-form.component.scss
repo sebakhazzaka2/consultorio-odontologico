@@ -1,0 +1,205 @@
+.registro-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.header-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.page-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+.registro-container {
+  padding: 60px 40px;
+  background-color: #f5f5f5;
+  min-height: calc(100vh - 64px - 200px);
+}
+
+.form-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.form-card {
+  padding: 40px;
+}
+
+mat-card-header {
+  margin-bottom: 30px;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.8rem;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+.btn-nuevo-paciente {
+  margin-bottom: 16px;
+}
+.btn-nuevo-paciente mat-icon {
+  margin-right: 8px;
+}
+
+.registro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.form-field-full {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.submit-button {
+  font-size: 1.1rem;
+  padding: 12px 32px;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.cancel-button {
+  font-size: 1rem;
+}
+
+.info-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-card,
+.contact-card {
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    mat-card-title {
+      font-size: 1.3rem;
+      margin: 0;
+    }
+  }
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    mat-icon {
+      color: #4caf50;
+      margin-top: 4px;
+    }
+
+    span {
+      flex: 1;
+      line-height: 1.6;
+    }
+  }
+}
+
+.contact-card {
+  mat-card-content {
+    p {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+
+      mat-icon {
+        color: #667eea;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .form-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .info-sidebar {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .registro-container {
+    padding: 40px 20px;
+  }
+
+  .form-card {
+    padding: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

@@ -2,16 +2,16 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './features/public/home/home.component';
 import { ServiciosComponent } from './features/public/servicios/servicios.component';
 import { LoginComponent } from './features/auth/login/login.component';
-import { CitasListadoComponent } from './features/admin/citas/citas-listado.component';
-import { PacientesListadoComponent } from './features/admin/pacientes/pacientes-listado.component';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'servicios', component: ServiciosComponent },
-  { path: 'registro', component: LoginComponent },
-  { path: 'registro/editar/:id', component: LoginComponent },
-  { path: 'citas', component: CitasListadoComponent },
-  { path: 'pacientes', component: PacientesListadoComponent },
+  { path: 'login', component: LoginComponent },
+  {
+    path: 'admin',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes)
+  },
   { path: '**', redirectTo: '' }
 ];
-

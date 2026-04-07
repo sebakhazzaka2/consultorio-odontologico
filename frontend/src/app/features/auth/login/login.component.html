@@ -1,123 +1,38 @@
-<div class="registro-header">
-  <div class="header-content">
-    <h1 class="page-title">{{ esEdicion ? 'Editar cita' : 'Agendar una Cita' }}</h1>
-    <p class="page-subtitle">{{ esEdicion ? 'Modifica los datos y guarda los cambios' : 'Selecciona el paciente y el horario' }}</p>
-  </div>
-</div>
+<div class="login-wrapper">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Iniciar sesión</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
+            <mat-error>El email es requerido</mat-error>
+          } @else if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
+            <mat-error>Ingresá un email válido</mat-error>
+          }
+        </mat-form-field>
 
-<div class="registro-container">
-  <div class="form-wrapper">
-    <mat-card class="form-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>event</mat-icon>
-          Información de la Cita
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
-          <mat-form-field appearance="outline" class="form-field-full">
-            <mat-label>Paciente</mat-label>
-            <mat-select formControlName="paciente_id" placeholder="Selecciona un paciente">
-              <mat-option *ngFor="let p of pacientes" [value]="p.id">
-                {{ p.nombre }} {{ p.apellido }} — {{ p.telefono }}
-              </mat-option>
-            </mat-select>
-            <mat-icon matPrefix>person</mat-icon>
-            <mat-error *ngIf="registroForm.get('paciente_id')?.invalid && registroForm.get('paciente_id')?.touched">
-              {{ getErrorMessage('paciente_id') }}
-            </mat-error>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" formControlName="password" autocomplete="current-password" />
+          @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+            <mat-error>La contraseña es requerida</mat-error>
+          }
+        </mat-form-field>
 
-          <button mat-stroked-button type="button" (click)="abrirNuevoPaciente()" class="btn-nuevo-paciente">
-            <mat-icon>person_add</mat-icon>
-            Crear paciente nuevo
-          </button>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Fecha</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="minDate">
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-              <mat-icon matPrefix>calendar_today</mat-icon>
-              <mat-error *ngIf="registroForm.get('fecha')?.invalid && registroForm.get('fecha')?.touched">
-                {{ getErrorMessage('fecha') }}
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Horario</mat-label>
-              <mat-select formControlName="horario">
-                <mat-option *ngFor="let horario of horarios" [value]="horario">
-                  {{ horario }}
-                </mat-option>
-              </mat-select>
-              <mat-icon matPrefix>schedule</mat-icon>
-              <mat-error *ngIf="registroForm.get('horario')?.invalid && registroForm.get('horario')?.touched">
-                {{ getErrorMessage('horario') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <mat-form-field appearance="outline" class="form-field-full">
-            <mat-label>Motivo de la consulta (opcional)</mat-label>
-            <textarea matInput formControlName="motivo" rows="4" placeholder="Describe brevemente el motivo de tu consulta..."></textarea>
-            <mat-icon matPrefix>description</mat-icon>
-          </mat-form-field>
-
-          <div class="form-actions">
-            <button mat-raised-button color="primary" type="submit" [disabled]="registroForm.invalid || enviando" class="submit-button">
-              <mat-icon>{{ esEdicion ? 'save' : 'send' }}</mat-icon>
-              {{ esEdicion ? 'Guardar cambios' : 'Agendar Cita' }}
-            </button>
-            <button mat-button type="button" [routerLink]="esEdicion ? ['/citas'] : ['/']" class="cancel-button">
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-
-    <div class="info-sidebar">
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-icon color="primary">info</mat-icon>
-          <mat-card-title>Información Importante</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <ul class="info-list">
-            <li>
-              <mat-icon>check_circle</mat-icon>
-              <span>Confirma tu cita con al menos 24 horas de anticipación</span>
-            </li>
-            <li>
-              <mat-icon>check_circle</mat-icon>
-              <span>Llega 10 minutos antes de tu cita</span>
-            </li>
-            <li>
-              <mat-icon>check_circle</mat-icon>
-              <span>Trae una identificación válida</span>
-            </li>
-            <li>
-              <mat-icon>check_circle</mat-icon>
-              <span>Si necesitas cancelar, hazlo con 24 horas de anticipación</span>
-            </li>
-          </ul>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="contact-card">
-        <mat-card-header>
-          <mat-icon color="primary">contact_phone</mat-icon>
-          <mat-card-title>Contacto</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p><mat-icon>phone</mat-icon> (555) 123-4567</p>
-          <p><mat-icon>email</mat-icon> info&#64;consultorio.com</p>
-          <p><mat-icon>schedule</mat-icon> Lun - Vie: 9:00 AM - 6:00 PM</p>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="submit-button"
+          [disabled]="loginForm.invalid || cargando"
+        >
+          {{ cargando ? 'Iniciando sesión...' : 'Iniciar sesión' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

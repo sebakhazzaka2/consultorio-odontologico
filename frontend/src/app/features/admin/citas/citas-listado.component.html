@@ -2,7 +2,7 @@
   <div class="header-content">
     <h1 class="page-title">Citas agendadas</h1>
     <p class="page-subtitle">Gestiona las citas del consultorio</p>
-    <button mat-raised-button color="primary" routerLink="/registro" class="btn-nueva">
+    <button mat-raised-button color="primary" routerLink="/admin/citas/nueva" class="btn-nueva">
       <mat-icon>add</mat-icon>
       Nueva cita
     </button>
@@ -26,7 +26,7 @@
       <div class="empty">
         <mat-icon>event_busy</mat-icon>
         <p>No hay citas registradas</p>
-        <button mat-raised-button color="primary" routerLink="/registro">Agendar primera cita</button>
+        <button mat-raised-button color="primary" routerLink="/admin/citas/nueva">Agendar primera cita</button>
       </div>
     } @else {
       <div class="citas-list">
@@ -42,7 +42,7 @@
                 }
               </div>
               <div class="cita-actions">
-                <button mat-icon-button color="primary" [routerLink]="['/registro', 'editar', cita.id]" matTooltip="Editar">
+                <button mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', cita.id]" matTooltip="Editar">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button color="warn" (click)="eliminarCita(cita)" matTooltip="Eliminar">
