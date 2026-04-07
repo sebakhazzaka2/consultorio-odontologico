@@ -8,11 +8,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { PacienteService } from '../../services/paciente.service';
-import { Paciente } from '../../models/paciente.model';
+import { PacienteService } from './paciente.service';
+import { Paciente } from '../../../core/models/paciente.model';
 import { PacienteFormDialogComponent } from './paciente-form-dialog.component';
 import { ConfirmarBorradoPacienteDialogComponent } from './confirmar-borrado-paciente-dialog.component';
-import type { PacientePayload } from '../../models/paciente.model';
+import type { PacientePayload } from '../../../core/models/paciente.model';
 
 @Component({
   selector: 'app-pacientes-listado',

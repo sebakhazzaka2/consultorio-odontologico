@@ -1,21 +1,21 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { Cita } from '../../models/cita.model';
+import { Paciente } from '../../../core/models/paciente.model';
 
-export interface ConfirmarBorradoData {
-  cita: Cita;
+export interface ConfirmarBorradoPacienteData {
+  paciente: Paciente;
 }
 
 @Component({
-  selector: 'app-confirmar-borrado-dialog',
+  selector: 'app-confirmar-borrado-paciente-dialog',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule],
   template: `
-    <h2 mat-dialog-title>Confirmar eliminación</h2>
+    <h2 mat-dialog-title>Eliminar paciente</h2>
     <mat-dialog-content>
-      <p>¿Está seguro que desea eliminar la cita de <strong>{{ data.cita.paciente ? (data.cita.paciente.nombre + ' ' + data.cita.paciente.apellido) : 'Paciente' }}</strong>?</p>
-      <p class="detalle">Fecha: {{ data.cita.fecha }} · Hora: {{ data.cita.hora }}</p>
+      <p>¿Eliminar a <strong>{{ data.paciente.nombre }} {{ data.paciente.apellido }}</strong>?</p>
+      <p class="detalle">Si tiene citas asociadas, no se podrá eliminar.</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="cancelar()">Cancelar</button>
@@ -27,10 +27,10 @@ export interface ConfirmarBorradoData {
     mat-dialog-content { min-width: 280px; }
   `]
 })
-export class ConfirmarBorradoDialogComponent {
+export class ConfirmarBorradoPacienteDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<ConfirmarBorradoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmarBorradoData
+    public dialogRef: MatDialogRef<ConfirmarBorradoPacienteDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmarBorradoPacienteData
   ) {}
 
   cancelar(): void {

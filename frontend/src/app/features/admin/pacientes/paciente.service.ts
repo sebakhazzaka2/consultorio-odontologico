@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { Paciente, PacientePayload } from '../models/paciente.model';
+import { environment } from '../../../../environments/environment';
+import { Paciente, PacientePayload } from '../../../core/models/paciente.model';
 
 export interface ResultadoPaciente {
   ok: boolean;

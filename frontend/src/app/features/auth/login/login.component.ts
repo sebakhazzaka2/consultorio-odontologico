@@ -12,17 +12,16 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CitaService } from '../../services/cita.service';
-import { PacienteService } from '../../services/paciente.service';
-import { Cita } from '../../models/cita.model';
-import { Paciente } from '../../models/paciente.model';
-import { ResultadoCita } from '../../services/cita.service';
-import { PacienteFormDialogComponent } from '../pacientes/paciente-form-dialog.component';
-import type { PacientePayload } from '../../models/paciente.model';
-import type { CitaPayload } from '../../models/cita.model';
+import { CitaService, ResultadoCita } from '../../admin/citas/cita.service';
+import { PacienteService } from '../../admin/pacientes/paciente.service';
+import { Cita } from '../../../core/models/cita.model';
+import { Paciente } from '../../../core/models/paciente.model';
+import { PacienteFormDialogComponent } from '../../admin/pacientes/paciente-form-dialog.component';
+import type { PacientePayload } from '../../../core/models/paciente.model';
+import type { CitaPayload } from '../../../core/models/cita.model';
 
 @Component({
-  selector: 'app-registro',
+  selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
@@ -39,10 +38,10 @@ import type { CitaPayload } from '../../models/cita.model';
     MatSnackBarModule,
     MatDialogModule
   ],
-  templateUrl: './registro.component.html',
-  styleUrl: './registro.component.scss'
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss'
 })
-export class RegistroComponent implements OnInit {
+export class LoginComponent implements OnInit {
   registroForm: FormGroup;
   idEdicion: number | null = null;
   enviando = false;

@@ -8,10 +8,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CitaService } from '../../services/cita.service';
-import { Cita } from '../../models/cita.model';
+import { CitaService, ResultadoCita } from './cita.service';
+import { Cita } from '../../../core/models/cita.model';
 import { ConfirmarBorradoDialogComponent } from './confirmar-borrado-dialog.component';
-import { ResultadoCita } from '../../services/cita.service';
 
 @Component({
   selector: 'app-citas-listado',
