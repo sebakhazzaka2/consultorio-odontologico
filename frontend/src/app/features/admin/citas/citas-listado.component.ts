@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,15 +9,20 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 import { CitaService, ResultadoCita } from './cita.service';
 import { Cita } from '../../../core/models/cita.model';
-import { ConfirmarBorradoDialogComponent } from './confirmar-borrado-dialog.component';
+import { ConfirmarCancelarDialogComponent } from './confirmar-cancelar-dialog.component';
 
 @Component({
   selector: 'app-citas-listado',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
     MatCardModule,
     MatButtonModule,
@@ -24,7 +30,11 @@ import { ConfirmarBorradoDialogComponent } from './confirmar-borrado-dialog.comp
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatNativeDateModule
   ],
   templateUrl: './citas-listado.component.html',
   styleUrl: './citas-listado.component.scss'
@@ -33,6 +43,13 @@ export class CitasListadoComponent implements OnInit {
   citas: Cita[] = [];
   cargando = true;
   errorMensaje: string | null = null;
+  fechaFiltro: Date | null = null;
+
+  get citasFiltradas(): Cita[] {
+    if (!this.fechaFiltro) return this.citas;
+    const iso = this.fechaFiltro.toISOString().slice(0, 10);
+    return this.citas.filter(c => c.fecha_hora_inicio.startsWith(iso));
+  }
 
   constructor(
     private citaService: CitaService,
@@ -62,17 +79,17 @@ export class CitasListadoComponent implements OnInit {
     });
   }
 
-  eliminarCita(cita: Cita): void {
-    const dialogRef = this.dialog.open(ConfirmarBorradoDialogComponent, {
+  cancelarCita(cita: Cita): void {
+    const dialogRef = this.dialog.open(ConfirmarCancelarDialogComponent, {
       width: '400px',
       data: { cita }
     });
 
     dialogRef.afterClosed().subscribe((confirmado: boolean) => {
       if (!confirmado) return;
-      this.citaService.eliminarCita(cita.id).subscribe({
-        next: (res) => {
-          this.snackBar.open(res.mensaje || 'Cita eliminada correctamente', 'Cerrar', {
+      this.citaService.cancelarCita(cita.id).subscribe({
+        next: () => {
+          this.snackBar.open('Cita cancelada', 'Cerrar', {
             duration: 4000,
             horizontalPosition: 'center',
             verticalPosition: 'top'
@@ -80,9 +97,8 @@ export class CitasListadoComponent implements OnInit {
           this.cargarCitas();
         },
         error: (res: ResultadoCita) => {
-          // Mostrar mensaje y detalles del backend cuando rechace la operación
           const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
-          this.snackBar.open(msg || 'Error al eliminar', 'Cerrar', {
+          this.snackBar.open(msg || 'Error al cancelar', 'Cerrar', {
             duration: 6000,
             horizontalPosition: 'center',
             verticalPosition: 'top'
@@ -90,6 +106,10 @@ export class CitasListadoComponent implements OnInit {
         }
       });
     });
+  }
+
+  limpiarFiltro(): void {
+    this.fechaFiltro = null;
   }
 
   formatearFecha(fechaHoraInicio: string): string {

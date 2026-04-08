@@ -29,29 +29,65 @@
         <button mat-raised-button color="primary" routerLink="/admin/citas/nueva">Agendar primera cita</button>
       </div>
     } @else {
-      <div class="citas-list">
-        @for (cita of citas; track cita.id) {
-          <mat-card class="cita-card">
-            <mat-card-content>
-              <div class="cita-info">
-                <span class="nombre">{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}</span>
-                <span class="detalle">{{ formatearFecha(cita.fecha_hora_inicio) }} · {{ cita.duracion_minutos }} min</span>
-                @if (cita.motivo) {
-                  <span class="motivo">{{ cita.motivo }}</span>
-                }
-              </div>
-              <div class="cita-actions">
-                <button mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', cita.id]" matTooltip="Editar">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="eliminarCita(cita)" matTooltip="Eliminar">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-card-content>
-          </mat-card>
+      <div class="filtro-fecha">
+        <mat-icon>filter_list</mat-icon>
+        <mat-form-field appearance="outline" class="campo-fecha">
+          <mat-label>Filtrar por fecha</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="fechaFiltro" />
+          <mat-datepicker-toggle matSuffix [for]="picker" />
+          <mat-datepicker #picker />
+        </mat-form-field>
+        @if (fechaFiltro) {
+          <button mat-button (click)="limpiarFiltro()">
+            <mat-icon>close</mat-icon>
+            Limpiar
+          </button>
         }
       </div>
+
+      @if (citasFiltradas.length === 0) {
+        <div class="empty">
+          <mat-icon>event_busy</mat-icon>
+          <p>No hay citas para la fecha seleccionada</p>
+        </div>
+      } @else {
+        <div class="citas-list">
+          @for (cita of citasFiltradas; track cita.id) {
+            <mat-card class="cita-card">
+              <mat-card-content>
+                <div class="cita-info">
+                  <div class="cita-top">
+                    <span class="nombre">{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}</span>
+                    <span class="chip"
+                      [class.chip-confirmada]="cita.estado === 'CONFIRMADA'"
+                      [class.chip-cancelada]="cita.estado === 'CANCELADA'"
+                      [class.chip-pendiente]="cita.estado === 'PENDIENTE'"
+                      [class.chip-completada]="cita.estado === 'COMPLETADA'">
+                      {{ cita.estado }}
+                    </span>
+                  </div>
+                  <span class="detalle">{{ formatearFecha(cita.fecha_hora_inicio) }} · {{ cita.duracion_minutos }} min</span>
+                  @if (cita.motivo) {
+                    <span class="motivo">{{ cita.motivo }}</span>
+                  }
+                </div>
+                <div class="cita-actions">
+                  @if (cita.estado !== 'CANCELADA') {
+                    <button mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', cita.id]" matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  }
+                  @if (cita.estado !== 'CANCELADA') {
+                    <button mat-icon-button color="warn" (click)="cancelarCita(cita)" matTooltip="Cancelar cita">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
     }
   </mat-card>
 </div>
