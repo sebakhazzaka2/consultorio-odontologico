@@ -53,6 +53,11 @@ public class CitaController {
     return new ResponseEntity<>(citaService.cancelar(id), HttpStatus.OK);
   }
 
+  @PatchMapping("/{id}/confirmar")
+  public ResponseEntity<CitaResponse> confirmar(@PathVariable Long id) {
+    return new ResponseEntity<>(citaService.confirmar(id), HttpStatus.OK);
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     citaService.delete(id);

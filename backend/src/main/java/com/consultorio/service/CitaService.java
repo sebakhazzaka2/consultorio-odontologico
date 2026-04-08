@@ -107,6 +107,17 @@ public class CitaService {
     return toResponse(cancelada);
   }
 
+  public CitaResponse confirmar(Long id) {
+    Cita cita =
+        citaRepository
+            .findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con id: " + id));
+
+    cita.setEstado(CitaEstado.CONFIRMADA);
+    Cita confirmada = citaRepository.save(cita);
+    return toResponse(confirmada);
+  }
+
   public void delete(Long id) {
     findById(id);
     citaRepository.deleteById(id);
