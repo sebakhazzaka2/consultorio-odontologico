@@ -1,0 +1,84 @@
+.tratamientos-header {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  padding: 2rem;
+  color: white;
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .page-subtitle {
+      margin: 0;
+      opacity: 0.85;
+      font-size: 0.95rem;
+      width: 100%;
+      order: -1;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .btn-nuevo {
+      margin-left: auto;
+    }
+  }
+}
+
+.tratamientos-container {
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .table-card {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .tratamientos-table {
+    width: 100%;
+
+    .descripcion-cell {
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .precio-cell {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+
+  .loading,
+  .error-box,
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 2rem;
+    gap: 1rem;
+    color: #666;
+
+    mat-icon {
+      font-size: 3rem;
+      height: 3rem;
+      width: 3rem;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+    }
+  }
+}

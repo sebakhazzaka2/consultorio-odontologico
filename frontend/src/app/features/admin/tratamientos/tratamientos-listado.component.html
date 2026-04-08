@@ -1,0 +1,87 @@
+<div class="tratamientos-header">
+  <div class="header-content">
+    <p class="page-subtitle">Gestiona los tratamientos del consultorio</p>
+    <h1 class="page-title">Tratamientos</h1>
+    <button mat-raised-button color="primary" (click)="abrirNuevo()" class="btn-nuevo">
+      <mat-icon>add</mat-icon>
+      Nuevo tratamiento
+    </button>
+  </div>
+</div>
+
+<div class="tratamientos-container">
+  <mat-card class="table-card">
+    @if (cargando) {
+      <div class="loading">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Cargando tratamientos...</p>
+      </div>
+    } @else if (errorMensaje) {
+      <div class="error-box">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ errorMensaje }}</p>
+        <button mat-raised-button (click)="cargar()">Reintentar</button>
+      </div>
+    } @else if (tratamientos.length === 0) {
+      <div class="empty">
+        <mat-icon>healing</mat-icon>
+        <p>No hay tratamientos registrados</p>
+        <button mat-raised-button color="primary" (click)="abrirNuevo()">Crear primer tratamiento</button>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="tratamientos" class="tratamientos-table">
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let t">{{ t.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let t" class="descripcion-cell">{{ t.descripcion || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="precio">
+          <th mat-header-cell *matHeaderCellDef>Precio</th>
+          <td mat-cell *matCellDef="let t" class="precio-cell">{{ t.precio | number:'1.2-2' }} UY$</td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let t">
+            <mat-chip-set>
+              <mat-chip
+                [style.background-color]="t.activo ? '#e8f5e9' : '#f5f5f5'"
+                [style.color]="t.activo ? '#2e7d32' : '#757575'"
+                disableRipple>
+                {{ t.activo ? 'Activo' : 'Inactivo' }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let t">
+            <button mat-icon-button color="primary" (click)="abrirEditar(t)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              [color]="t.activo ? 'primary' : ''"
+              (click)="toggleActivo(t)"
+              [matTooltip]="t.activo ? 'Desactivar' : 'Activar'">
+              <mat-icon>{{ t.activo ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminar(t)" matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    }
+  </mat-card>
+</div>

@@ -13,6 +13,10 @@ export const adminRoutes: Routes = [
       { path: 'citas', component: CitasListadoComponent },
       { path: 'citas/nueva', component: CitaFormComponent },
       { path: 'citas/editar/:id', component: CitaFormComponent },
+      {
+        path: 'tratamientos',
+        loadComponent: () => import('./tratamientos/tratamientos-listado.component').then(m => m.TratamientosListadoComponent)
+      },
       { path: '', redirectTo: 'pacientes', pathMatch: 'full' }
     ]
   }
