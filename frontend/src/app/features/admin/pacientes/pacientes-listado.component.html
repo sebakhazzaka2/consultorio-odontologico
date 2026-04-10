@@ -39,6 +39,9 @@
                 <span class="detalle">{{ p.email }} · {{ p.telefono }}</span>
               </div>
               <div class="paciente-actions">
+                <button mat-icon-button [routerLink]="['/admin/pacientes', p.id]" matTooltip="Ver detalle">
+                  <mat-icon>visibility</mat-icon>
+                </button>
                 <button mat-icon-button color="primary" (click)="abrirEditar(p)" matTooltip="Editar">
                   <mat-icon>edit</mat-icon>
                 </button>

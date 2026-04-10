@@ -15,6 +15,10 @@ export const adminRoutes: Routes = [
       { path: 'citas/editar/:id', component: CitaFormComponent },
       { path: 'citas/reagendar/:id', component: CitaFormComponent },
       {
+        path: 'pacientes/:id',
+        loadComponent: () => import('./pacientes/paciente-detalle.component').then(m => m.PacienteDetalleComponent)
+      },
+      {
         path: 'tratamientos',
         loadComponent: () => import('./tratamientos/tratamientos-listado.component').then(m => m.TratamientosListadoComponent)
       },
