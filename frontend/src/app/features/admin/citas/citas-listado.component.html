@@ -82,6 +82,11 @@
                       <mat-icon>cancel</mat-icon>
                     </button>
                   }
+                  @if (cita.estado === 'CANCELADA') {
+                    <button mat-icon-button color="primary" [routerLink]="['/admin/citas/reagendar', cita.id]" matTooltip="Reagendar">
+                      <mat-icon>event_repeat</mat-icon>
+                    </button>
+                  }
                 </div>
               </mat-card-content>
             </mat-card>

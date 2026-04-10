@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { switchMap } from 'rxjs/operators';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,6 +46,7 @@ export class CitaFormComponent implements OnInit {
   registroForm: FormGroup;
   idEdicion: number | null = null;
   enviando = false;
+  esReagendar = false;
   pacientes: Paciente[] = [];
 
   horarios: string[] = (() => {
@@ -86,6 +88,7 @@ export class CitaFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.esReagendar = this.route.snapshot.url.some(s => s.path === 'reagendar');
     this.cargarPacientes();
     this.route.params.subscribe((params) => {
       const id = params['id'];
@@ -175,6 +178,26 @@ export class CitaFormComponent implements OnInit {
       motivo: v.motivo,
       notas: v.notas || null
     };
+
+    if (this.esReagendar && this.idEdicion != null) {
+      const id = this.idEdicion;
+      this.citaService.actualizarCita(id, payload).pipe(
+        switchMap(() => this.citaService.confirmarCita(id))
+      ).subscribe({
+        next: () => {
+          this.enviando = false;
+          this.snackBar.open('Cita reagendada correctamente', 'Cerrar', { duration: 4000 });
+          this.registroForm.reset();
+          this.router.navigate(['/admin/citas']);
+        },
+        error: (res: ResultadoCita) => {
+          this.enviando = false;
+          const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
+          this.snackBar.open(msg || 'Error al reagendar la cita', 'Cerrar', { duration: 6000 });
+        }
+      });
+      return;
+    }
 
     const request = this.idEdicion
       ? this.citaService.actualizarCita(this.idEdicion, payload)

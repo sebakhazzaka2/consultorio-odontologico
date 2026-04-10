@@ -70,4 +70,10 @@ export class CitaService {
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
     );
   }
+
+  confirmarCita(id: number): Observable<Cita> {
+    return this.http.patch<Cita>(`${this.apiUrl}/${id}/confirmar`, {}).pipe(
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
+    );
+  }
 }
