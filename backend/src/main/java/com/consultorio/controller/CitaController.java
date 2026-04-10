@@ -4,6 +4,7 @@ import com.consultorio.dto.CitaRequest;
 import com.consultorio.dto.CitaResponse;
 import com.consultorio.service.CitaService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,6 +32,12 @@ public class CitaController {
   @GetMapping
   public ResponseEntity<List<CitaResponse>> findAll() {
     return new ResponseEntity<>(citaService.findAll(), HttpStatus.OK);
+  }
+
+  @GetMapping("/disponibilidad")
+  public ResponseEntity<List<String>> getDisponibilidad(
+      @RequestParam LocalDate fecha, @RequestParam int duracion) {
+    return new ResponseEntity<>(citaService.getDisponibilidad(fecha, duracion), HttpStatus.OK);
   }
 
   @GetMapping("/{id}")

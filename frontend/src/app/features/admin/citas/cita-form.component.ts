@@ -48,17 +48,8 @@ export class CitaFormComponent implements OnInit {
   enviando = false;
   esReagendar = false;
   pacientes: Paciente[] = [];
-
-  horarios: string[] = (() => {
-    const slots: string[] = [];
-    for (let h = 9; h <= 18; h++) {
-      for (let m = 0; m < 60; m += 15) {
-        if (h === 18 && m > 0) break;
-        slots.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
-      }
-    }
-    return slots;
-  })();
+  horariosDisponibles: string[] = [];
+  cargandoHorarios = false;
 
   duraciones = [15, 30, 45, 60, 90];
 
@@ -90,6 +81,8 @@ export class CitaFormComponent implements OnInit {
   ngOnInit(): void {
     this.esReagendar = this.route.snapshot.url.some(s => s.path === 'reagendar');
     this.cargarPacientes();
+    this.registroForm.get('fecha')!.valueChanges.subscribe(() => this.cargarDisponibilidad());
+    this.registroForm.get('duracion_minutos')!.valueChanges.subscribe(() => this.cargarDisponibilidad());
     this.route.params.subscribe((params) => {
       const id = params['id'];
       if (id) {
@@ -99,6 +92,27 @@ export class CitaFormComponent implements OnInit {
         }
       } else {
         this.idEdicion = null;
+      }
+    });
+  }
+
+  cargarDisponibilidad(): void {
+    const fecha: Date | null = this.registroForm.get('fecha')!.value;
+    const duracion: number | null = this.registroForm.get('duracion_minutos')!.value;
+    if (!fecha || !duracion) {
+      this.horariosDisponibles = [];
+      return;
+    }
+    this.cargandoHorarios = true;
+    const fechaIso = fecha.toISOString().slice(0, 10);
+    this.citaService.getDisponibilidad(fechaIso, duracion).subscribe({
+      next: (slots: string[]) => {
+        this.horariosDisponibles = slots;
+        this.cargandoHorarios = false;
+      },
+      error: () => {
+        this.snackBar.open('Error al cargar horarios disponibles', 'Cerrar', { duration: 4000 });
+        this.cargandoHorarios = false;
       }
     });
   }

@@ -8,7 +8,11 @@ import com.consultorio.model.CitaEstado;
 import com.consultorio.model.Paciente;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.PacienteRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -116,6 +120,41 @@ public class CitaService {
     cita.setEstado(CitaEstado.CONFIRMADA);
     Cita confirmada = citaRepository.save(cita);
     return toResponse(confirmada);
+  }
+
+  public List<String> getDisponibilidad(LocalDate fecha, int duracionMinutos) {
+    LocalDateTime inicioDia = fecha.atStartOfDay();
+    LocalDateTime finDia = fecha.atTime(23, 59);
+
+    List<Cita> citasOcupadas = citaRepository.findByFechaHoraInicioBetween(inicioDia, finDia)
+        .stream()
+        .filter(c -> c.getEstado() == CitaEstado.CONFIRMADA || c.getEstado() == CitaEstado.PENDIENTE)
+        .toList();
+
+    List<String> disponibles = new ArrayList<>();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    LocalTime slotTime = LocalTime.of(9, 0);
+    LocalTime limite = LocalTime.of(17, 45);
+
+    while (!slotTime.isAfter(limite)) {
+      LocalDateTime slot = fecha.atTime(slotTime);
+      LocalDateTime slotFin = slot.plusMinutes(duracionMinutos);
+
+      boolean solapado = citasOcupadas.stream().anyMatch(cita -> {
+        LocalDateTime citaInicio = cita.getFechaHoraInicio();
+        LocalDateTime citaFin = calcularFin(citaInicio, cita.getDuracionMinutos());
+        return citaInicio.isBefore(slotFin) && citaFin.isAfter(slot);
+      });
+
+      if (!solapado) {
+        disponibles.add(slotTime.format(formatter));
+      }
+
+      slotTime = slotTime.plusMinutes(15);
+    }
+
+    return disponibles;
   }
 
   public void delete(Long id) {

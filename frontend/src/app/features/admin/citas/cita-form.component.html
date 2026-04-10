@@ -34,31 +34,16 @@
             Crear paciente nuevo
           </button>
 
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Fecha</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="minDate">
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-              <mat-icon matPrefix>calendar_today</mat-icon>
-              <mat-error *ngIf="registroForm.get('fecha')?.invalid && registroForm.get('fecha')?.touched">
-                {{ getErrorMessage('fecha') }}
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Hora</mat-label>
-              <mat-select formControlName="hora">
-                <mat-option *ngFor="let h of horarios" [value]="h">
-                  {{ h }}
-                </mat-option>
-              </mat-select>
-              <mat-icon matPrefix>schedule</mat-icon>
-              <mat-error *ngIf="registroForm.get('hora')?.invalid && registroForm.get('hora')?.touched">
-                {{ getErrorMessage('hora') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Fecha</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="minDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-icon matPrefix>calendar_today</mat-icon>
+            <mat-error *ngIf="registroForm.get('fecha')?.invalid && registroForm.get('fecha')?.touched">
+              {{ getErrorMessage('fecha') }}
+            </mat-error>
+          </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field-full">
             <mat-label>Duración</mat-label>
@@ -70,6 +55,20 @@
             <mat-icon matPrefix>timelapse</mat-icon>
             <mat-error *ngIf="registroForm.get('duracion_minutos')?.invalid && registroForm.get('duracion_minutos')?.touched">
               {{ getErrorMessage('duracion_minutos') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Hora</mat-label>
+            <mat-select formControlName="hora" [disabled]="horariosDisponibles.length === 0 || cargandoHorarios">
+              <mat-option *ngFor="let h of horariosDisponibles" [value]="h">
+                {{ h }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>schedule</mat-icon>
+            <mat-hint *ngIf="horariosDisponibles.length === 0 && !cargandoHorarios">Elegí primero fecha y duración</mat-hint>
+            <mat-error *ngIf="registroForm.get('hora')?.invalid && registroForm.get('hora')?.touched">
+              {{ getErrorMessage('hora') }}
             </mat-error>
           </mat-form-field>
 

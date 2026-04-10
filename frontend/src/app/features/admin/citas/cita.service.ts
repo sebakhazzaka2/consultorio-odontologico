@@ -76,4 +76,12 @@ export class CitaService {
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
     );
   }
+
+  getDisponibilidad(fecha: string, duracion: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/disponibilidad`, {
+      params: { fecha, duracion }
+    }).pipe(
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
+    );
+  }
 }
