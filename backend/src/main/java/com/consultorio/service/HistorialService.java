@@ -12,10 +12,14 @@ import com.consultorio.repository.HistorialRepository;
 import com.consultorio.repository.PacienteRepository;
 import com.consultorio.repository.TratamientoRepository;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class HistorialService {
+
+  private static final Logger log = LoggerFactory.getLogger(HistorialService.class);
 
   private final HistorialRepository historialRepository;
   private final PacienteRepository pacienteRepository;
@@ -99,6 +103,7 @@ public class HistorialService {
                       new ResourceNotFoundException(
                           "Tratamiento no encontrado con id: " + tratamientoId));
       if (!tratamiento.getActivo()) {
+        log.warn("Intento de usar tratamiento inactivo — id: {}", tratamientoId);
         throw new IllegalArgumentException("El tratamiento no está disponible");
       }
     }
@@ -114,6 +119,8 @@ public class HistorialService {
     historial.setFotoUrl(request.getFotoUrl());
 
     HistorialClinico creado = historialRepository.save(historial);
+    log.info("Registro de historial creado — id: {}, paciente: {}, procedimiento: '{}', precio aplicado: {}",
+        creado.getId(), pacienteId, creado.getProcedimiento(), creado.getPrecioAplicado());
     return toResponse(creado);
   }
 
@@ -152,6 +159,7 @@ public class HistorialService {
                       new ResourceNotFoundException(
                           "Tratamiento no encontrado con id: " + tratamientoId));
       if (!tratamiento.getActivo()) {
+        log.warn("Intento de usar tratamiento inactivo al actualizar historial id {} — tratamiento id: {}", id, tratamientoId);
         throw new IllegalArgumentException("El tratamiento no está disponible");
       }
     }
@@ -166,12 +174,14 @@ public class HistorialService {
     existente.setFotoUrl(request.getFotoUrl());
 
     HistorialClinico actualizado = historialRepository.save(existente);
+    log.info("Registro de historial actualizado — id: {}, paciente: {}", actualizado.getId(), pacienteId);
     return toResponse(actualizado);
   }
 
   public void delete(Long id) {
     findById(id);
     historialRepository.deleteById(id);
+    log.info("Registro de historial eliminado — id: {}", id);
   }
 
   private HistorialResponse toResponse(HistorialClinico h) {

@@ -14,10 +14,14 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CitaService {
+
+  private static final Logger log = LoggerFactory.getLogger(CitaService.class);
 
   private final CitaRepository citaRepository;
   private final PacienteRepository pacienteRepository;
@@ -53,6 +57,7 @@ public class CitaService {
         calcularFin(request.getFechaHoraInicio(), request.getDuracionMinutos());
 
     if (haySolapamiento(request.getFechaHoraInicio(), fechaHoraFin, null)) {
+      log.warn("Solapamiento de cita detectado — inicio: {}, fin: {}", request.getFechaHoraInicio(), fechaHoraFin);
       throw new IllegalArgumentException("El horario se solapa con una cita existente");
     }
 
@@ -65,6 +70,8 @@ public class CitaService {
     cita.setNotas(request.getNotas());
 
     Cita creada = citaRepository.save(cita);
+    log.info("Cita creada — id: {}, paciente: {}, inicio: {}, duración: {} min",
+        creada.getId(), pacienteId, creada.getFechaHoraInicio(), creada.getDuracionMinutos());
     return toResponse(creada);
   }
 
@@ -87,6 +94,7 @@ public class CitaService {
         calcularFin(request.getFechaHoraInicio(), request.getDuracionMinutos());
 
     if (haySolapamiento(request.getFechaHoraInicio(), fechaHoraFin, id)) {
+      log.warn("Solapamiento de cita detectado al actualizar id {} — inicio: {}, fin: {}", id, request.getFechaHoraInicio(), fechaHoraFin);
       throw new IllegalArgumentException("El horario se solapa con una cita existente");
     }
 
@@ -97,6 +105,7 @@ public class CitaService {
     existente.setNotas(request.getNotas());
 
     Cita actualizada = citaRepository.save(existente);
+    log.info("Cita actualizada — id: {}, paciente: {}, nuevo inicio: {}", actualizada.getId(), pacienteId, actualizada.getFechaHoraInicio());
     return toResponse(actualizada);
   }
 
@@ -108,6 +117,7 @@ public class CitaService {
 
     cita.setEstado(CitaEstado.CANCELADA);
     Cita cancelada = citaRepository.save(cita);
+    log.info("Cita cancelada — id: {}", cancelada.getId());
     return toResponse(cancelada);
   }
 
@@ -119,6 +129,7 @@ public class CitaService {
 
     cita.setEstado(CitaEstado.CONFIRMADA);
     Cita confirmada = citaRepository.save(cita);
+    log.info("Cita confirmada — id: {}", confirmada.getId());
     return toResponse(confirmada);
   }
 
@@ -154,12 +165,15 @@ public class CitaService {
       slotTime = slotTime.plusMinutes(15);
     }
 
+    log.info("Consulta de disponibilidad — fecha: {}, duración: {} min, slots disponibles: {}",
+        fecha, duracionMinutos, disponibles.size());
     return disponibles;
   }
 
   public void delete(Long id) {
     findById(id);
     citaRepository.deleteById(id);
+    log.info("Cita eliminada — id: {}", id);
   }
 
   private CitaResponse toResponse(Cita cita) {
