@@ -15,8 +15,9 @@ import { HistorialService } from './historial.service';
 import { PagoService } from './pago.service';
 import { Paciente } from '../../../core/models/paciente.model';
 import { HistorialClinico, HistorialPayload } from '../../../core/models/historial.model';
-import { Pago, SaldoPaciente } from '../../../core/models/pago.model';
+import { Pago, PagoPayload, SaldoPaciente } from '../../../core/models/pago.model';
 import { HistorialFormDialogComponent } from './historial-form-dialog.component';
+import { PagoFormDialogComponent } from './pago-form-dialog.component';
 
 @Component({
   selector: 'app-confirmar-eliminar-historial-dialog',
@@ -43,6 +44,30 @@ export class ConfirmarEliminarHistorialDialogComponent {
 }
 
 @Component({
+  selector: 'app-confirmar-eliminar-pago-dialog',
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule, CommonModule],
+  template: `
+    <h2 mat-dialog-title>Eliminar pago</h2>
+    <mat-dialog-content>
+      <p>¿Eliminar el pago de <strong>UY$ {{ data.monto | number:'1.2-2' }}</strong> del <strong>{{ data.fecha | date:'dd/MM/yyyy' }}</strong>?</p>
+      <p class="detalle">Esta acción no se puede deshacer.</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="dialogRef.close(false)">Cancelar</button>
+      <button mat-raised-button color="warn" (click)="dialogRef.close(true)">Eliminar</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`.detalle { color: #666; font-size: 0.9rem; margin-top: 0.5rem; } mat-dialog-content { min-width: 280px; }`]
+})
+export class ConfirmarEliminarPagoDialogComponent {
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmarEliminarPagoDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { monto: number; fecha: string }
+  ) {}
+}
+
+@Component({
   selector: 'app-paciente-detalle',
   standalone: true,
   imports: [
@@ -55,7 +80,9 @@ export class ConfirmarEliminarHistorialDialogComponent {
     MatTooltipModule,
     MatTableModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    PagoFormDialogComponent,
+    ConfirmarEliminarPagoDialogComponent
   ],
   templateUrl: './paciente-detalle.component.html',
   styleUrl: './paciente-detalle.component.scss'
@@ -69,7 +96,7 @@ export class PacienteDetalleComponent implements OnInit {
   errorMensaje: string | null = null;
 
   readonly historialColumnas: string[] = ['fecha_hora', 'procedimiento', 'tratamiento', 'precio_aplicado', 'notas', 'acciones'];
-  readonly pagosColumnas: string[] = ['fecha', 'monto', 'concepto'];
+  readonly pagosColumnas: string[] = ['fecha', 'monto', 'concepto', 'acciones'];
 
   constructor(
     private route: ActivatedRoute,
@@ -108,6 +135,20 @@ export class PacienteDetalleComponent implements OnInit {
           ? res.mensaje + ': ' + res.detalles.join('. ')
           : (res.mensaje || 'Error al cargar el detalle del paciente');
         this.cargando = false;
+      }
+    });
+  }
+
+  private recargarPagosYSaldo(): void {
+    if (!this.paciente) return;
+    const id = this.paciente.id;
+    forkJoin({
+      pagos: this.pagoService.listarPorPaciente(id),
+      saldo: this.pagoService.getSaldo(id)
+    }).subscribe({
+      next: ({ pagos, saldo }) => {
+        this.pagos = pagos;
+        this.saldo = saldo;
       }
     });
   }
@@ -182,6 +223,46 @@ export class PacienteDetalleComponent implements OnInit {
         error: (res) => {
           const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
           this.snackBar.open(msg || 'Error al eliminar la entrada', 'Cerrar', { duration: 5000 });
+        }
+      });
+    });
+  }
+
+  abrirNuevoPago(): void {
+    if (!this.paciente) return;
+    const ref = this.dialog.open(PagoFormDialogComponent, {
+      width: '400px',
+      data: { pacienteId: this.paciente.id }
+    });
+    ref.afterClosed().subscribe((payload: PagoPayload | null) => {
+      if (!payload) return;
+      this.pagoService.crear(payload).subscribe({
+        next: () => {
+          this.snackBar.open('Pago registrado', 'Cerrar', { duration: 3000 });
+          this.recargarPagosYSaldo();
+        },
+        error: (res) => {
+          const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
+          this.snackBar.open(msg || 'Error al registrar el pago', 'Cerrar', { duration: 5000 });
+        }
+      });
+    });
+  }
+
+  eliminarPago(p: Pago): void {
+    const ref = this.dialog.open(ConfirmarEliminarPagoDialogComponent, {
+      data: { monto: p.monto, fecha: p.fecha }
+    });
+    ref.afterClosed().subscribe((confirmado: boolean) => {
+      if (!confirmado) return;
+      this.pagoService.eliminar(p.id).subscribe({
+        next: () => {
+          this.snackBar.open('Pago eliminado', 'Cerrar', { duration: 3000 });
+          this.recargarPagosYSaldo();
+        },
+        error: (res) => {
+          const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
+          this.snackBar.open(msg || 'Error al eliminar el pago', 'Cerrar', { duration: 5000 });
         }
       });
     });

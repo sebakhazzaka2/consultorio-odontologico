@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { Pago, SaldoPaciente } from '../../../core/models/pago.model';
+import { Pago, PagoPayload, SaldoPaciente } from '../../../core/models/pago.model';
 
 export interface ResultadoPago {
   ok: boolean;
@@ -37,6 +37,18 @@ export class PagoService {
 
   getSaldo(pacienteId: number): Observable<SaldoPaciente> {
     return this.http.get<SaldoPaciente>(`${this.pacientesUrl}/${pacienteId}/saldo`).pipe(
+      catchError((err) => throwError(() => this.extraerError(err)))
+    );
+  }
+
+  crear(payload: PagoPayload): Observable<Pago> {
+    return this.http.post<Pago>(this.apiUrl, payload).pipe(
+      catchError((err) => throwError(() => this.extraerError(err)))
+    );
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       catchError((err) => throwError(() => this.extraerError(err)))
     );
   }

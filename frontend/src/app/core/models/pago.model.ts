@@ -1,3 +1,10 @@
+export interface PagoPayload {
+  paciente_id: number;
+  monto: number;
+  fecha: string;
+  concepto?: string | null;
+}
+
 export interface Pago {
   id: number;
   paciente_id: number;
