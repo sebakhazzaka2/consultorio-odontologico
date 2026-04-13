@@ -1,0 +1,180 @@
+<div class="detalle-header">
+  <div class="header-content">
+    <button mat-button class="btn-volver" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+    @if (paciente) {
+      <h1 class="page-title">{{ paciente.nombre }} {{ paciente.apellido }}</h1>
+      <div class="paciente-meta">
+        <span><mat-icon inline>email</mat-icon> {{ paciente.email }}</span>
+        <span><mat-icon inline>phone</mat-icon> {{ paciente.telefono }}</span>
+        @if (paciente.fecha_nacimiento) {
+          <span><mat-icon inline>cake</mat-icon> {{ paciente.fecha_nacimiento | date:'dd/MM/yyyy' }}</span>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<div class="detalle-container">
+
+  @if (cargando) {
+    <div class="loading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando detalle del paciente...</p>
+    </div>
+  } @else if (errorMensaje) {
+    <div class="error-box">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ errorMensaje }}</p>
+    </div>
+  } @else {
+
+    <!-- Saldo -->
+    @if (saldo) {
+      <mat-card class="section-card saldo-card">
+        <mat-card-header>
+          <mat-card-title>Resumen de cuenta</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="saldo-grid">
+            <div class="saldo-item">
+              <span class="saldo-label">Total deuda</span>
+              <span class="saldo-valor">UY$ {{ saldo.total_deuda | number:'1.2-2' }}</span>
+            </div>
+            <div class="saldo-item">
+              <span class="saldo-label">Total pagado</span>
+              <span class="saldo-valor">UY$ {{ saldo.total_pagado | number:'1.2-2' }}</span>
+            </div>
+            <div class="saldo-item">
+              <span class="saldo-label">Saldo pendiente</span>
+              <span class="saldo-valor" [class.pendiente]="saldo.saldo_pendiente > 0" [class.al-dia]="saldo.saldo_pendiente <= 0">
+                UY$ {{ saldo.saldo_pendiente | number:'1.2-2' }}
+                @if (saldo.saldo_pendiente > 0) {
+                  <span class="badge-estado pendiente">Saldo pendiente</span>
+                } @else {
+                  <span class="badge-estado al-dia">Al día</span>
+                }
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Historial clínico -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Historial clínico</mat-card-title>
+        <div class="card-header-actions">
+          <button mat-raised-button color="primary" (click)="abrirNuevoHistorial()">
+            <mat-icon>add</mat-icon>
+            Agregar entrada
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (historial.length === 0) {
+          <div class="empty-section">
+            <mat-icon>history</mat-icon>
+            <p>Sin entradas en el historial</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="historial" class="detalle-table">
+              <ng-container matColumnDef="fecha_hora">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let h">{{ h.fecha_hora | date:'dd/MM/yyyy HH:mm' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="procedimiento">
+                <th mat-header-cell *matHeaderCellDef>Procedimiento</th>
+                <td mat-cell *matCellDef="let h">{{ h.procedimiento }}</td>
+              </ng-container>
+              <ng-container matColumnDef="tratamiento">
+                <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
+                <td mat-cell *matCellDef="let h">{{ h.nombre_tratamiento ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="precio_aplicado">
+                <th mat-header-cell *matHeaderCellDef>Precio</th>
+                <td mat-cell *matCellDef="let h">
+                  @if (h.precio_aplicado !== null) {
+                    UY$ {{ h.precio_aplicado | number:'1.2-2' }}
+                  } @else {
+                    —
+                  }
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="notas">
+                <th mat-header-cell *matHeaderCellDef>Notas</th>
+                <td mat-cell *matCellDef="let h">{{ h.notas ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let h" class="acciones-cell">
+                  <button mat-icon-button matTooltip="Editar" (click)="abrirEditarHistorial(h)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Eliminar" color="warn" (click)="eliminarHistorial(h)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="historialColumnas"></tr>
+              <tr mat-row *matRowDef="let row; columns: historialColumnas;"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Pagos -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Pagos</mat-card-title>
+        <div class="card-header-actions">
+          <button mat-raised-button color="primary" (click)="abrirNuevoPago()">
+            <mat-icon>add</mat-icon>
+            Registrar pago
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (pagos.length === 0) {
+          <div class="empty-section">
+            <mat-icon>payments</mat-icon>
+            <p>Sin pagos registrados</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="pagos" class="detalle-table">
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let p">{{ p.fecha | date:'dd/MM/yyyy' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="monto">
+                <th mat-header-cell *matHeaderCellDef>Monto</th>
+                <td mat-cell *matCellDef="let p">UY$ {{ p.monto | number:'1.2-2' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="concepto">
+                <th mat-header-cell *matHeaderCellDef>Concepto</th>
+                <td mat-cell *matCellDef="let p">{{ p.concepto ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let p" class="acciones-cell">
+                  <button mat-icon-button matTooltip="Eliminar" color="warn" (click)="eliminarPago(p)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="pagosColumnas"></tr>
+              <tr mat-row *matRowDef="let row; columns: pagosColumnas;"></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+  }
+</div>

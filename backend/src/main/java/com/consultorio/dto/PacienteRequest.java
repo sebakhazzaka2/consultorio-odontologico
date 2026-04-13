@@ -18,7 +18,7 @@ public class PacienteRequest {
   private String apellido;
 
   @NotBlank
-  @Pattern(regexp = "^[0-9]{10}$", message = "El telefono debe tener 10 digitos")
+  @Pattern(regexp = "^[0-9]{7,15}$", message = "El telefono debe tener entre 7 y 15 digitos")
   private String telefono;
 
   @NotBlank

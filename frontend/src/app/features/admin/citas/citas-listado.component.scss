@@ -1,0 +1,136 @@
+.citas-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-content {
+  max-width: 900px;
+  width: 100%;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.btn-nueva mat-icon {
+  margin-right: 8px;
+}
+
+.citas-container {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.list-card {
+  padding: 24px;
+}
+
+.loading, .error-box, .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  color: #666;
+}
+
+.error-box mat-icon, .empty mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.citas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cita-card mat-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cita-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cita-info .nombre {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.cita-info .detalle {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.cita-info .motivo {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.cita-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.cita-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chip-confirmada { background: #e8f5e9; color: #2e7d32; }
+.chip-cancelada  { background: #f5f5f5; color: #757575; }
+.chip-pendiente  { background: #fff8e1; color: #f57f17; }
+.chip-completada { background: #e3f2fd; color: #1565c0; }
+
+.filtro-fecha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+
+  mat-icon {
+    color: #666;
+  }
+}
+
+.campo-fecha {
+  width: 200px;
+}

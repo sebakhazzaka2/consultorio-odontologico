@@ -1,0 +1,58 @@
+<div class="pacientes-header">
+  <div class="header-content">
+    <h1 class="page-title">Pacientes</h1>
+    <p class="page-subtitle">Gestiona los pacientes del consultorio</p>
+    <button mat-raised-button color="primary" (click)="abrirNuevo()" class="btn-nueva">
+      <mat-icon>person_add</mat-icon>
+      Nuevo paciente
+    </button>
+  </div>
+</div>
+
+<div class="pacientes-container">
+  <mat-card class="list-card">
+    @if (cargando) {
+      <div class="loading">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Cargando pacientes...</p>
+      </div>
+    } @else if (errorMensaje) {
+      <div class="error-box">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ errorMensaje }}</p>
+        <button mat-raised-button (click)="cargar()">Reintentar</button>
+      </div>
+    } @else if (pacientes.length === 0) {
+      <div class="empty">
+        <mat-icon>people_outline</mat-icon>
+        <p>No hay pacientes registrados</p>
+        <p class="hint">Crea un paciente desde aquí o al agendar una cita</p>
+        <button mat-raised-button color="primary" (click)="abrirNuevo()">Crear primer paciente</button>
+      </div>
+    } @else {
+      <div class="pacientes-list">
+        @for (p of pacientes; track p.id) {
+          <mat-card class="paciente-card">
+            <mat-card-content>
+              <div class="paciente-info">
+                <span class="nombre">{{ p.nombre }} {{ p.apellido }}</span>
+                <span class="detalle">{{ p.email }} · {{ p.telefono }}</span>
+              </div>
+              <div class="paciente-actions">
+                <button mat-icon-button [routerLink]="['/admin/pacientes', p.id]" matTooltip="Ver detalle">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" (click)="abrirEditar(p)" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="eliminar(p)" matTooltip="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  </mat-card>
+</div>
