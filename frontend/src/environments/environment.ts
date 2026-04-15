@@ -1,8 +1,8 @@
 /**
- * Configuración por defecto (producción).
- * La URL del API debe apuntar a tu backend en producción.
+ * Configuración de producción / Docker.
+ * apiUrl vacío: Nginx proxea /api al backend dentro del compose network.
  */
 export const environment = {
   production: true,
-  apiUrl: 'https://api.tu-consultorio.com'
+  apiUrl: ''
 };
