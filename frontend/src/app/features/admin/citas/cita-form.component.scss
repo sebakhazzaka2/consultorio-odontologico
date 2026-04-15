@@ -69,6 +69,12 @@ mat-card-header {
   gap: 20px;
 }
 
+.hora-error {
+  font-size: 12px;
+  color: #f44336;
+  margin-top: -12px;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

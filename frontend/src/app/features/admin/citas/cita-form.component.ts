@@ -18,6 +18,7 @@ import { PacienteService } from '../pacientes/paciente.service';
 import { Cita } from '../../../core/models/cita.model';
 import { Paciente } from '../../../core/models/paciente.model';
 import { PacienteFormDialogComponent } from '../pacientes/paciente-form-dialog.component';
+import { SlotPickerComponent } from './slot-picker.component';
 import type { PacientePayload } from '../../../core/models/paciente.model';
 import type { CitaPayload } from '../../../core/models/cita.model';
 
@@ -37,7 +38,8 @@ import type { CitaPayload } from '../../../core/models/cita.model';
     MatIconModule,
     MatCardModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    SlotPickerComponent
   ],
   templateUrl: './cita-form.component.html',
   styleUrl: './cita-form.component.scss'
@@ -66,9 +68,9 @@ export class CitaFormComponent implements OnInit {
   ) {
     this.registroForm = this.fb.group({
       paciente_id: ['', Validators.required],
-      fecha: ['', Validators.required],
+      fecha: [new Date(), Validators.required],
       hora: ['', Validators.required],
-      duracion_minutos: ['', Validators.required],
+      duracion_minutos: [15, Validators.required],
       motivo: ['', Validators.required],
       notas: ['']
     });
@@ -92,6 +94,7 @@ export class CitaFormComponent implements OnInit {
         }
       } else {
         this.idEdicion = null;
+        this.cargarDisponibilidad(); // carga con fecha=hoy y duracion=15 por defecto
       }
     });
   }
@@ -147,6 +150,11 @@ export class CitaFormComponent implements OnInit {
         this.router.navigate(['/admin/citas']);
       }
     });
+  }
+
+  onSlotElegido(hora: string): void {
+    this.registroForm.patchValue({ hora });
+    this.registroForm.get('hora')!.markAsTouched();
   }
 
   abrirNuevoPaciente(): void {
