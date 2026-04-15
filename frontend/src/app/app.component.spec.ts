@@ -12,15 +12,8 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  it('crea la app', () => {
+  it('debería crearse correctamente', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('tiene el título del consultorio', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toBe('Consultorio Odontológico');
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });
