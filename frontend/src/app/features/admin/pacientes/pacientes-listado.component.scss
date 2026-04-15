@@ -91,3 +91,25 @@
   display: flex;
   gap: 4px;
 }
+
+.nombre-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-deuda {
+  background-color: #fdecea !important;
+  color: #c62828 !important;
+  font-size: 0.78rem;
+  height: 24px;
+  font-weight: 600;
+}
+
+.chip-al-dia {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  font-size: 0.78rem;
+  height: 24px;
+}
