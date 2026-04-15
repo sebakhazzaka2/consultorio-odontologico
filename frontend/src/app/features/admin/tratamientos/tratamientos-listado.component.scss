@@ -32,14 +32,35 @@
   }
 }
 
+@media (max-width: 599px) {
+  .tratamientos-header {
+    padding: 1.25rem;
+
+    .header-content {
+      .page-title {
+        font-size: 1.4rem;
+      }
+    }
+  }
+}
+
 .tratamientos-container {
   padding: 1.5rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 
+  @media (max-width: 599px) {
+    padding: 1rem 0.75rem;
+  }
+
   .table-card {
     padding: 0;
     overflow: hidden;
+  }
+
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .tratamientos-table {

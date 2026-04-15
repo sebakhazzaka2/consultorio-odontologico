@@ -29,6 +29,7 @@
         <button mat-raised-button color="primary" (click)="abrirNuevo()">Crear primer tratamiento</button>
       </div>
     } @else {
+      <div class="table-scroll-wrapper">
       <table mat-table [dataSource]="tratamientos" class="tratamientos-table">
 
         <ng-container matColumnDef="nombre">
@@ -82,6 +83,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+      </div>
     }
   </mat-card>
 </div>
