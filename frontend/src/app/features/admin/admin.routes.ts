@@ -10,6 +10,10 @@ export const adminRoutes: Routes = [
     component: AdminLayoutComponent,
     children: [
       { path: 'pacientes', component: PacientesListadoComponent },
+      {
+        path: 'agenda',
+        loadComponent: () => import('./agenda/agenda-calendar.component').then(m => m.AgendaCalendarComponent)
+      },
       { path: 'citas', component: CitasListadoComponent },
       { path: 'citas/nueva', component: CitaFormComponent },
       { path: 'citas/editar/:id', component: CitaFormComponent },
@@ -22,7 +26,7 @@ export const adminRoutes: Routes = [
         path: 'tratamientos',
         loadComponent: () => import('./tratamientos/tratamientos-listado.component').then(m => m.TratamientosListadoComponent)
       },
-      { path: '', redirectTo: 'pacientes', pathMatch: 'full' }
+      { path: '', redirectTo: 'agenda', pathMatch: 'full' }
     ]
   }
 ];

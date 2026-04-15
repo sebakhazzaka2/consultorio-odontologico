@@ -1,0 +1,136 @@
+<div class="agenda-wrapper">
+
+  <!-- HEADER -->
+  <div class="agenda-header">
+
+    <!-- Selector de semana -->
+    <div class="week-picker-anchor">
+      <button class="week-range-btn" (click)="togglePicker()">
+        <span>{{ getWeekRange() }}</span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      @if (showPicker) {
+        <!-- backdrop para cerrar al hacer click fuera -->
+        <div class="picker-backdrop" (click)="closePicker()"></div>
+
+        <div class="picker-panel">
+          <!-- cabecera mes -->
+          <div class="picker-month-header">
+            <button mat-icon-button (click)="prevPickerMonth()">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="picker-month-label">{{ getPickerMonthLabel() }}</span>
+            <button mat-icon-button (click)="nextPickerMonth()">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+
+          <!-- nombres de día -->
+          <div class="picker-day-names">
+            @for (name of DAY_NAMES; track name + $index) {
+              <span>{{ name }}</span>
+            }
+          </div>
+
+          <!-- filas de semanas -->
+          @for (week of pickerWeeks; track week[0].getTime()) {
+            <div
+              class="picker-week-row"
+              [class.selected-week]="isSelectedWeek(week)"
+              (click)="selectWeek(week)"
+            >
+              @for (day of week; track day.getTime()) {
+                <span
+                  class="picker-day"
+                  [class.other-month]="!isDayInCurrentMonth(day)"
+                  [class.today]="isToday(day)"
+                >{{ day.getDate() }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="header-actions">
+      <button mat-stroked-button (click)="goToToday()">Hoy</button>
+      <button mat-icon-button (click)="goToPrevWeek()" matTooltip="Semana anterior">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button (click)="goToNextWeek()" matTooltip="Semana siguiente">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" (click)="onNuevaCita()">
+        <mat-icon>add</mat-icon>
+        Nueva cita
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  @if (cargando) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+
+    <!-- CALENDAR -->
+    <div class="calendar-scroll">
+      <div class="calendar-grid">
+
+        <!-- Fila 1: corner + cabeceras de día -->
+        <div class="corner-cell"></div>
+        @for (day of weekDays; track day.getTime()) {
+          <div class="day-header" [class.today]="isToday(day)">
+            <span class="day-name">{{ getDayName(day) }}</span>
+            <span class="day-number" [class.today-circle]="isToday(day)">{{ getDayNumber(day) }}</span>
+          </div>
+        }
+
+        <!-- Fila 2: eje de tiempo + columnas de días -->
+        <div class="time-axis">
+          @for (label of hourLabels; track label) {
+            <div class="hour-cell" [style.height.px]="HOUR_HEIGHT">{{ label }}</div>
+          }
+        </div>
+
+        @for (day of weekDays; track day.getTime()) {
+          <div class="day-column" [style.height.px]="totalHeight">
+
+            <!-- líneas de hora (mayor) y de cuarto de hora (menor) -->
+            @for (label of hourLabels; track label; let i = $index) {
+              <div class="hour-line" [style.top.px]="i * HOUR_HEIGHT"></div>
+              @for (q of quarterOffsets; track q) {
+                <div class="quarter-line" [style.top.px]="i * HOUR_HEIGHT + q * QUARTER_HEIGHT"></div>
+              }
+            }
+
+            <!-- bloques de cita -->
+            @for (cita of getCitasDelDia(day); track cita.id) {
+              <div
+                class="cita-block"
+                [ngClass]="getBlockClass(cita.estado)"
+                [ngStyle]="getBlockStyle(cita)"
+                (click)="onCitaClick(cita)"
+                [matTooltip]="cita.nombre_paciente + ' ' + cita.apellido_paciente + ' · ' + getDuracionLabel(cita.duracion_minutos) + ' · ' + cita.estado"
+              >
+                <span class="cita-hora">
+                  {{ getHoraInicio(cita.fecha_hora_inicio) }}
+                  <span class="cita-duracion">{{ getDuracionLabel(cita.duracion_minutos) }}</span>
+                </span>
+                <span class="cita-paciente">{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}</span>
+                @if (cita.motivo) {
+                  <span class="cita-motivo">{{ cita.motivo }}</span>
+                }
+              </div>
+            }
+
+          </div>
+        }
+
+      </div>
+    </div>
+
+  }
+</div>
