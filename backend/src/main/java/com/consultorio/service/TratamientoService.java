@@ -6,10 +6,14 @@ import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Tratamiento;
 import com.consultorio.repository.TratamientoRepository;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TratamientoService {
+
+  private static final Logger log = LoggerFactory.getLogger(TratamientoService.class);
 
   private final TratamientoRepository tratamientoRepository;
 
@@ -43,6 +47,7 @@ public class TratamientoService {
     tratamiento.setFotoUrl(request.getFotoUrl());
 
     Tratamiento creado = tratamientoRepository.save(tratamiento);
+    log.info("Tratamiento creado — id: {}, nombre: '{}', precio: {}", creado.getId(), creado.getNombre(), creado.getPrecio());
     return toResponse(creado);
   }
 
@@ -60,6 +65,7 @@ public class TratamientoService {
     existente.setFotoUrl(request.getFotoUrl());
 
     Tratamiento actualizado = tratamientoRepository.save(existente);
+    log.info("Tratamiento actualizado — id: {}, nombre: '{}'", actualizado.getId(), actualizado.getNombre());
     return toResponse(actualizado);
   }
 
@@ -72,12 +78,15 @@ public class TratamientoService {
 
     tratamiento.setActivo(!tratamiento.getActivo());
     Tratamiento actualizado = tratamientoRepository.save(tratamiento);
+    log.info("Tratamiento id {} '{}' marcado como {}", actualizado.getId(), actualizado.getNombre(),
+        actualizado.getActivo() ? "activo" : "inactivo");
     return toResponse(actualizado);
   }
 
   public void delete(Long id) {
     findById(id);
     tratamientoRepository.deleteById(id);
+    log.info("Tratamiento eliminado — id: {}", id);
   }
 
   private TratamientoResponse toResponse(Tratamiento tratamiento) {

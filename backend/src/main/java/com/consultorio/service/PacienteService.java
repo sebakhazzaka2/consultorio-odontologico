@@ -6,10 +6,14 @@ import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Paciente;
 import com.consultorio.repository.PacienteRepository;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PacienteService {
+
+  private static final Logger log = LoggerFactory.getLogger(PacienteService.class);
 
   private final PacienteRepository pacienteRepository;
 
@@ -31,11 +35,13 @@ public class PacienteService {
 
   public PacienteResponse create(PacienteRequest request) {
     if (pacienteRepository.existsByEmail(request.getEmail())) {
+      log.warn("Intento de crear paciente con email ya registrado: {}", request.getEmail());
       throw new IllegalArgumentException("El email ya está registrado");
     }
 
     Paciente paciente = toEntity(request);
     Paciente creado = pacienteRepository.save(paciente);
+    log.info("Paciente creado — id: {}, nombre: {} {}", creado.getId(), creado.getNombre(), creado.getApellido());
     return toResponse(creado);
   }
 
@@ -53,6 +59,7 @@ public class PacienteService {
           .ifPresent(
               encontrado -> {
                 if (!encontrado.getId().equals(id)) {
+                  log.warn("Intento de actualizar paciente id {} con email ya registrado: {}", id, nuevoEmail);
                   throw new IllegalArgumentException("El email ya está registrado");
                 }
               });
@@ -65,6 +72,7 @@ public class PacienteService {
     existente.setFechaNacimiento(request.getFechaNacimiento());
 
     Paciente actualizado = pacienteRepository.save(existente);
+    log.info("Paciente actualizado — id: {}", actualizado.getId());
     return toResponse(actualizado);
   }
 
@@ -74,6 +82,7 @@ public class PacienteService {
         .findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado con id: " + id));
     pacienteRepository.deleteById(id);
+    log.info("Paciente eliminado — id: {}", id);
   }
 
   private PacienteResponse toResponse(Paciente paciente) {
