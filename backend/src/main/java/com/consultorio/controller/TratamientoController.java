@@ -38,7 +38,7 @@ public class TratamientoController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TratamientoResponse> findById(@PathVariable Long id) {
+  public ResponseEntity<TratamientoResponse> findById(@PathVariable("id") Long id) {
     return new ResponseEntity<>(tratamientoService.findById(id), HttpStatus.OK);
   }
 
@@ -50,18 +50,18 @@ public class TratamientoController {
 
   @PutMapping("/{id}")
   public ResponseEntity<TratamientoResponse> update(
-      @PathVariable Long id, @Valid @RequestBody TratamientoRequest tratamientoRequest) {
+      @PathVariable("id") Long id, @Valid @RequestBody TratamientoRequest tratamientoRequest) {
     return new ResponseEntity<>(
         tratamientoService.update(id, tratamientoRequest), HttpStatus.OK);
   }
 
   @PatchMapping("/{id}/toggle")
-  public ResponseEntity<TratamientoResponse> toggleActivo(@PathVariable Long id) {
+  public ResponseEntity<TratamientoResponse> toggleActivo(@PathVariable("id") Long id) {
     return new ResponseEntity<>(tratamientoService.toggleActivo(id), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     tratamientoService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

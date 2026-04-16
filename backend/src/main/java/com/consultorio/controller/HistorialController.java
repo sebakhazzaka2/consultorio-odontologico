@@ -32,17 +32,17 @@ public class HistorialController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<HistorialResponse> findById(@PathVariable Long id) {
+  public ResponseEntity<HistorialResponse> findById(@PathVariable("id") Long id) {
     return new ResponseEntity<>(historialService.findById(id), HttpStatus.OK);
   }
 
   @GetMapping("/paciente/{pacienteId}")
-  public ResponseEntity<List<HistorialResponse>> findByPaciente(@PathVariable Long pacienteId) {
+  public ResponseEntity<List<HistorialResponse>> findByPaciente(@PathVariable("pacienteId") Long pacienteId) {
     return new ResponseEntity<>(historialService.findByPaciente(pacienteId), HttpStatus.OK);
   }
 
   @GetMapping("/cita/{citaId}")
-  public ResponseEntity<List<HistorialResponse>> findByCita(@PathVariable Long citaId) {
+  public ResponseEntity<List<HistorialResponse>> findByCita(@PathVariable("citaId") Long citaId) {
     return new ResponseEntity<>(historialService.findByCita(citaId), HttpStatus.OK);
   }
 
@@ -54,12 +54,12 @@ public class HistorialController {
 
   @PutMapping("/{id}")
   public ResponseEntity<HistorialResponse> update(
-      @PathVariable Long id, @Valid @RequestBody HistorialRequest historialRequest) {
+      @PathVariable("id") Long id, @Valid @RequestBody HistorialRequest historialRequest) {
     return new ResponseEntity<>(historialService.update(id, historialRequest), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     historialService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
