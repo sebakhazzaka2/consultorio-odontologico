@@ -58,6 +58,27 @@
   --space-12: 64px;
 }
 
+// ── Table row styles ──────────────────────────────────────────────────────────
+.mat-mdc-row {
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--color-slate-50);
+  }
+}
+
+.mat-mdc-header-row {
+  background: var(--color-slate-50);
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600 !important;
+  color: var(--color-text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem !important;
+}
+
 html, body {
   height: 100%;
   margin: 0;

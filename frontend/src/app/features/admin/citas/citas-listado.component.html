@@ -23,10 +23,13 @@
         <button mat-raised-button (click)="cargarCitas()">Reintentar</button>
       </div>
     } @else if (citas.length === 0) {
-      <div class="empty">
-        <mat-icon>event_busy</mat-icon>
-        <p>No hay citas registradas</p>
-        <button mat-raised-button color="primary" routerLink="/admin/citas/nueva">Agendar primera cita</button>
+      <div class="empty-state">
+        <mat-icon class="empty-icon">event_busy</mat-icon>
+        <h3>No hay citas agendadas todavía</h3>
+        <p>Empezá agendando la primera cita del consultorio.</p>
+        <button mat-flat-button color="primary" routerLink="/admin/citas/nueva">
+          <mat-icon>add</mat-icon> Nueva cita
+        </button>
       </div>
     } @else {
       <div class="filtro-fecha">
@@ -46,9 +49,13 @@
       </div>
 
       @if (citasFiltradas.length === 0) {
-        <div class="empty">
-          <mat-icon>event_busy</mat-icon>
-          <p>No hay citas para la fecha seleccionada</p>
+        <div class="empty-state">
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h3>Sin resultados para esa fecha</h3>
+          <p>No hay citas registradas para la fecha seleccionada.</p>
+          <button mat-button (click)="limpiarFiltro()">
+            <mat-icon>close</mat-icon> Limpiar filtro
+          </button>
         </div>
       } @else {
         <div class="citas-list">
@@ -58,13 +65,7 @@
                 <div class="cita-info">
                   <div class="cita-top">
                     <span class="nombre">{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}</span>
-                    <span class="chip"
-                      [class.chip-confirmada]="cita.estado === 'CONFIRMADA'"
-                      [class.chip-cancelada]="cita.estado === 'CANCELADA'"
-                      [class.chip-pendiente]="cita.estado === 'PENDIENTE'"
-                      [class.chip-completada]="cita.estado === 'COMPLETADA'">
-                      {{ cita.estado }}
-                    </span>
+                    <app-status-chip [estado]="cita.estado" />
                   </div>
                   <span class="detalle">{{ formatearFecha(cita.fecha_hora_inicio) }} · {{ cita.duracion_minutos }} min</span>
                   @if (cita.motivo) {
@@ -73,7 +74,7 @@
                 </div>
                 <div class="cita-actions">
                   @if (cita.estado !== 'CANCELADA') {
-                    <button mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', cita.id]" matTooltip="Editar">
+                    <button mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', cita.id]" matTooltip="Editar cita">
                       <mat-icon>edit</mat-icon>
                     </button>
                   }
@@ -83,7 +84,7 @@
                     </button>
                   }
                   @if (cita.estado === 'CANCELADA') {
-                    <button mat-icon-button color="primary" [routerLink]="['/admin/citas/reagendar', cita.id]" matTooltip="Reagendar">
+                    <button mat-icon-button color="primary" [routerLink]="['/admin/citas/reagendar', cita.id]" matTooltip="Reagendar cita">
                       <mat-icon>event_repeat</mat-icon>
                     </button>
                   }

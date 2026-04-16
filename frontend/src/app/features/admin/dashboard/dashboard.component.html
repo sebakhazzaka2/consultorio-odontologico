@@ -1,0 +1,48 @@
+<section class="dashboard">
+  <header class="dashboard-header">
+    <h1>Panel</h1>
+    <p class="dashboard-date">{{ today | date:'EEEE, d MMMM y':'':'es-UY' }}</p>
+  </header>
+
+  <div class="stat-grid" [@staggerList]="3">
+    <article class="stat-card stat-card--primary">
+      <span class="stat-icon"><mat-icon>today</mat-icon></span>
+      <span class="stat-label">Turnos hoy</span>
+      <span class="stat-value">{{ turnosHoy().length }}</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon"><mat-icon>schedule</mat-icon></span>
+      <span class="stat-label">Próximos turnos</span>
+      <span class="stat-value">{{ proximos5().length }}</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon"><mat-icon>group</mat-icon></span>
+      <span class="stat-label">Pacientes</span>
+      <span class="stat-value">{{ totalPacientes() }}</span>
+    </article>
+  </div>
+
+  <section class="dashboard-next">
+    <h2>Próximos turnos</h2>
+    @if (loading()) {
+      <mat-spinner diameter="32"></mat-spinner>
+    } @else if (proximos5().length === 0) {
+      <p class="empty">No hay turnos próximos.</p>
+    } @else {
+      <ul class="next-list">
+        @for (c of proximos5(); track c.id) {
+          <li class="next-item">
+            <div class="next-when">
+              <span class="next-day">{{ c.fecha_hora_inicio | date:'d MMM':'':'es-UY' }}</span>
+              <span class="next-time">{{ c.fecha_hora_inicio | date:'HH:mm' }}</span>
+            </div>
+            <div class="next-who">
+              <span class="next-patient">{{ c.nombre_paciente }} {{ c.apellido_paciente }}</span>
+              <span class="next-meta">{{ c.duracion_minutos }} min</span>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</section>

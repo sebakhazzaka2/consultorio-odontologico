@@ -9,6 +9,11 @@ export const adminRoutes: Routes = [
     path: '',
     component: AdminLayoutComponent,
     children: [
+      {
+        path: '',
+        loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
+        pathMatch: 'full'
+      },
       { path: 'pacientes', component: PacientesListadoComponent },
       {
         path: 'agenda',
@@ -25,8 +30,7 @@ export const adminRoutes: Routes = [
       {
         path: 'tratamientos',
         loadComponent: () => import('./tratamientos/tratamientos-listado.component').then(m => m.TratamientosListadoComponent)
-      },
-      { path: '', redirectTo: 'agenda', pathMatch: 'full' }
+      }
     ]
   }
 ];

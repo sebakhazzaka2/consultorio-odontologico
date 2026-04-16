@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { CitaService, ResultadoCita } from './cita.service';
 import { Cita } from '../../../core/models/cita.model';
 import { ConfirmarCancelarDialogComponent } from './confirmar-cancelar-dialog.component';
+import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip.component';
 
 @Component({
   selector: 'app-citas-listado',
@@ -34,7 +35,8 @@ import { ConfirmarCancelarDialogComponent } from './confirmar-cancelar-dialog.co
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    StatusChipComponent
   ],
   templateUrl: './citas-listado.component.html',
   styleUrl: './citas-listado.component.scss'

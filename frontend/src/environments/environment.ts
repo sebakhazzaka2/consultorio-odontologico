@@ -4,5 +4,6 @@
  */
 export const environment = {
   production: true,
-  apiUrl: ''
+  apiUrl: '',
+  businessName: 'Nombre del Negocio'
 };

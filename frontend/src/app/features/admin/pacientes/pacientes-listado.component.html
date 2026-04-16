@@ -23,11 +23,13 @@
         <button mat-raised-button (click)="cargar()">Reintentar</button>
       </div>
     } @else if (pacientes.length === 0) {
-      <div class="empty">
-        <mat-icon>people_outline</mat-icon>
-        <p>No hay pacientes registrados</p>
-        <p class="hint">Crea un paciente desde aquí o al agendar una cita</p>
-        <button mat-raised-button color="primary" (click)="abrirNuevo()">Crear primer paciente</button>
+      <div class="empty-state">
+        <mat-icon class="empty-icon">inbox</mat-icon>
+        <h3>No hay pacientes todavía</h3>
+        <p>Empezá agregando tu primer paciente.</p>
+        <button mat-flat-button color="primary" (click)="abrirNuevo()">
+          <mat-icon>add</mat-icon> Nuevo paciente
+        </button>
       </div>
     } @else {
       <div class="pacientes-list">

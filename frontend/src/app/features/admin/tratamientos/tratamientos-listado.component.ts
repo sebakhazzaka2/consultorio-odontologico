@@ -9,7 +9,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
 import { TratamientoService, ResultadoTratamiento } from './tratamiento.service';
 import { Tratamiento, TratamientoPayload } from '../../../core/models/tratamiento.model';
 import { TratamientoFormDialogComponent } from './tratamiento-form-dialog.component';
@@ -59,8 +58,7 @@ export class ConfirmarBorradoTratamientoDialogComponent {
     MatSnackBarModule,
     MatTooltipModule,
     MatDialogModule,
-    MatTableModule,
-    MatChipsModule
+    MatTableModule
   ],
   templateUrl: './tratamientos-listado.component.html',
   styleUrl: './tratamientos-listado.component.scss'

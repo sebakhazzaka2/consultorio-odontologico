@@ -37,7 +37,7 @@
   padding: 24px;
 }
 
-.loading, .error-box, .empty {
+.loading, .error-box {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,15 +46,39 @@
   color: #666;
 }
 
-.empty .hint {
-  font-size: 0.9rem;
-  margin-top: -8px;
-}
-
-.error-box mat-icon, .empty mat-icon {
+.error-box mat-icon {
   font-size: 48px;
   width: 48px;
   height: 48px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+
+  .empty-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-slate-300);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
 }
 
 .pacientes-list {
@@ -63,12 +87,20 @@
   gap: 12px;
 }
 
-.paciente-card mat-card-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+.paciente-card {
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--color-slate-50);
+  }
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
 }
 
 .paciente-info {
@@ -84,7 +116,7 @@
 
 .paciente-info .detalle {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .paciente-actions {
@@ -100,16 +132,16 @@
 }
 
 .chip-deuda {
-  background-color: #fdecea !important;
-  color: #c62828 !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  color: var(--color-danger) !important;
   font-size: 0.78rem;
   height: 24px;
   font-weight: 600;
 }
 
 .chip-al-dia {
-  background-color: #e8f5e9 !important;
-  color: #2e7d32 !important;
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  color: var(--color-success) !important;
   font-size: 0.78rem;
   height: 24px;
 }
