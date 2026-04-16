@@ -76,6 +76,12 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- Actuator — health check interno (puerto 8081, no expuesto en nginx) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
     <!-- Flyway — migraciones versionadas de base de datos -->
     <dependency>
       <groupId>org.flywaydb</groupId>
