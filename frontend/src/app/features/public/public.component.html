@@ -25,7 +25,36 @@
   <div class="section-container">
     <h2 class="section-title">Tratamientos</h2>
     <p class="section-lead">Conocé nuestra carta de servicios.</p>
-    <!-- Grid de tratamientos: se arma en Fase 3 -->
+
+    @if (loading()) {
+      <div class="tratamientos-loading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    } @else if (error()) {
+      <div class="tratamientos-error">
+        <p>No pudimos cargar los tratamientos. Intentá más tarde.</p>
+      </div>
+    } @else if (tratamientos().length === 0) {
+      <div class="tratamientos-empty">
+        <p>Próximamente publicaremos nuestra carta de tratamientos.</p>
+      </div>
+    } @else {
+      <div class="tratamientos-grid" [@staggerList]="tratamientos().length">
+        @for (t of tratamientos(); track t.id) {
+          <article class="tratamiento-card">
+            <div class="card-header">
+              <h3 class="card-title">{{ t.nombre }}</h3>
+              <span class="card-duration">{{ t.duracionMinutos }} min</span>
+            </div>
+            <p class="card-description">{{ t.descripcion }}</p>
+            <div class="card-footer">
+              <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
+              <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
+            </div>
+          </article>
+        }
+      </div>
+    }
   </div>
 </section>
 
