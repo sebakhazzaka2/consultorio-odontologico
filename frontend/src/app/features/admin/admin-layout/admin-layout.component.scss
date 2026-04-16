@@ -9,10 +9,32 @@ mat-sidenav {
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 8px;
+}
+
+.toolbar-title {
+  flex: 1;
+}
+
+.menu-btn {
+  margin-right: 4px;
+}
+
+.logout-btn {
+  margin-left: auto;
 }
 
 .content {
   padding: 24px;
+}
+
+@media (max-width: 599px) {
+  .content {
+    padding: 16px 12px;
+  }
+
+  .logout-label {
+    display: none;
+  }
 }

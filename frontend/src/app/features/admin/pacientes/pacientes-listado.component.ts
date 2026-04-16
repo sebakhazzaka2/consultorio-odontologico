@@ -8,7 +8,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { PacienteService } from './paciente.service';
+import { PagoService } from './pago.service';
 import { Paciente } from '../../../core/models/paciente.model';
 import { PacienteFormDialogComponent } from './paciente-form-dialog.component';
 import { ConfirmarBorradoPacienteDialogComponent } from './confirmar-borrado-paciente-dialog.component';
@@ -26,7 +30,8 @@ import type { PacientePayload } from '../../../core/models/paciente.model';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatChipsModule
   ],
   templateUrl: './pacientes-listado.component.html',
   styleUrl: './pacientes-listado.component.scss'
@@ -35,9 +40,11 @@ export class PacientesListadoComponent implements OnInit {
   pacientes: Paciente[] = [];
   cargando = true;
   errorMensaje: string | null = null;
+  saldos: Map<number, number> = new Map();
 
   constructor(
     private pacienteService: PacienteService,
+    private pagoService: PagoService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
@@ -49,15 +56,31 @@ export class PacientesListadoComponent implements OnInit {
   cargar(): void {
     this.cargando = true;
     this.errorMensaje = null;
+    this.saldos = new Map();
     this.pacienteService.listar().subscribe({
       next: (lista) => {
         this.pacientes = lista;
         this.cargando = false;
+        this.cargarSaldos();
       },
       error: (res) => {
         this.errorMensaje = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
         this.cargando = false;
       }
+    });
+  }
+
+  private cargarSaldos(): void {
+    if (this.pacientes.length === 0) return;
+    const reqs = this.pacientes.map(p =>
+      this.pagoService.getSaldo(p.id).pipe(catchError(() => of(null)))
+    );
+    forkJoin(reqs).subscribe(resultados => {
+      resultados.forEach((s, i) => {
+        if (s !== null) {
+          this.saldos.set(this.pacientes[i].id, s.saldo_pendiente);
+        }
+      });
     });
   }
 
