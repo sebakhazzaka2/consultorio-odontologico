@@ -60,10 +60,9 @@ public class SecurityConfig {
                 ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
+                auth.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
+                    .anyRequest().authenticated())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

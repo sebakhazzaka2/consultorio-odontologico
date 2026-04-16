@@ -1,0 +1,84 @@
+<header class="public-nav">
+  <div class="nav-container">
+    <a class="nav-brand" href="#top">Dental Montecaseros</a>
+    <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
+      <a href="#tratamientos" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
+      <a href="#contacto" (click)="mobileMenuOpen.set(false)">Contacto</a>
+      <a routerLink="/login" class="nav-cta" (click)="mobileMenuOpen.set(false)">Iniciar sesión</a>
+    </nav>
+    <button
+      class="nav-burger"
+      (click)="mobileMenuOpen.set(!mobileMenuOpen())"
+      [attr.aria-expanded]="mobileMenuOpen()"
+      aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-container">
+    <span class="hero-eyebrow">Clínica odontológica</span>
+    <h1 class="hero-title">Dental Montecaseros</h1>
+    <p class="hero-subtitle">Odontología Integral</p>
+    <div class="hero-actions">
+      <button class="btn-primary" disabled>Reservar turno (próximamente)</button>
+      <a class="btn-ghost" href="#tratamientos">Ver tratamientos</a>
+    </div>
+  </div>
+</section>
+
+<section class="tratamientos-section" id="tratamientos">
+  <div class="section-container">
+    <h2 class="section-title">Tratamientos</h2>
+    <p class="section-lead">Conocé nuestra carta de servicios.</p>
+
+    @if (loading()) {
+      <div class="tratamientos-loading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    } @else if (error()) {
+      <div class="tratamientos-error">
+        <p>No pudimos cargar los tratamientos. Intentá más tarde.</p>
+      </div>
+    } @else if (tratamientos().length === 0) {
+      <div class="tratamientos-empty">
+        <p>Próximamente publicaremos nuestra carta de tratamientos.</p>
+      </div>
+    } @else {
+      <div class="tratamientos-grid" [@staggerList]="tratamientos().length">
+        @for (t of tratamientos(); track t.id) {
+          <article class="tratamiento-card">
+            <div class="card-header">
+              <h3 class="card-title">{{ t.nombre }}</h3>
+            </div>
+            <p class="card-description">{{ t.descripcion }}</p>
+            <div class="card-footer">
+              <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
+              <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<section class="contacto-section" id="contacto">
+  <div class="section-container contact-grid">
+    <div>
+      <h2 class="section-title">Visitanos</h2>
+      <p>Monte Caseros 2687 a</p>
+      <p>Lunes a Viernes 09:00 – 19:00</p>
+    </div>
+    <div>
+      <h3>Contacto</h3>
+      <p>Tel: 099 572 537</p>
+      <a class="whatsapp-link" href="https://wa.me/59899572537" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer class="public-footer">
+  <p>© 2026 Dental Montecaseros. Todos los derechos reservados.</p>
+</footer>

@@ -1,5 +1,6 @@
 package com.consultorio.service;
 
+import com.consultorio.dto.PublicTratamientoResponse;
 import com.consultorio.dto.TratamientoRequest;
 import com.consultorio.dto.TratamientoResponse;
 import com.consultorio.exception.ResourceNotFoundException;
@@ -27,6 +28,16 @@ public class TratamientoService {
 
   public List<TratamientoResponse> findAllActivos() {
     return tratamientoRepository.findByActivoTrue().stream().map(this::toResponse).toList();
+  }
+
+  public List<PublicTratamientoResponse> findPublicActivos() {
+    List<PublicTratamientoResponse> activos = tratamientoRepository
+        .findByActivoTrueOrderByNombreAsc()
+        .stream()
+        .map(this::toPublicResponse)
+        .toList();
+    log.info("Listando tratamientos públicos: {}", activos.size());
+    return activos;
   }
 
   public TratamientoResponse findById(Long id) {
@@ -87,6 +98,14 @@ public class TratamientoService {
     findById(id);
     tratamientoRepository.deleteById(id);
     log.info("Tratamiento eliminado — id: {}", id);
+  }
+
+  private PublicTratamientoResponse toPublicResponse(Tratamiento tratamiento) {
+    return new PublicTratamientoResponse(
+        tratamiento.getId(),
+        tratamiento.getNombre(),
+        tratamiento.getDescripcion(),
+        tratamiento.getPrecio());
   }
 
   private TratamientoResponse toResponse(Tratamiento tratamiento) {
