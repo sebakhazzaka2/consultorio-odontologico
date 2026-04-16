@@ -5,6 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -20,7 +21,8 @@ import { AuthService } from '../../../core/auth/auth.service';
     MatToolbarModule,
     MatListModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule
   ],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.scss'

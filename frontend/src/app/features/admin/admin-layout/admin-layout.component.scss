@@ -1,40 +1,167 @@
-mat-sidenav-container {
+// ─── Container ───────────────────────────────────────────────────────────────
+
+.sidenav-container {
   height: 100vh;
 }
 
-mat-sidenav {
-  width: 220px;
-  padding: 8px;
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+
+mat-sidenav.sidenav {
+  width: 260px;
+  background-color: var(--color-slate-900);
+  border-right: none;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  .brand-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: var(--color-blue-500);
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .brand-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 400;
+  }
+}
+
+// ─── Nav items (Material MDC overrides) ──────────────────────────────────────
+
+:host ::ng-deep {
+  // Remove the default sidenav shadow/border
+  .mat-drawer-inner-container {
+    overflow-x: hidden;
+  }
+
+  .sidenav .mat-mdc-nav-list {
+    padding: 8px 0;
+  }
+
+  .sidenav .mat-mdc-list-item {
+    // Layout
+    border-radius: var(--radius-md);
+    margin: 2px 12px;
+    width: calc(100% - 24px);
+    height: 44px !important;
+
+    // Colors
+    color: rgba(255, 255, 255, 0.7);
+
+    // Transitions
+    transition:
+      background var(--transition-fast),
+      color var(--transition-fast);
+
+    // Primary text inherits color
+    .mdc-list-item__primary-text {
+      color: inherit;
+    }
+
+    // Icons inherit color
+    .mat-icon {
+      color: currentColor;
+    }
+
+    // Hover state
+    &:hover {
+      background: rgba(255, 255, 255, 0.06) !important;
+      color: #ffffff;
+    }
+
+    // Active state (routerLinkActive)
+    &.active-link {
+      background: var(--color-blue-600) !important;
+      color: #ffffff;
+
+      .mat-icon {
+        color: #ffffff;
+      }
+    }
+
+    // Suppress Material's built-in ripple state layer on dark backgrounds
+    .mat-mdc-list-item-state-layer,
+    .mdc-list-item__ripple {
+      display: none;
+    }
+  }
+}
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+:host ::ng-deep .toolbar.mat-toolbar {
+  background-color: var(--color-slate-800) !important;
+  color: #ffffff !important;
+  box-shadow: var(--shadow-sm);
+  height: 64px;
+  min-height: 64px;
 }
 
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .toolbar-title {
   flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
 }
 
 .menu-btn {
+  color: rgba(255, 255, 255, 0.8);
   margin-right: 4px;
+
+  &:hover {
+    color: #ffffff;
+  }
 }
 
 .logout-btn {
+  color: rgba(255, 255, 255, 0.65);
   margin-left: auto;
+
+  &:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
+
+// ─── Content area ────────────────────────────────────────────────────────────
 
 .content {
-  padding: 24px;
+  background-color: var(--color-surface);
+  min-height: calc(100vh - 64px);
+  padding: 32px;
 }
 
-@media (max-width: 599px) {
+// ─── Mobile ──────────────────────────────────────────────────────────────────
+
+@media (max-width: 767px) {
   .content {
     padding: 16px 12px;
-  }
-
-  .logout-label {
-    display: none;
   }
 }
