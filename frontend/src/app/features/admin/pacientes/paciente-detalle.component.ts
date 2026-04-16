@@ -80,9 +80,7 @@ export class ConfirmarEliminarPagoDialogComponent {
     MatTooltipModule,
     MatTableModule,
     MatDialogModule,
-    MatSnackBarModule,
-    PagoFormDialogComponent,
-    ConfirmarEliminarPagoDialogComponent
+    MatSnackBarModule
   ],
   templateUrl: './paciente-detalle.component.html',
   styleUrl: './paciente-detalle.component.scss'
