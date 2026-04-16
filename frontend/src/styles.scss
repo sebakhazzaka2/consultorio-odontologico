@@ -1,32 +1,43 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 :root {
-  // Slate
-  --color-slate-900: #0F172A;
-  --color-slate-800: #1E293B;
-  --color-slate-700: #334155;
-  --color-slate-500: #64748B;
-  --color-slate-300: #CBD5E1;
-  --color-slate-100: #F1F5F9;
-  --color-slate-50:  #F8FAFC;
+  /* Navy — brand primary */
+  --color-navy-950: #0B1A3A;
+  --color-navy-900: #132857;
+  --color-navy-800: #1E3A73;
+  --color-navy-700: #2A4E96;
+  --color-navy-600: #3B5BDB;
+  --color-navy-500: #4C6FE3;
+  --color-navy-100: #DCE5FA;
+  --color-navy-50:  #F0F4FD;
 
-  // Blue
-  --color-blue-600: #2563EB;
-  --color-blue-500: #3B82F6;
-  --color-blue-100: #DBEAFE;
+  /* Neutrales (grises fríos) */
+  --color-ink-900: #0F172A;
+  --color-ink-700: #334155;
+  --color-ink-500: #64748B;
+  --color-ink-300: #CBD5E1;
+  --color-ink-200: #E2E8F0;
+  --color-ink-100: #F1F5F9;
+  --color-ink-50:  #F8FAFC;
 
-  // Semantic
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-danger:  #EF4444;
-  --color-info:    #3B82F6;
+  /* Semánticos */
+  --color-success:    #059669;
+  --color-success-bg: #D1FAE5;
+  --color-warning:    #D97706;
+  --color-warning-bg: #FEF3C7;
+  --color-danger:     #DC2626;
+  --color-danger-bg:  #FEE2E2;
+  --color-info:       #2563EB;
+  --color-info-bg:    #DBEAFE;
 
-  // Surface
-  --color-bg:         #FFFFFF;
-  --color-surface:    #F8FAFC;
-  --color-border:     #E2E8F0;
-  --color-text:       #0F172A;
-  --color-text-muted: #64748B;
+  /* Superficies semánticas */
+  --color-bg:           #FFFFFF;
+  --color-surface:      #F8FAFC;
+  --color-surface-alt:  #F1F5F9;
+  --color-border:       #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-text:         var(--color-ink-900);
+  --color-text-muted:   var(--color-ink-500);
 
   // Border radius
   --radius-sm: 6px;
@@ -63,12 +74,12 @@
   transition: background-color var(--transition-fast);
 
   &:hover {
-    background: var(--color-slate-50);
+    background: var(--color-ink-50);
   }
 }
 
 .mat-mdc-header-row {
-  background: var(--color-slate-50);
+  background: var(--color-ink-50);
 }
 
 .mat-mdc-header-cell {

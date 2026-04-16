@@ -119,7 +119,7 @@ $text-muted:       #6b6b6b;
 
   &:hover { background: rgba(255,255,255,0.06); }
 
-  &.selected-week { background: rgba(25, 118, 210, 0.25); }
+  &.selected-week { background: rgba(59, 91, 219, 0.25); }
 }
 
 .picker-day {
@@ -133,7 +133,7 @@ $text-muted:       #6b6b6b;
   &.other-month { color: $text-muted; }
 
   &.today {
-    background: #1976d2;
+    background: #3B5BDB;
     color: #fff;
     font-weight: 700;
     border-radius: 50%;
@@ -220,7 +220,7 @@ $text-muted:       #6b6b6b;
     border-radius: 50%;
 
     &.today-circle {
-      background: #1976d2;
+      background: #3B5BDB;
       color: #fff;
       font-size: 16px;
       font-weight: 600;

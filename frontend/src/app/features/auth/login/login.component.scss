@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  background: linear-gradient(135deg, var(--color-navy-950) 0%, var(--color-navy-800) 100%);
   position: relative;
   overflow: hidden;
   padding: 24px;
@@ -21,13 +21,13 @@
   &--1 {
     top: -100px;
     left: -100px;
-    background: #3b82f6;
+    background: var(--color-navy-500);
   }
 
   &--2 {
     bottom: -100px;
     right: -100px;
-    background: #7c3aed;
+    background: var(--color-navy-700);
   }
 }
 
@@ -50,13 +50,13 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-ink-900);
   letter-spacing: -0.01em;
   font-family: 'Inter', 'Roboto', sans-serif;
 }
 
 .login-subtitle {
-  color: #64748b;
+  color: var(--color-ink-500);
   margin-top: 8px;
   margin-bottom: 0;
   font-size: 0.9rem;
@@ -79,12 +79,12 @@
   padding: 10px 0;
   font-size: 1rem;
   font-weight: 600;
-  background-color: #0f172a !important;
+  background-color: var(--color-navy-950) !important;
   color: #ffffff !important;
   margin-top: 8px;
 
   &:hover:not([disabled]) {
-    background-color: #1e293b !important;
+    background-color: var(--color-navy-900) !important;
   }
 
   &[disabled] {
@@ -96,13 +96,13 @@
   display: block;
   text-align: center;
   margin-top: 24px;
-  color: #64748b;
+  color: var(--color-ink-500);
   font-size: 0.85rem;
   text-decoration: none;
   transition: color 150ms ease;
 
   &:hover {
-    color: #2563eb;
+    color: var(--color-navy-600);
   }
 }
 
