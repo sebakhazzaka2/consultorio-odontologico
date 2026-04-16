@@ -18,6 +18,7 @@ export class PublicComponent implements OnInit {
   tratamientos = signal<PublicTratamiento[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  mobileMenuOpen = signal(false);
 
   constructor(private readonly tratamientoService: PublicTratamientoService) {}
 

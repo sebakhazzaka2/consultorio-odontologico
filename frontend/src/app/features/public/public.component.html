@@ -1,11 +1,18 @@
 <header class="public-nav">
   <div class="nav-container">
     <a class="nav-brand" href="#top">Dental Montecaseros</a>
-    <nav class="nav-links">
-      <a href="#tratamientos">Tratamientos</a>
-      <a href="#contacto">Contacto</a>
-      <a routerLink="/login" class="nav-cta">Iniciar sesión</a>
+    <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
+      <a href="#tratamientos" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
+      <a href="#contacto" (click)="mobileMenuOpen.set(false)">Contacto</a>
+      <a routerLink="/login" class="nav-cta" (click)="mobileMenuOpen.set(false)">Iniciar sesión</a>
     </nav>
+    <button
+      class="nav-burger"
+      (click)="mobileMenuOpen.set(!mobileMenuOpen())"
+      [attr.aria-expanded]="mobileMenuOpen()"
+      aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
