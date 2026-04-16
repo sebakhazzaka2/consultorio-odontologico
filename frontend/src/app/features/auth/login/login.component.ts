@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/auth/auth.service';
+import { fadeInUp } from '../../../shared/animations/fade.animations';
 
 @Component({
   selector: 'app-login',
@@ -15,14 +15,15 @@ import { AuthService } from '../../../core/auth/auth.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatCardModule,
+    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatSnackBarModule
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
+  animations: [fadeInUp]
 })
 export class LoginComponent {
   loginForm;
