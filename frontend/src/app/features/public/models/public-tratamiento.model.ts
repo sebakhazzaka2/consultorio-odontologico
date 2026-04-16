@@ -3,5 +3,4 @@ export interface PublicTratamiento {
   nombre: string;
   descripcion: string;
   precio: number;
-  duracionMinutos: number;
 }
