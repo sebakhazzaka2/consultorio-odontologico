@@ -10,6 +10,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-admin-layout',
@@ -31,6 +32,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
   isMobile = false;
+  readonly businessName: string = environment.businessName;
   private subs = new Subscription();
 
   constructor(
