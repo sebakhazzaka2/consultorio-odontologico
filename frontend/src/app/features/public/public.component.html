@@ -18,20 +18,109 @@
 
 <section class="hero" id="top">
   <div class="hero-container">
-    <span class="hero-eyebrow">Clínica odontológica</span>
-    <h1 class="hero-title">Dental Montecaseros</h1>
-    <p class="hero-subtitle">Odontología Integral</p>
-    <div class="hero-actions">
-      <button class="btn-primary" disabled>Reservar turno (próximamente)</button>
-      <a class="btn-ghost" href="#tratamientos">Ver tratamientos</a>
+    <div class="hero-content">
+      <span class="hero-eyebrow">
+        <span class="hero-eyebrow-dot"></span>
+        Clínica odontológica en Montevideo
+      </span>
+      <h1 class="hero-title">Dental Montecaseros</h1>
+      <p class="hero-subtitle">Odontología integral con atención cercana</p>
+      <div class="hero-actions">
+        <button class="btn-primary" disabled>
+          Reservar turno
+          <span class="btn-badge">Próximamente</span>
+        </button>
+        <a class="btn-ghost" href="#tratamientos">
+          Ver tratamientos
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Lunes a Viernes 09:00 – 18:00</span>
+        </div>
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Montevideo, Uruguay</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-visual-frame">
+        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
+             alt="Clínica odontológica"
+             loading="eager"
+             fetchpriority="high" />
+      </div>
+      <div class="hero-visual-card hero-visual-card--top" [@fadeInUp]>
+        <span class="hero-card-label">Agenda</span>
+        <span class="hero-card-value">Confirmación inmediata</span>
+      </div>
+      <div class="hero-visual-card hero-visual-card--bottom" [@fadeInUp]>
+        <span class="hero-card-label">Atención</span>
+        <span class="hero-card-value">+500 pacientes atendidos</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features-section" id="features">
+  <div class="section-container">
+    <div class="section-header">
+      <span class="section-eyebrow">Por qué elegirnos</span>
+      <h2 class="section-title">Una experiencia clínica pensada en vos</h2>
+      <p class="section-lead">
+        Combinamos atención profesional con herramientas modernas para que tu tratamiento sea simple de principio a fin.
+      </p>
+    </div>
+
+    <div class="features-grid" [@staggerList]="4">
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <h3 class="feature-title">Agenda online</h3>
+        <p class="feature-text">Reservá tu turno con confirmación inmediata, sin llamadas ni esperas.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        </div>
+        <h3 class="feature-title">Historial seguro</h3>
+        <p class="feature-text">Tu ficha clínica completa, tratamientos y notas accesibles en cualquier momento.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h3 class="feature-title">Atención personalizada</h3>
+        <p class="feature-text">Profesionales matriculados que te acompañan durante todo el tratamiento.</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3 class="feature-title">Tecnología actual</h3>
+        <p class="feature-text">Equipamiento moderno y protocolos clínicos actualizados.</p>
+      </article>
     </div>
   </div>
 </section>
 
 <section class="tratamientos-section" id="tratamientos">
   <div class="section-container">
-    <h2 class="section-title">Tratamientos</h2>
-    <p class="section-lead">Conocé nuestra carta de servicios.</p>
+    <div class="section-header">
+      <span class="section-eyebrow">Servicios</span>
+      <h2 class="section-title">Tratamientos que ofrecemos</h2>
+      <p class="section-lead">Carta de servicios con precios transparentes. Consultá por planes de pago.</p>
+    </div>
 
     @if (loading()) {
       <div class="tratamientos-loading">
@@ -65,20 +154,106 @@
 </section>
 
 <section class="contacto-section" id="contacto">
-  <div class="section-container contact-grid">
-    <div>
-      <h2 class="section-title">Visitanos</h2>
-      <p>Monte Caseros 2687 a</p>
-      <p>Lunes a Viernes 09:00 – 19:00</p>
-    </div>
-    <div>
-      <h3>Contacto</h3>
-      <p>Tel: 099 572 537</p>
-      <a class="whatsapp-link" href="https://wa.me/59899572537" target="_blank" rel="noopener">WhatsApp</a>
+  <div class="section-container">
+    <div class="contact-layout">
+      <div class="contact-info">
+        <span class="section-eyebrow">Contactanos</span>
+        <h2 class="section-title">Coordiná tu consulta</h2>
+        <p class="section-lead">
+          Estamos para responder tus consultas. Escribinos por WhatsApp, llamá o envianos un correo.
+        </p>
+        <div class="contact-channels">
+          <a [href]="'https://wa.me/' + clinica.whatsapp" target="_blank" rel="noopener" class="contact-channel contact-channel--whatsapp">
+            <div class="contact-channel-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.94 11.94 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 6L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12a11.94 11.94 0 0 0-3.48-8.52zM12 22c-1.86 0-3.66-.5-5.24-1.45l-.38-.22-3.67.96.98-3.58-.25-.37A9.94 9.94 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10z"/></svg>
+            </div>
+            <div class="contact-channel-body">
+              <span class="contact-channel-label">WhatsApp</span>
+              <span class="contact-channel-value">Respuesta rápida</span>
+            </div>
+          </a>
+          <a [href]="'tel:' + clinica.phone" class="contact-channel">
+            <div class="contact-channel-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="contact-channel-body">
+              <span class="contact-channel-label">Teléfono</span>
+              <span class="contact-channel-value">{{ clinica.phone }}</span>
+            </div>
+          </a>
+          <a [href]="'mailto:' + clinica.email" class="contact-channel">
+            <div class="contact-channel-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+            </div>
+            <div class="contact-channel-body">
+              <span class="contact-channel-label">Email</span>
+              <span class="contact-channel-value">{{ clinica.email }}</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <aside class="contact-card">
+        <h3>Visitanos</h3>
+        <div class="contact-detail">
+          <span class="contact-detail-label">Dirección</span>
+          <span class="contact-detail-value">{{ clinica.address }}</span>
+        </div>
+        <div class="contact-detail">
+          <span class="contact-detail-label">Horario</span>
+          <span class="contact-detail-value">{{ clinica.hours }}</span>
+        </div>
+        <div class="contact-hours-badge">
+          <span class="hours-dot"></span>
+          Abierto hoy
+        </div>
+      </aside>
     </div>
   </div>
 </section>
 
 <footer class="public-footer">
-  <p>© 2026 Dental Montecaseros. Todos los derechos reservados.</p>
+  <div class="section-container">
+    <div class="footer-grid">
+      <div class="footer-col footer-col--brand">
+        <h3 class="footer-clinic">{{ clinica.nombre }}</h3>
+        <p class="footer-tagline">{{ clinica.tagline }}</p>
+        <p class="footer-address">{{ clinica.address }}</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#top">Inicio</a></li>
+          <li><a href="#features">Por qué elegirnos</a></li>
+          <li><a href="#tratamientos">Tratamientos</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Atención</h4>
+        <ul>
+          <li>{{ clinica.hours }}</li>
+          <li>{{ clinica.phone }}</li>
+          <li><a [href]="'mailto:' + clinica.email">{{ clinica.email }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Acceso</h4>
+        <ul>
+          <li><a routerLink="/login">Panel administrativo</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© {{ currentYear }} {{ clinica.nombre }}. Todos los derechos reservados.</p>
+      <div class="powered-by">
+        <span>Powered by</span>
+        <app-brand-logo size="sm" [showWordmark]="true"></app-brand-logo>
+      </div>
+    </div>
+  </div>
 </footer>

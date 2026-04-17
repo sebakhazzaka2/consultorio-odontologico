@@ -1,18 +1,20 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, effect, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PublicTratamientoService } from './services/public-tratamiento.service';
 import { PublicTratamiento } from './models/public-tratamiento.model';
-import { staggerList } from '../../shared/animations/fade.animations';
+import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
+import { CLINIC_CONFIG } from './clinic.config';
+import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
 
 @Component({
   selector: 'app-public',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, MatProgressSpinnerModule],
+  imports: [RouterLink, CurrencyPipe, MatProgressSpinnerModule, BrandLogoComponent],
   templateUrl: './public.component.html',
   styleUrl: './public.component.scss',
-  animations: [staggerList],
+  animations: [fadeInUp, staggerList],
 })
 export class PublicComponent implements OnInit {
   tratamientos = signal<PublicTratamiento[]>([]);
@@ -20,7 +22,14 @@ export class PublicComponent implements OnInit {
   error = signal<string | null>(null);
   mobileMenuOpen = signal(false);
 
-  constructor(private readonly tratamientoService: PublicTratamientoService) {}
+  readonly clinica = CLINIC_CONFIG;
+  readonly currentYear = new Date().getFullYear();
+
+  constructor(private readonly tratamientoService: PublicTratamientoService) {
+    effect(() => {
+      document.body.style.overflow = this.mobileMenuOpen() ? 'hidden' : '';
+    });
+  }
 
   ngOnInit(): void {
     this.tratamientoService.getActivos().subscribe({
