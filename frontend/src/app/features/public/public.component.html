@@ -213,5 +213,47 @@
 </section>
 
 <footer class="public-footer">
-  <p>© 2026 Dental Montecaseros. Todos los derechos reservados.</p>
+  <div class="section-container">
+    <div class="footer-grid">
+      <div class="footer-col footer-col--brand">
+        <h3 class="footer-clinic">{{ clinica.nombre }}</h3>
+        <p class="footer-tagline">{{ clinica.tagline }}</p>
+        <p class="footer-address">{{ clinica.address }}</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#top">Inicio</a></li>
+          <li><a href="#features">Por qué elegirnos</a></li>
+          <li><a href="#tratamientos">Tratamientos</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Atención</h4>
+        <ul>
+          <li>{{ clinica.hours }}</li>
+          <li>{{ clinica.phone }}</li>
+          <li><a [href]="'mailto:' + clinica.email">{{ clinica.email }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Acceso</h4>
+        <ul>
+          <li><a routerLink="/login">Panel administrativo</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© {{ currentYear }} {{ clinica.nombre }}. Todos los derechos reservados.</p>
+      <div class="powered-by">
+        <span>Powered by</span>
+        <app-brand-logo size="sm" [showWordmark]="true"></app-brand-logo>
+      </div>
+    </div>
+  </div>
 </footer>

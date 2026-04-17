@@ -761,13 +761,95 @@ button:focus-visible {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 .public-footer {
-  background: var(--color-ink-900);
-  color: var(--color-ink-300);
-  text-align: center;
-  padding: var(--space-8) var(--space-6);
+  background: var(--color-navy-950);
+  color: rgba(255, 255, 255, 0.7);
+  padding: clamp(48px, 8vw, 80px) 0 32px;
+}
 
-  p {
-    margin: 0;
-    font-size: 0.875rem;
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+
+  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: 2fr 1fr 1fr 1fr; }
+}
+
+.footer-col h4 {
+  color: white;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.footer-col a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color var(--transition-fast);
+
+  &:hover { color: white; }
+}
+
+.footer-col--brand {
+  .footer-clinic {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px;
   }
 }
+
+.footer-tagline {
+  margin: 0 0 16px;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.footer-address {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+  font-size: 0.85rem;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+.powered-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+
+  app-brand-logo { color: white; }
+}
+
+.footer-copy { margin: 0; }
