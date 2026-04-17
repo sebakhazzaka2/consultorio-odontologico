@@ -1,0 +1,380 @@
+// =============================================================================
+// NexaClinic Design System
+// Fuente única de verdad para tokens de diseño.
+// Importar con: @use 'styles/design-system' as ds;  (o via styles.scss global)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// TOKENS — definidos como CSS custom properties en :root
+// -----------------------------------------------------------------------------
+:root {
+
+  // ── PALETA BASE — navy ──────────────────────────────────────────────────────
+  --color-navy-950: #0B1A3A;   // sidebar bg, primary action
+  --color-navy-900: #132857;   // toolbar, dark gradients
+  --color-navy-800: #1E3A73;
+  --color-navy-700: #2A4E96;
+  --color-navy-600: #3B5BDB;   // active state, brand accent
+  --color-navy-500: #4C6FE3;   // focus rings, lighter accent
+  --color-navy-100: #DCE5FA;
+  --color-navy-50:  #F0F4FD;
+
+  // ── PALETA BASE — ink (grises fríos) ───────────────────────────────────────
+  --color-ink-900: #0F172A;    // texto principal
+  --color-ink-700: #334155;    // texto secundario
+  --color-ink-500: #64748B;    // texto muted, labels
+  --color-ink-300: #CBD5E1;    // bordes fuertes
+  --color-ink-200: #E2E8F0;    // bordes normales
+  --color-ink-100: #F1F5F9;    // superficies alternativas
+  --color-ink-50:  #F8FAFC;    // fondo surface
+
+  // ── ROLES SEMÁNTICOS (usar estos en componentes, no la paleta directa) ─────
+  --color-primary:        var(--color-navy-950);  // acción principal (botón fill)
+  --color-primary-hover:  var(--color-navy-800);  // hover de primary
+  --color-primary-light:  var(--color-navy-600);  // active nav, links
+  --color-secondary:      var(--color-ink-700);   // acción secundaria
+  --color-focus-ring:     var(--color-navy-500);  // outline accesibilidad
+
+  // ── SUPERFICIES ─────────────────────────────────────────────────────────────
+  --color-bg:            #FFFFFF;
+  --color-surface:       #F8FAFC;    // fondo content area
+  --color-surface-alt:   #F1F5F9;    // fondo alternativo, filas hover
+  --color-border:        #E2E8F0;
+  --color-border-strong: #CBD5E1;
+
+  // ── TEXTO ───────────────────────────────────────────────────────────────────
+  --color-text:       var(--color-ink-900);
+  --color-text-muted: var(--color-ink-500);
+
+  // ── ESTADOS SEMÁNTICOS ──────────────────────────────────────────────────────
+  --color-success:    #059669;
+  --color-success-bg: #D1FAE5;
+  --color-warning:    #D97706;
+  --color-warning-bg: #FEF3C7;
+  --color-danger:     #DC2626;
+  --color-danger-bg:  #FEE2E2;
+  --color-info:       #2563EB;
+  --color-info-bg:    #DBEAFE;
+
+  // ── TIPOGRAFÍA ──────────────────────────────────────────────────────────────
+  --font-family:  'Inter', -apple-system, system-ui, sans-serif;
+
+  --font-size-xs:   0.75rem;   // 12px  — labels, chips, table headers
+  --font-size-sm:   0.875rem;  // 14px  — texto secundario, descriptions
+  --font-size-base: 1rem;      // 16px  — cuerpo principal
+  --font-size-lg:   1.125rem;  // 18px  — subtítulos, parágrafos destacados
+  --font-size-xl:   1.25rem;   // 20px  — card titles
+  --font-size-2xl:  1.5rem;    // 24px  — section headings
+  --font-size-3xl:  2rem;      // 32px  — page titles
+  --font-size-4xl:  2.5rem;    // 40px  — hero headings
+
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  --line-height-tight:  1.2;
+  --line-height-snug:   1.4;
+  --line-height-base:   1.6;
+  --line-height-relaxed:1.8;
+
+  // ── ESPACIADO (base 4px) ────────────────────────────────────────────────────
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  // ── BORDER RADIUS ───────────────────────────────────────────────────────────
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  // ── SOMBRAS ─────────────────────────────────────────────────────────────────
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.16);
+
+  // ── TRANSICIONES ────────────────────────────────────────────────────────────
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // ── LAYOUT ──────────────────────────────────────────────────────────────────
+  --toolbar-height:  64px;
+  --sidenav-width:   260px;
+}
+
+
+// =============================================================================
+// COMPONENTES REUTILIZABLES
+// Clases CSS que implementan el sistema. Usar en templates Angular.
+// =============================================================================
+
+// ── BOTONES ──────────────────────────────────────────────────────────────────
+//
+// Uso: <button class="btn btn-primary">Guardar</button>
+//      <button class="btn btn-secondary">Cancelar</button>
+//      <button class="btn btn-ghost">Ver más</button>
+//      <button class="btn btn-danger">Eliminar</button>
+//
+// Para formularios Material, usar mat-flat-button + color="primary" (con override abajo).
+// Las clases .btn son para botones fuera de Material.
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &.btn-sm {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+  }
+
+  &.btn-lg {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-lg);
+  }
+
+  &.btn-full {
+    width: 100%;
+  }
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: var(--color-secondary);
+  border-color: var(--color-border-strong);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-alt);
+    border-color: var(--color-ink-300);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-primary-light);
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: var(--color-navy-50);
+  }
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
+
+  &:hover:not(:disabled) {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+
+// ── CARDS ────────────────────────────────────────────────────────────────────
+//
+// Uso: <div class="card"> o <mat-card class="card">
+// Variante clickeable: class="card card-hover"
+// Variante stat: class="card card-stat"
+
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-hover {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.card-stat {
+  padding: var(--space-6);
+
+  .card-stat__label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+  }
+
+  .card-stat__value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    line-height: var(--line-height-tight);
+  }
+
+  .card-stat__sub {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+  }
+}
+
+
+// ── CHIPS / BADGES DE ESTADO ─────────────────────────────────────────────────
+//
+// Uso: <span class="chip chip-success">Confirmada</span>
+//      <span class="chip chip-warning">Pendiente</span>
+//      <span class="chip chip-neutral">Cancelada</span>
+//      <span class="chip chip-info">Info</span>
+//      <span class="chip chip-danger">Rechazado</span>
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-sm);  // 6px → mismo que radius-sm
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.chip-success {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--color-success);
+}
+
+.chip-warning {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+}
+
+.chip-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--color-danger);
+}
+
+.chip-info {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--color-info);
+}
+
+.chip-neutral {
+  background: rgba(100, 116, 139, 0.12);
+  color: var(--color-text-muted);
+}
+
+
+// ── INPUTS (Material override global) ────────────────────────────────────────
+//
+// Los campos Material con appearance="outline" son el estándar.
+// Overrides para alinear con el design system.
+
+.mat-mdc-form-field {
+  &.mat-form-field-appearance-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--color-border) !important;
+    }
+
+    &:hover .mdc-notched-outline__leading,
+    &:hover .mdc-notched-outline__notch,
+    &:hover .mdc-notched-outline__trailing {
+      border-color: var(--color-border-strong) !important;
+    }
+
+    &.mat-focused .mdc-notched-outline__leading,
+    &.mat-focused .mdc-notched-outline__notch,
+    &.mat-focused .mdc-notched-outline__trailing {
+      border-color: var(--color-primary-light) !important;
+    }
+  }
+
+  .mat-mdc-floating-label {
+    color: var(--color-text-muted) !important;
+  }
+}
+
+
+// ── TABLES (Material override global) ────────────────────────────────────────
+
+.mat-mdc-header-row {
+  background: var(--color-surface-alt);
+}
+
+.mat-mdc-header-cell {
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--color-text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mat-mdc-row {
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--color-surface-alt);
+  }
+}
+
+
+// ── FOCUS GLOBAL ─────────────────────────────────────────────────────────────
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}

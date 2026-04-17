@@ -41,7 +41,7 @@ public class CitaController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<CitaResponse> findById(@PathVariable Long id) {
+  public ResponseEntity<CitaResponse> findById(@PathVariable("id") Long id) {
     return new ResponseEntity<>(citaService.findById(id), HttpStatus.OK);
   }
 
@@ -52,22 +52,22 @@ public class CitaController {
 
   @PutMapping("/{id}")
   public ResponseEntity<CitaResponse> update(
-      @PathVariable Long id, @Valid @RequestBody CitaRequest citaRequest) {
+      @PathVariable("id") Long id, @Valid @RequestBody CitaRequest citaRequest) {
     return new ResponseEntity<>(citaService.update(id, citaRequest), HttpStatus.OK);
   }
 
   @PatchMapping("/{id}/cancelar")
-  public ResponseEntity<CitaResponse> cancelar(@PathVariable Long id) {
+  public ResponseEntity<CitaResponse> cancelar(@PathVariable("id") Long id) {
     return new ResponseEntity<>(citaService.cancelar(id), HttpStatus.OK);
   }
 
   @PatchMapping("/{id}/confirmar")
-  public ResponseEntity<CitaResponse> confirmar(@PathVariable Long id) {
+  public ResponseEntity<CitaResponse> confirmar(@PathVariable("id") Long id) {
     return new ResponseEntity<>(citaService.confirmar(id), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     citaService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

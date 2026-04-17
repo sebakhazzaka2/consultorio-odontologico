@@ -26,6 +26,77 @@ frontend/src/app/
 
 ---
 
+## Design System — estándar obligatorio
+
+**Fuente única:** `src/styles/_design-system.scss`  
+Todos los tokens están como CSS custom properties en `:root`. Nunca hardcodear colores, fuentes, spacing ni radios directamente en componentes.
+
+### Colores — roles semánticos (usar estos, no la paleta directa)
+
+| Variable | Valor | Rol |
+|---|---|---|
+| `--color-primary` | navy-950 `#0B1A3A` | Botón fill, acción principal |
+| `--color-primary-hover` | navy-800 `#1E3A73` | Hover de primary |
+| `--color-primary-light` | navy-600 `#3B5BDB` | Nav activo, links, accents |
+| `--color-secondary` | ink-700 `#334155` | Acción secundaria |
+| `--color-focus-ring` | navy-500 `#4C6FE3` | Outline accesibilidad |
+| `--color-bg` | `#FFFFFF` | Fondo de página |
+| `--color-surface` | `#F8FAFC` | Fondo content area admin |
+| `--color-surface-alt` | `#F1F5F9` | Hover filas, fondos alternativos |
+| `--color-border` | `#E2E8F0` | Bordes normales |
+| `--color-border-strong` | `#CBD5E1` | Bordes enfatizados |
+| `--color-text` | ink-900 `#0F172A` | Texto principal |
+| `--color-text-muted` | ink-500 `#64748B` | Texto secundario, labels |
+| `--color-success` | `#059669` | Estado positivo |
+| `--color-warning` | `#D97706` | Estado precaución |
+| `--color-danger` | `#DC2626` | Estado error/negativo |
+| `--color-info` | `#2563EB` | Estado informativo |
+
+Paleta base disponible: `--color-navy-{50,100,500,600,700,800,900,950}` y `--color-ink-{50,100,200,300,500,700,900}`.
+
+### Tipografía
+
+- **Font:** siempre `var(--font-family)` → Inter + system fallbacks
+- **Tamaños:** `--font-size-{xs,sm,base,lg,xl,2xl,3xl,4xl}` (12→40px)
+- **Pesos:** `--font-weight-{normal,medium,semibold,bold}` (400/500/600/700)
+- **Line-height:** `--line-height-{tight,snug,base,relaxed}` (1.2/1.4/1.6/1.8)
+
+### Espaciado
+
+Escala de 4px: `--space-{1,2,3,4,5,6,7,8,10,12,16}` = 4/8/12/16/20/24/28/32/40/48/64 px.  
+No usar valores de px arbitrarios — siempre `var(--space-N)`.
+
+### Bordes y sombras
+
+- Radios: `--radius-{sm,md,lg,xl,full}` → 6/10/14/20/9999 px
+- Sombras: `--shadow-{sm,md,lg,xl}` — usar en ese orden de elevación
+- Transiciones: `--transition-{fast,base,slow}` → 150/250/400 ms
+
+### Componentes predefinidos
+
+| Clase | Uso |
+|---|---|
+| `.btn .btn-primary` | Botón fill principal |
+| `.btn .btn-secondary` | Botón outline |
+| `.btn .btn-ghost` | Botón fantasma |
+| `.btn .btn-danger` | Acción destructiva |
+| `.btn.btn-sm` / `.btn.btn-lg` | Variantes de tamaño |
+| `.btn.btn-full` | Ancho completo |
+| `.card` | Contenedor base |
+| `.card.card-hover` | Card con hover elevado |
+| `.card.card-stat` | Card para estadísticas |
+| `.chip .chip-{success,warning,danger,info,neutral}` | Badge de estado |
+
+Para **inputs** usar siempre `mat-form-field` con `appearance="outline"`. Los overrides de color ya están en el design system.
+
+Para **botones en Material** usar `mat-flat-button` (primary fill) o `mat-stroked-button` (secondary); los colores se alinean vía el theme de Material + las variables CSS.
+
+### Regla de aplicación
+
+> Cada nuevo componente DEBE usar variables del design system. Si necesitás un valor que no existe, primero evaluá si encaja en la escala existente. Si realmente es nuevo, agregalo a `_design-system.scss` con comentario, no lo pongas inline en el componente.
+
+---
+
 ## Estado MVP1 (✅ mergeado a main)
 
 - **Auth:** `AuthService`, `authInterceptor` (functional), `authGuard` (functional), `LoginComponent`
@@ -63,3 +134,13 @@ frontend/src/app/
 - Datos de la clínica: nombre, descripción, horario (hardcodeados en MVP1, configurables en MVP2)
 - Diseño coherente con el admin (Inter font, paleta azul/slate)
 - MVP2: desde esta página los pacientes podrán elegir turno
+
+{MARCA_SISTEMA} = "NexaClinic"
+{MARCA_TAGLINE} = "Simple, integrated clinical system"
+{CLINICA_NOMBRE} = "Dental Montecaseros"
+{CLINICA_TAGLINE} = "Odontología integral con atención cercana"
+{CLINICA_DIRECCION} = "Monte Caseros 2687 a"
+{CLINICA_HORARIO} = "Lunes a Viernes 09:00 – 18:00"
+{CLINICA_TELEFONO} = "+59899572537"
+{CLINICA_WHATSAPP} = "+59899572537"
+{CLINICA_EMAIL} = "[EMAIL_ADDRESS]"

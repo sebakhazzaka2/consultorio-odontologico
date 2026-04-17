@@ -20,7 +20,7 @@ public class SaldoController {
   }
 
   @GetMapping("/{id}/saldo")
-  public ResponseEntity<SaldoPacienteResponse> getSaldoPaciente(@PathVariable Long id) {
+  public ResponseEntity<SaldoPacienteResponse> getSaldoPaciente(@PathVariable("id") Long id) {
     return new ResponseEntity<>(pagoService.getSaldoPaciente(id), HttpStatus.OK);
   }
 }

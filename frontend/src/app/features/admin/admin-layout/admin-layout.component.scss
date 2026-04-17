@@ -8,7 +8,7 @@
 
 mat-sidenav.sidenav {
   width: 260px;
-  background-color: var(--color-slate-900);
+  background-color: var(--color-navy-950);
   border-right: none;
 }
 
@@ -23,7 +23,7 @@ mat-sidenav.sidenav {
     font-size: 28px;
     width: 28px;
     height: 28px;
-    color: var(--color-blue-500);
+    color: var(--color-navy-500);
     flex-shrink: 0;
   }
 
@@ -84,7 +84,7 @@ mat-sidenav.sidenav {
 
     // Active state (routerLinkActive)
     &.active-link {
-      background: var(--color-blue-600) !important;
+      background: var(--color-navy-600) !important;
       color: #ffffff;
 
       .mat-icon {
@@ -103,7 +103,7 @@ mat-sidenav.sidenav {
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
 
 :host ::ng-deep .toolbar.mat-toolbar {
-  background-color: var(--color-slate-800) !important;
+  background-color: var(--color-navy-900) !important;
   color: #ffffff !important;
   box-shadow: var(--shadow-sm);
   height: 64px;

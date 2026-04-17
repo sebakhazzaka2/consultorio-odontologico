@@ -31,12 +31,12 @@ public class PagoController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<PagoResponse> findById(@PathVariable Long id) {
+  public ResponseEntity<PagoResponse> findById(@PathVariable("id") Long id) {
     return new ResponseEntity<>(pagoService.findById(id), HttpStatus.OK);
   }
 
   @GetMapping("/paciente/{pacienteId}")
-  public ResponseEntity<List<PagoResponse>> findByPaciente(@PathVariable Long pacienteId) {
+  public ResponseEntity<List<PagoResponse>> findByPaciente(@PathVariable("pacienteId") Long pacienteId) {
     return new ResponseEntity<>(pagoService.findByPaciente(pacienteId), HttpStatus.OK);
   }
 
@@ -46,7 +46,7 @@ public class PagoController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     pagoService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

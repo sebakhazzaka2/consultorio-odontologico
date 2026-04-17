@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/auth/auth.service';
 import { fadeInUp } from '../../../shared/animations/fade.animations';
-
+import { BrandLogoComponent } from '../../../shared/components/brand-logo/brand-logo.component';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -19,7 +19,8 @@ import { fadeInUp } from '../../../shared/animations/fade.animations';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    BrandLogoComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

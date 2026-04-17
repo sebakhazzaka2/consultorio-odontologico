@@ -51,8 +51,8 @@
   }
 
   &--primary {
-    background: var(--color-slate-900);
-    border-color: var(--color-slate-900);
+    background: var(--color-navy-900);
+    border-color: var(--color-navy-900);
 
     .stat-icon,
     .stat-label {
@@ -72,13 +72,13 @@
 .stat-icon {
   display: flex;
   align-items: center;
-  color: var(--color-blue-600);
+  color: var(--color-navy-600);
 
   mat-icon {
     font-size: 28px;
     width: 28px;
     height: 28px;
-    color: var(--color-blue-600);
+    color: var(--color-navy-600);
   }
 }
 
@@ -158,7 +158,7 @@
 .next-time {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-blue-600);
+  color: var(--color-navy-600);
   font-variant-numeric: tabular-nums;
 }
 
