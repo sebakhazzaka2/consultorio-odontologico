@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MatTableModule } from '@angular/material/table';
@@ -27,6 +30,7 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
   imports: [
     CommonModule,
     RouterModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -35,6 +39,8 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
     MatTooltipModule,
     MatDialogModule,
     MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
     PageHeaderComponent,
     EmptyStateComponent
   ],
@@ -47,6 +53,15 @@ export class PacientesListadoComponent implements OnInit {
   errorMensaje: string | null = null;
   saldos: Map<number, number> = new Map();
   readonly displayedColumns = ['nombre', 'email', 'telefono', 'saldo', 'acciones'];
+  busqueda = new FormControl('');
+
+  get pacientesFiltrados(): Paciente[] {
+    const q = (this.busqueda.value ?? '').toLowerCase().trim();
+    if (!q) return this.pacientes;
+    return this.pacientes.filter(p =>
+      `${p.nombre} ${p.apellido}`.toLowerCase().includes(q)
+    );
+  }
 
   constructor(
     private pacienteService: PacienteService,

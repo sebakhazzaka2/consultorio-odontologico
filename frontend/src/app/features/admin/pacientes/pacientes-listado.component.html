@@ -31,8 +31,27 @@
         </button>
       </app-empty-state>
     } @else {
+      <div class="search-bar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar paciente</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [formControl]="busqueda" placeholder="Nombre o apellido...">
+          @if (busqueda.value) {
+            <button matSuffix mat-icon-button aria-label="Limpiar" (click)="busqueda.setValue('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (pacientesFiltrados.length === 0) {
+        <div class="no-results">
+          <mat-icon>search_off</mat-icon>
+          <p>No se encontraron pacientes con "{{ busqueda.value }}"</p>
+        </div>
+      } @else {
       <div class="table-scroll-wrapper">
-        <table mat-table [dataSource]="pacientes" class="pacientes-table">
+        <table mat-table [dataSource]="pacientesFiltrados" class="pacientes-table">
 
           <ng-container matColumnDef="nombre">
             <th mat-header-cell *matHeaderCellDef>Nombre</th>
@@ -83,6 +102,7 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </div>
+      }
     }
   </mat-card>
 </div>
