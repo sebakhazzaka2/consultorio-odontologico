@@ -18,12 +18,52 @@
 
 <section class="hero" id="top">
   <div class="hero-container">
-    <span class="hero-eyebrow">Clínica odontológica</span>
-    <h1 class="hero-title">Dental Montecaseros</h1>
-    <p class="hero-subtitle">Odontología Integral</p>
-    <div class="hero-actions">
-      <button class="btn-primary" disabled>Reservar turno (próximamente)</button>
-      <a class="btn-ghost" href="#tratamientos">Ver tratamientos</a>
+    <div class="hero-content">
+      <span class="hero-eyebrow">
+        <span class="hero-eyebrow-dot"></span>
+        Clínica odontológica en Montevideo
+      </span>
+      <h1 class="hero-title">Dental Montecaseros</h1>
+      <p class="hero-subtitle">Odontología integral con atención cercana</p>
+      <div class="hero-actions">
+        <button class="btn-primary" disabled>
+          Reservar turno
+          <span class="btn-badge">Próximamente</span>
+        </button>
+        <a class="btn-ghost" href="#tratamientos">
+          Ver tratamientos
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Lunes a Viernes 09:00 – 18:00</span>
+        </div>
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Montevideo, Uruguay</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-visual-frame">
+        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
+             alt="Clínica odontológica"
+             loading="eager"
+             fetchpriority="high" />
+      </div>
+      <div class="hero-visual-card hero-visual-card--top" [@fadeInUp]>
+        <span class="hero-card-label">Agenda</span>
+        <span class="hero-card-value">Confirmación inmediata</span>
+      </div>
+      <div class="hero-visual-card hero-visual-card--bottom" [@fadeInUp]>
+        <span class="hero-card-label">Atención</span>
+        <span class="hero-card-value">+500 pacientes atendidos</span>
+      </div>
     </div>
   </div>
 </section>

@@ -4,7 +4,7 @@ import { CurrencyPipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PublicTratamientoService } from './services/public-tratamiento.service';
 import { PublicTratamiento } from './models/public-tratamiento.model';
-import { staggerList } from '../../shared/animations/fade.animations';
+import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
 
 @Component({
   selector: 'app-public',
@@ -12,7 +12,7 @@ import { staggerList } from '../../shared/animations/fade.animations';
   imports: [RouterLink, CurrencyPipe, MatProgressSpinnerModule],
   templateUrl: './public.component.html',
   styleUrl: './public.component.scss',
-  animations: [staggerList],
+  animations: [fadeInUp, staggerList],
 })
 export class PublicComponent implements OnInit {
   tratamientos = signal<PublicTratamiento[]>([]);
