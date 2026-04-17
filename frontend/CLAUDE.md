@@ -117,17 +117,19 @@ Para **botones en Material** usar `mat-flat-button` (primary fill) o `mat-stroke
 - Responsive mobile-first (sidebar colapsable, tablas responsive)
 - Saldo adeudado visible en listado pacientes
 
-### Admin polish (⏳ rama `feat/admin-polish`)
-- Login page: fondo oscuro (slate-900→blue-900), card blanca, Inter font
-- Admin sidebar: fondo `#0F172A` (slate-900), nav items blancos, highlight azul activo
-- Admin toolbar: `#1E293B` reemplaza indigo genérico de Material
-- Inter font globalmente en el admin
-- Dashboard component en `/admin` (reemplaza redirect a `/admin/agenda`)
-  - Cards: turnos hoy, próximos 5 turnos, total pacientes
-  - APIs: `GET /api/citas?fecha=hoy`, `GET /api/pacientes`
-- Tablas: íconos en columna acciones (`edit`, `delete`, `visibility`), empty states con CTA, chips semánticos (PENDIENTE=yellow, CONFIRMADA=green, CANCELADA=gray)
+### Admin polish v1 (✅ mergeado a main)
+- Login page: fondo oscuro, sidebar oscuro `#0F172A`, Inter font, toolbar `#1E293B`
+- Dashboard component en `/admin` — 3 stats (hoy, próximos, pacientes)
+- Chips semánticos de estado de cita
 
-### Página pública de la clínica (⏳ rama `feat/public-page`)
+### Admin polish v2 (✅ en main)
+- `PageHeaderComponent` (`shared/components/page-header`) — header flat con borde inferior, título izq, acción derecha
+- `EmptyStateComponent` (`shared/components/empty-state`) — ícono en círculo + título + descripción + ng-content para CTA
+- StatusChip: simplificado a usar clases `.chip .chip-{variant}` del design system (sin SCSS propio)
+- Citas y Pacientes: `mat-table` en lugar de card-list
+- Dashboard: 4 stats, chips en próximos turnos, sección "Por confirmar" (PENDIENTE), accesos rápidos
+
+### Página pública de la clínica (✅ mergeado a main)
 - `''` → `PublicComponent` — página pública de la clínica
 - Consumir `GET /api/tratamientos` (solo activos) para mostrar carta de servicios con precio
 - Botón "Iniciar sesión" visible (navbar o header) → `/login`

@@ -9,21 +9,24 @@ import {
   query,
   stagger
 } from '@angular/animations';
+import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 import { CitaService } from '../citas/cita.service';
 import { PacienteService } from '../pacientes/paciente.service';
 import { Cita } from '../../../core/models/cita.model';
+import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, StatusChipComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   animations: [
     trigger('staggerList', [
-      transition('* => *', [
+      transition(':enter', [
         query('.stat-card', [
           style({ opacity: 0, transform: 'translateY(16px)' }),
           stagger(80, [
@@ -37,6 +40,7 @@ import { Cita } from '../../../core/models/cita.model';
 export class DashboardComponent implements OnInit {
   turnosHoy = signal<Cita[]>([]);
   proximos5 = signal<Cita[]>([]);
+  citasPendientes = signal<Cita[]>([]);
   totalPacientes = signal<number>(0);
   loading = signal(true);
 
@@ -60,15 +64,15 @@ export class DashboardComponent implements OnInit {
           citas.filter(c => c.fecha_hora_inicio.startsWith(hoyStr))
         );
 
-        this.proximos5.set(
-          citas
-            .filter(
-              c =>
-                (c.estado === 'CONFIRMADA' || c.estado === 'PENDIENTE') &&
-                new Date(c.fecha_hora_inicio) > ahora
-            )
-            .sort((a, b) => a.fecha_hora_inicio.localeCompare(b.fecha_hora_inicio))
-            .slice(0, 5)
+        const futuras = citas.filter(
+          c => (c.estado === 'CONFIRMADA' || c.estado === 'PENDIENTE') &&
+               new Date(c.fecha_hora_inicio) > ahora
+        ).sort((a, b) => a.fecha_hora_inicio.localeCompare(b.fecha_hora_inicio));
+
+        this.proximos5.set(futuras.slice(0, 5));
+
+        this.citasPendientes.set(
+          futuras.filter(c => c.estado === 'PENDIENTE').slice(0, 5)
         );
 
         this.totalPacientes.set(pacientes.length);

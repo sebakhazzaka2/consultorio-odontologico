@@ -15,8 +15,8 @@ P3B código ✅ → public-page → admin-polish → [pagar] deploy → 🎯 pri
 | P2 — Infraestructura profesional | ✅ Completo (mergeado a main) | No |
 | P3 Fase A — Producto usable | ✅ Completo (mergeado a main) | No |
 | **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) | No |
-| **Página pública clínica** | ⏳ Próxima (`feat/public-page`) | No |
-| **Admin polish** | ⏳ Próximo (`feat/admin-polish`) | No |
+| **Página pública clínica** | ⏳ ✅ Completo (mergeado a main) | No |
+| **Admin polish** | ⏳ ✅ Completo (mergeado a main) | No |
 | **Deploy real** | ⏳ Al final (Hetzner + Cloudflare + dominio) | **Sí** |
 | 🎯 Primer cliente | ⏳ Meta inmediata post-deploy | — |
 | MVP2 — Rol paciente | ⏳ Después del primer cliente | — |
@@ -60,7 +60,6 @@ P3B código ✅ → public-page → admin-polish → [pagar] deploy → 🎯 pri
 ### P3 Fase C — Producto premium (con feedback real)
 - Dashboard avanzado (ingresos, gráfico 30 días)
 - Historial UX mejorado (cards, colores por tratamiento)
-- Agenda drag & drop
 - Dark mode toggle
 - Pageable cuando haya volumen
 - Email automático (Fase 1 notificaciones)
