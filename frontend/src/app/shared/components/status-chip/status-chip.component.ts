@@ -4,8 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-status-chip',
   standalone: true,
   imports: [],
-  template: `<span class="chip chip--{{ variant }}">{{ label }}</span>`,
-  styleUrl: './status-chip.component.scss'
+  template: `<span class="chip chip-{{ variant }}">{{ label }}</span>`,
 })
 export class StatusChipComponent {
   @Input() estado: string = '';
