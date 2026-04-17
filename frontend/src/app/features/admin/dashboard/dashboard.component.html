@@ -18,9 +18,9 @@
         <span class="stat-value">{{ turnosHoy().length }}</span>
       </article>
       <article class="stat-card">
-        <span class="stat-icon"><mat-icon>schedule</mat-icon></span>
-        <span class="stat-label">Próximos</span>
-        <span class="stat-value">{{ proximos5().length }}</span>
+        <span class="stat-icon"><mat-icon>date_range</mat-icon></span>
+        <span class="stat-label">Esta semana</span>
+        <span class="stat-value">{{ estaSemana() }}</span>
       </article>
       <article class="stat-card" [class.stat-card--alert]="citasPendientes().length > 0">
         <span class="stat-icon"><mat-icon>pending_actions</mat-icon></span>
