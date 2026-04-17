@@ -79,6 +79,13 @@
     .stat-icon mat-icon { color: var(--color-warning); }
     .stat-value { color: var(--color-warning); }
   }
+
+  &--success {
+    border-color: var(--color-success);
+
+    .stat-icon mat-icon { color: var(--color-success); }
+    .stat-value { color: var(--color-success); }
+  }
 }
 
 .stat-icon {
