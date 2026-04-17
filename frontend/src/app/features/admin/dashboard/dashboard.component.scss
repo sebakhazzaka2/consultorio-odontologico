@@ -86,6 +86,51 @@
     .stat-icon mat-icon { color: var(--color-success); }
     .stat-value { color: var(--color-success); }
   }
+
+  &--financial {
+    border-color: var(--color-primary-light);
+
+    .stat-icon mat-icon { color: var(--color-primary-light); }
+    .stat-value { color: var(--color-primary-light); }
+  }
+}
+
+.financial-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.financial-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.toggle-btn {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  padding: 2px var(--space-2);
+  border: none;
+  background: transparent;
+  border-radius: calc(var(--radius-sm) - 2px);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+
+  &.active {
+    background: var(--color-bg);
+    color: var(--color-primary-light);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:hover:not(.active) {
+    color: var(--color-text);
+  }
 }
 
 .stat-icon {

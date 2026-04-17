@@ -42,6 +42,18 @@
         <span class="stat-label">Completadas este mes</span>
         <span class="stat-value">{{ completadasMes() }}</span>
       </article>
+      <article class="stat-card stat-card--financial">
+        <div class="financial-header">
+          <span class="stat-icon"><mat-icon>payments</mat-icon></span>
+          <div class="financial-toggle">
+            <button class="toggle-btn" [class.active]="periodoFinanciero() === 'dia'" (click)="periodoFinanciero.set('dia')">Hoy</button>
+            <button class="toggle-btn" [class.active]="periodoFinanciero() === 'semana'" (click)="periodoFinanciero.set('semana')">Sem</button>
+            <button class="toggle-btn" [class.active]="periodoFinanciero() === 'mes'" (click)="periodoFinanciero.set('mes')">Mes</button>
+          </div>
+        </div>
+        <span class="stat-label">Ingresos</span>
+        <span class="stat-value">{{ ingresosPeriodo | currency:'UYU':'symbol':'1.0-0':'es-UY' }}</span>
+      </article>
     </div>
 
     <div class="dashboard-grid">

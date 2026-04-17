@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import {
   trigger,
@@ -15,13 +15,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { CitaService } from '../citas/cita.service';
 import { PacienteService } from '../pacientes/paciente.service';
+import { PagoService } from '../pacientes/pago.service';
 import { Cita } from '../../../core/models/cita.model';
+import { Pago } from '../../../core/models/pago.model';
 import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, StatusChipComponent],
+  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, StatusChipComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   animations: [
@@ -45,21 +47,35 @@ export class DashboardComponent implements OnInit {
   estaSemana = signal<number>(0);
   canceladasMes = signal<number>(0);
   completadasMes = signal<number>(0);
+  ingresosHoy = signal<number>(0);
+  ingresosSemana = signal<number>(0);
+  ingresosMes = signal<number>(0);
+  periodoFinanciero = signal<'dia' | 'semana' | 'mes'>('mes');
   loading = signal(true);
 
   readonly today = new Date();
 
+  get ingresosPeriodo(): number {
+    switch (this.periodoFinanciero()) {
+      case 'dia':    return this.ingresosHoy();
+      case 'semana': return this.ingresosSemana();
+      case 'mes':    return this.ingresosMes();
+    }
+  }
+
   constructor(
     private citaService: CitaService,
-    private pacienteService: PacienteService
+    private pacienteService: PacienteService,
+    private pagoService: PagoService
   ) {}
 
   ngOnInit(): void {
     forkJoin({
       citas: this.citaService.listarCitas(),
-      pacientes: this.pacienteService.listar()
+      pacientes: this.pacienteService.listar(),
+      pagos: this.pagoService.listarTodos()
     }).subscribe({
-      next: ({ citas, pacientes }) => {
+      next: ({ citas, pacientes, pagos }) => {
         const ahora = new Date();
         const hoyStr = ahora.toISOString().slice(0, 10);
 
@@ -114,6 +130,18 @@ export class DashboardComponent implements OnInit {
         );
 
         this.totalPacientes.set(pacientes.length);
+
+        const sumar = (lista: Pago[]) => lista.reduce((acc, p) => acc + p.monto, 0);
+        this.ingresosHoy.set(sumar(pagos.filter(p => p.fecha.startsWith(hoyStr))));
+        this.ingresosSemana.set(sumar(pagos.filter(p => {
+          const f = new Date(p.fecha);
+          return f >= lunes && f <= domingo;
+        })));
+        this.ingresosMes.set(sumar(pagos.filter(p => {
+          const f = new Date(p.fecha);
+          return f >= inicioMes && f <= finMes;
+        })));
+
         this.loading.set(false);
       },
       error: () => {
