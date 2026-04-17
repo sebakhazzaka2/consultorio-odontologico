@@ -161,6 +161,17 @@
   line-height: 1;
 }
 
+// ── Gráfico ───────────────────────────────────────────────────────────────────
+
+.chart-section {
+  margin-bottom: var(--space-6);
+}
+
+.chart-wrapper {
+  height: 180px;
+  position: relative;
+}
+
 // ── Dashboard layout ──────────────────────────────────────────────────────────
 
 .dashboard-grid {

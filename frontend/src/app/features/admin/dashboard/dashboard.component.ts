@@ -1,5 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartData, ChartOptions } from 'chart.js';
 import { forkJoin } from 'rxjs';
 import {
   trigger,
@@ -23,7 +25,7 @@ import { StatusChipComponent } from '../../../shared/components/status-chip/stat
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, StatusChipComponent],
+  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, StatusChipComponent, BaseChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   animations: [
@@ -52,6 +54,40 @@ export class DashboardComponent implements OnInit {
   ingresosMes = signal<number>(0);
   periodoFinanciero = signal<'dia' | 'semana' | 'mes'>('mes');
   loading = signal(true);
+
+  chartData: ChartData<'bar'> = { labels: [], datasets: [] };
+  readonly barLabelsPlugin = {
+    id: 'barLabels',
+    afterDatasetDraw(chart: any): void {
+      const { ctx } = chart;
+      chart.getDatasetMeta(0).data.forEach((bar: any, index: number) => {
+        const value = chart.data.datasets[0].data[index] as number;
+        if (value < 1) return;
+        const barHeight = bar.base - bar.y;
+        if (barHeight < 18) return;
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold 12px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(value), bar.x, bar.y + barHeight / 2);
+        ctx.restore();
+      });
+    }
+  };
+
+  chartData: ChartData<'bar'> = { labels: [], datasets: [] };
+  chartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: {
+      label: ctx => ` ${ctx.parsed.y} turno${ctx.parsed.y !== 1 ? 's' : ''}`
+    }}},
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter, sans-serif', size: 11 }, color: '#64748B' } },
+      y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter, sans-serif', size: 11 }, color: '#64748B' }, grid: { color: '#E2E8F0' } }
+    }
+  };
 
   readonly today = new Date();
 
@@ -141,6 +177,31 @@ export class DashboardComponent implements OnInit {
           const f = new Date(p.fecha);
           return f >= inicioMes && f <= finMes;
         })));
+
+        // Gráfico: últimas 4 semanas (lunes→domingo)
+        const semanas: { label: string; count: number }[] = [];
+        for (let i = 3; i >= 0; i--) {
+          const ini = new Date(lunes);
+          ini.setDate(lunes.getDate() - i * 7);
+          const fin = new Date(ini);
+          fin.setDate(ini.getDate() + 6);
+          fin.setHours(23, 59, 59, 999);
+          const label = `${ini.getDate()}/${ini.getMonth() + 1}`;
+          const count = citas.filter(c => {
+            const f = new Date(c.fecha_hora_inicio);
+            return f >= ini && f <= fin && c.estado !== 'CANCELADA';
+          }).length;
+          semanas.push({ label, count });
+        }
+        this.chartData = {
+          labels: semanas.map(s => s.label),
+          datasets: [{
+            data: semanas.map(s => s.count),
+            backgroundColor: '#3B5BDB',
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        };
 
         this.loading.set(false);
       },

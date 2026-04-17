@@ -56,6 +56,13 @@
       </article>
     </div>
 
+    <section class="dashboard-section chart-section">
+      <h2 class="section-title">Turnos por semana</h2>
+      <div class="chart-wrapper">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="[barLabelsPlugin]" type="bar"></canvas>
+      </div>
+    </section>
+
     <div class="dashboard-grid">
       <section class="dashboard-section">
         <h2 class="section-title">Próximos turnos</h2>
