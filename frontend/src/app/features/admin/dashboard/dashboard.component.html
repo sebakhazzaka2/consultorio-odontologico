@@ -32,6 +32,11 @@
         <span class="stat-label">Pacientes</span>
         <span class="stat-value">{{ totalPacientes() }}</span>
       </article>
+      <article class="stat-card" [class.stat-card--alert]="canceladasMes() > 0">
+        <span class="stat-icon"><mat-icon>event_busy</mat-icon></span>
+        <span class="stat-label">Canceladas este mes</span>
+        <span class="stat-value">{{ canceladasMes() }}</span>
+      </article>
     </div>
 
     <div class="dashboard-grid">
