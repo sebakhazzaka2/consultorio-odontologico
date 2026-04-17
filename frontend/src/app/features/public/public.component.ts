@@ -5,6 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PublicTratamientoService } from './services/public-tratamiento.service';
 import { PublicTratamiento } from './models/public-tratamiento.model';
 import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
+import { CLINIC_CONFIG } from './clinic.config';
 
 @Component({
   selector: 'app-public',
@@ -19,6 +20,8 @@ export class PublicComponent implements OnInit {
   loading = signal(true);
   error = signal<string | null>(null);
   mobileMenuOpen = signal(false);
+
+  readonly clinica = CLINIC_CONFIG;
 
   constructor(private readonly tratamientoService: PublicTratamientoService) {}
 
