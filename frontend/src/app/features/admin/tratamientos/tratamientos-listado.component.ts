@@ -12,6 +12,8 @@ import { MatTableModule } from '@angular/material/table';
 import { TratamientoService, ResultadoTratamiento } from './tratamiento.service';
 import { Tratamiento, TratamientoPayload } from '../../../core/models/tratamiento.model';
 import { TratamientoFormDialogComponent } from './tratamiento-form-dialog.component';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 // ---- Dialog de confirmación de borrado (inline, sin archivo separado) ----
 @Component({
@@ -58,7 +60,9 @@ export class ConfirmarBorradoTratamientoDialogComponent {
     MatSnackBarModule,
     MatTooltipModule,
     MatDialogModule,
-    MatTableModule
+    MatTableModule,
+    PageHeaderComponent,
+    EmptyStateComponent
   ],
   templateUrl: './tratamientos-listado.component.html',
   styleUrl: './tratamientos-listado.component.scss'

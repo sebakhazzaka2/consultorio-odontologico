@@ -11,12 +11,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { MatTableModule } from '@angular/material/table';
 import { PacienteService } from './paciente.service';
 import { PagoService } from './pago.service';
 import { Paciente } from '../../../core/models/paciente.model';
 import { PacienteFormDialogComponent } from './paciente-form-dialog.component';
 import { ConfirmarBorradoPacienteDialogComponent } from './confirmar-borrado-paciente-dialog.component';
 import type { PacientePayload } from '../../../core/models/paciente.model';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-pacientes-listado',
@@ -31,7 +34,9 @@ import type { PacientePayload } from '../../../core/models/paciente.model';
     MatSnackBarModule,
     MatTooltipModule,
     MatDialogModule,
-    MatChipsModule
+    MatTableModule,
+    PageHeaderComponent,
+    EmptyStateComponent
   ],
   templateUrl: './pacientes-listado.component.html',
   styleUrl: './pacientes-listado.component.scss'
@@ -41,6 +46,7 @@ export class PacientesListadoComponent implements OnInit {
   cargando = true;
   errorMensaje: string | null = null;
   saldos: Map<number, number> = new Map();
+  readonly displayedColumns = ['nombre', 'email', 'telefono', 'saldo', 'acciones'];
 
   constructor(
     private pacienteService: PacienteService,
