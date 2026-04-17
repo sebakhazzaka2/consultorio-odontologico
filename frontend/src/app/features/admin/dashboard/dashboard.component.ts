@@ -55,7 +55,8 @@ export class DashboardComponent implements OnInit {
   periodoFinanciero = signal<'dia' | 'semana' | 'mes'>('mes');
   loading = signal(true);
 
-  chartData: ChartData<'bar'> = { labels: [], datasets: [] };
+  readonly today = new Date();
+
   readonly barLabelsPlugin = {
     id: 'barLabels',
     afterDatasetDraw(chart: any): void {
@@ -67,7 +68,7 @@ export class DashboardComponent implements OnInit {
         if (barHeight < 18) return;
         ctx.save();
         ctx.fillStyle = '#ffffff';
-        ctx.font = `bold 12px Inter, sans-serif`;
+        ctx.font = 'bold 12px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(String(value), bar.x, bar.y + barHeight / 2);
@@ -88,8 +89,6 @@ export class DashboardComponent implements OnInit {
       y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter, sans-serif', size: 11 }, color: '#64748B' }, grid: { color: '#E2E8F0' } }
     }
   };
-
-  readonly today = new Date();
 
   get ingresosPeriodo(): number {
     switch (this.periodoFinanciero()) {
@@ -178,7 +177,6 @@ export class DashboardComponent implements OnInit {
           return f >= inicioMes && f <= finMes;
         })));
 
-        // Gráfico: últimas 4 semanas (lunes→domingo)
         const semanas: { label: string; count: number }[] = [];
         for (let i = 3; i >= 0; i--) {
           const ini = new Date(lunes);
@@ -186,21 +184,15 @@ export class DashboardComponent implements OnInit {
           const fin = new Date(ini);
           fin.setDate(ini.getDate() + 6);
           fin.setHours(23, 59, 59, 999);
-          const label = `${ini.getDate()}/${ini.getMonth() + 1}`;
           const count = citas.filter(c => {
             const f = new Date(c.fecha_hora_inicio);
             return f >= ini && f <= fin && c.estado !== 'CANCELADA';
           }).length;
-          semanas.push({ label, count });
+          semanas.push({ label: `${ini.getDate()}/${ini.getMonth() + 1}`, count });
         }
         this.chartData = {
           labels: semanas.map(s => s.label),
-          datasets: [{
-            data: semanas.map(s => s.count),
-            backgroundColor: '#3B5BDB',
-            borderRadius: 6,
-            borderSkipped: false
-          }]
+          datasets: [{ data: semanas.map(s => s.count), backgroundColor: '#3B5BDB', borderRadius: 6, borderSkipped: false }]
         };
 
         this.loading.set(false);
