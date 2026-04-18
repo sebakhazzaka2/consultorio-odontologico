@@ -1,13 +1,12 @@
-<div class="tratamientos-header">
-  <div class="header-content">
-    <p class="page-subtitle">Gestiona los tratamientos del consultorio</p>
-    <h1 class="page-title">Tratamientos</h1>
-    <button mat-raised-button color="primary" (click)="abrirNuevo()" class="btn-nuevo">
-      <mat-icon>add</mat-icon>
-      Nuevo tratamiento
-    </button>
-  </div>
-</div>
+<app-page-header
+  title="Tratamientos"
+  subtitle="Gestiona los tratamientos del consultorio"
+  icon="medical_services">
+  <button mat-flat-button color="primary" (click)="abrirNuevo()">
+    <mat-icon>add</mat-icon>
+    Nuevo tratamiento
+  </button>
+</app-page-header>
 
 <div class="tratamientos-container">
   <mat-card class="table-card">
@@ -23,14 +22,14 @@
         <button mat-raised-button (click)="cargar()">Reintentar</button>
       </div>
     } @else if (tratamientos.length === 0) {
-      <div class="empty-state">
-        <mat-icon class="empty-icon">inbox</mat-icon>
-        <h3>No hay tratamientos todavía</h3>
-        <p>Empezá agregando los tratamientos del consultorio.</p>
+      <app-empty-state
+        icon="medical_services"
+        title="No hay tratamientos todavía"
+        description="Agregá los tratamientos que ofrece el consultorio.">
         <button mat-flat-button color="primary" (click)="abrirNuevo()">
           <mat-icon>add</mat-icon> Nuevo tratamiento
         </button>
-      </div>
+      </app-empty-state>
     } @else {
       <div class="table-scroll-wrapper">
       <table mat-table [dataSource]="tratamientos" class="tratamientos-table">
@@ -53,7 +52,7 @@
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let t">
-            <span class="activo-chip" [class.activo-chip--on]="t.activo" [class.activo-chip--off]="!t.activo">
+            <span class="chip" [class.chip-success]="t.activo" [class.chip-neutral]="!t.activo">
               {{ t.activo ? 'Activo' : 'Inactivo' }}
             </span>
           </td>

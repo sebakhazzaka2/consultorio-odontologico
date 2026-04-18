@@ -2,9 +2,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
@@ -65,6 +68,87 @@ export class ConfirmarEliminarPagoDialogComponent {
     public dialogRef: MatDialogRef<ConfirmarEliminarPagoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { monto: number; fecha: string }
   ) {}
+}
+
+export interface PagoPromptData {
+  pacienteId: number;
+  precio: number;
+  nombreTratamiento: string;
+}
+
+@Component({
+  selector: 'app-pago-prompt-dialog',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  template: `
+    <h2 mat-dialog-title>¿Registrar pago?</h2>
+    <mat-dialog-content>
+      <p class="tratamiento-nombre">{{ data.nombreTratamiento }}</p>
+      <p class="precio-ref">Precio de referencia: <strong>UY$ {{ data.precio | number:'1.0-0' }}</strong></p>
+      <div class="opciones">
+        <button class="opcion-btn" [class.selected]="modo === 'total'" (click)="seleccionarTotal()">
+          <span class="opcion-label">Pago total</span>
+          <span class="opcion-monto">UY$ {{ data.precio | number:'1.0-0' }}</span>
+        </button>
+        <button class="opcion-btn" [class.selected]="modo === 'parcial'" (click)="seleccionarParcial()">
+          <span class="opcion-label">Pago parcial</span>
+          <span class="opcion-monto">Ingresá el monto</span>
+        </button>
+      </div>
+      @if (modo === 'parcial') {
+        <mat-form-field appearance="outline" class="monto-field">
+          <mat-label>Monto a registrar</mat-label>
+          <input matInput type="number" min="1" [max]="data.precio" [formControl]="montoControl" placeholder="0">
+          <span matTextPrefix>UY$&nbsp;</span>
+        </mat-form-field>
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="dialogRef.close(null)">Ahora no</button>
+      <button mat-flat-button color="primary" [disabled]="!puedeConfirmar()" (click)="confirmar()">Registrar pago</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    mat-dialog-content { min-width: 340px; padding-top: 8px; }
+    .tratamiento-nombre { font-weight: 600; margin: 0 0 4px; }
+    .precio-ref { color: #64748B; font-size: 0.875rem; margin: 0 0 16px; }
+    .opciones { display: flex; gap: 10px; margin-bottom: 16px; }
+    .opcion-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: flex-start;
+      padding: 12px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px;
+      background: #fff; cursor: pointer; transition: border-color 150ms, background 150ms;
+    }
+    .opcion-btn.selected { border-color: #3B5BDB; background: #EEF2FF; }
+    .opcion-label { font-size: 0.8rem; color: #64748B; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+    .opcion-monto { font-size: 1rem; font-weight: 700; color: #0F172A; margin-top: 4px; }
+    .monto-field { width: 100%; }
+  `]
+})
+export class PagoPromptDialogComponent {
+  modo: 'total' | 'parcial' | null = null;
+  montoControl: FormControl;
+
+  constructor(
+    public dialogRef: MatDialogRef<PagoPromptDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: PagoPromptData,
+    private fb: FormBuilder
+  ) {
+    this.montoControl = this.fb.control(null, [Validators.required, Validators.min(1)]);
+  }
+
+  seleccionarTotal(): void { this.modo = 'total'; }
+  seleccionarParcial(): void { this.modo = 'parcial'; this.montoControl.reset(); }
+
+  puedeConfirmar(): boolean {
+    if (this.modo === 'total') return true;
+    if (this.modo === 'parcial') return this.montoControl.valid && this.montoControl.value > 0;
+    return false;
+  }
+
+  confirmar(): void {
+    const monto = this.modo === 'total' ? this.data.precio : Number(this.montoControl.value);
+    this.dialogRef.close(monto);
+  }
 }
 
 @Component({
@@ -174,14 +258,36 @@ export class PacienteDetalleComponent implements OnInit {
     ref.afterClosed().subscribe((payload: HistorialPayload | null) => {
       if (!payload) return;
       this.historialService.crear(payload).subscribe({
-        next: () => {
+        next: (creado) => {
           this.snackBar.open('Entrada creada correctamente', 'Cerrar', { duration: 3000 });
           this.recargarHistorialYSaldo();
+          if (creado.precio_aplicado && creado.precio_aplicado > 0) {
+            this.abrirPagoPrompt(creado.precio_aplicado, creado.nombre_tratamiento ?? 'Tratamiento');
+          }
         },
         error: (res) => {
           const msg = res.detalles?.length ? res.mensaje + ': ' + res.detalles.join('. ') : res.mensaje;
           this.snackBar.open(msg || 'Error al crear la entrada', 'Cerrar', { duration: 5000 });
         }
+      });
+    });
+  }
+
+  abrirPagoPrompt(precio: number, nombreTratamiento: string): void {
+    if (!this.paciente) return;
+    const ref = this.dialog.open(PagoPromptDialogComponent, {
+      width: '400px',
+      data: { pacienteId: this.paciente.id, precio, nombreTratamiento } satisfies PagoPromptData
+    });
+    ref.afterClosed().subscribe((monto: number | null) => {
+      if (!monto) return;
+      const hoy = new Date().toISOString().slice(0, 10);
+      this.pagoService.crear({ paciente_id: this.paciente!.id, monto, fecha: hoy }).subscribe({
+        next: () => {
+          this.snackBar.open('Pago registrado', 'Cerrar', { duration: 3000 });
+          this.recargarPagosYSaldo();
+        },
+        error: () => this.snackBar.open('Error al registrar el pago', 'Cerrar', { duration: 4000 })
       });
     });
   }

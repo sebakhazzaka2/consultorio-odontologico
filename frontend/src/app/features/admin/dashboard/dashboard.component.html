@@ -1,48 +1,144 @@
 <section class="dashboard">
   <header class="dashboard-header">
-    <h1>Panel</h1>
-    <p class="dashboard-date">{{ today | date:'EEEE, d MMMM y':'':'es-UY' }}</p>
+    <div>
+      <h1>Panel</h1>
+      <p class="dashboard-date">{{ today | date:'EEEE, d MMMM y':'':'es-UY' }}</p>
+    </div>
+    <div class="header-actions">
+      <a mat-flat-button color="primary" routerLink="/admin/citas/nueva" class="header-btn header-btn--primary">
+        <mat-icon>add_circle_outline</mat-icon>
+        Nueva cita
+      </a>
+      <a mat-stroked-button routerLink="/admin/pacientes" class="header-btn">
+        <mat-icon>person_add</mat-icon>
+        Pacientes
+      </a>
+      <a mat-stroked-button routerLink="/admin/agenda" class="header-btn">
+        <mat-icon>calendar_month</mat-icon>
+        Ver agenda
+      </a>
+    </div>
   </header>
 
-  <div class="stat-grid" [@staggerList]="3">
-    <article class="stat-card stat-card--primary">
-      <span class="stat-icon"><mat-icon>today</mat-icon></span>
-      <span class="stat-label">Turnos hoy</span>
-      <span class="stat-value">{{ turnosHoy().length }}</span>
-    </article>
-    <article class="stat-card">
-      <span class="stat-icon"><mat-icon>schedule</mat-icon></span>
-      <span class="stat-label">Próximos turnos</span>
-      <span class="stat-value">{{ proximos5().length }}</span>
-    </article>
-    <article class="stat-card">
-      <span class="stat-icon"><mat-icon>group</mat-icon></span>
-      <span class="stat-label">Pacientes</span>
-      <span class="stat-value">{{ totalPacientes() }}</span>
-    </article>
-  </div>
+  @if (loading()) {
+    <div class="dashboard-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <div class="stat-grid" [@staggerList]="4">
+      <article class="stat-card stat-card--primary">
+        <span class="stat-icon"><mat-icon>today</mat-icon></span>
+        <span class="stat-label">Turnos hoy</span>
+        <span class="stat-value">{{ turnosHoy().length }}</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon"><mat-icon>date_range</mat-icon></span>
+        <span class="stat-label">Esta semana</span>
+        <span class="stat-value">{{ estaSemana() }}</span>
+      </article>
+      <article class="stat-card" [class.stat-card--alert]="citasPendientes().length > 0">
+        <span class="stat-icon"><mat-icon>pending_actions</mat-icon></span>
+        <span class="stat-label">Pendientes</span>
+        <span class="stat-value">{{ citasPendientes().length }}</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon"><mat-icon>group</mat-icon></span>
+        <span class="stat-label">Pacientes</span>
+        <span class="stat-value">{{ totalPacientes() }}</span>
+      </article>
+      <article class="stat-card" [class.stat-card--alert]="canceladasMes() > 0">
+        <span class="stat-icon"><mat-icon>event_busy</mat-icon></span>
+        <span class="stat-label">Canceladas este mes</span>
+        <span class="stat-value">{{ canceladasMes() }}</span>
+      </article>
+      <article class="stat-card stat-card--success">
+        <span class="stat-icon"><mat-icon>event_available</mat-icon></span>
+        <span class="stat-label">Completadas este mes</span>
+        <span class="stat-value">{{ completadasMes() }}</span>
+      </article>
+      <article class="stat-card stat-card--financial">
+        <div class="financial-header">
+          <span class="stat-icon"><mat-icon>payments</mat-icon></span>
+          <div class="financial-toggle">
+            <button class="toggle-btn" [class.active]="periodoFinanciero() === 'dia'" (click)="periodoFinanciero.set('dia')">Hoy</button>
+            <button class="toggle-btn" [class.active]="periodoFinanciero() === 'semana'" (click)="periodoFinanciero.set('semana')">Sem</button>
+            <button class="toggle-btn" [class.active]="periodoFinanciero() === 'mes'" (click)="periodoFinanciero.set('mes')">Mes</button>
+          </div>
+        </div>
+        <span class="stat-label">Ingresos</span>
+        <span class="stat-value">{{ ingresosPeriodo | currency:'UYU':'symbol':'1.0-0':'es-UY' }}</span>
+      </article>
+    </div>
 
-  <section class="dashboard-next">
-    <h2>Próximos turnos</h2>
-    @if (loading()) {
-      <mat-spinner diameter="32"></mat-spinner>
-    } @else if (proximos5().length === 0) {
-      <p class="empty">No hay turnos próximos.</p>
-    } @else {
-      <ul class="next-list">
-        @for (c of proximos5(); track c.id) {
-          <li class="next-item">
-            <div class="next-when">
-              <span class="next-day">{{ c.fecha_hora_inicio | date:'d MMM':'':'es-UY' }}</span>
-              <span class="next-time">{{ c.fecha_hora_inicio | date:'HH:mm' }}</span>
-            </div>
-            <div class="next-who">
-              <span class="next-patient">{{ c.nombre_paciente }} {{ c.apellido_paciente }}</span>
-              <span class="next-meta">{{ c.duracion_minutos }} min</span>
-            </div>
-          </li>
+    <section class="dashboard-section chart-section">
+      <div class="chart-header">
+        <h2 class="section-title">Turnos por {{ chartVista() === 'semana' ? 'semana' : 'mes' }}</h2>
+        <div class="chart-controls">
+          <div class="chart-toggle">
+            <button class="toggle-btn" [class.active]="chartVista() === 'semana'" (click)="setVista('semana')">Semana</button>
+            <button class="toggle-btn" [class.active]="chartVista() === 'mes'" (click)="setVista('mes')">Mes</button>
+          </div>
+          <div class="chart-nav">
+            <button mat-icon-button (click)="shiftChart(-1)" matTooltip="Anterior">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="chart-range" (click)="resetChart()" matTooltip="Volver al actual">{{ chartRangeLabel() }}</span>
+            <button mat-icon-button (click)="shiftChart(1)" [disabled]="chartOffset() >= 0" matTooltip="Siguiente">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="[barLabelsPlugin]" type="bar"></canvas>
+      </div>
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="dashboard-section">
+        <h2 class="section-title">Próximos turnos</h2>
+        @if (proximos5().length === 0) {
+          <p class="empty">No hay turnos próximos.</p>
+        } @else {
+          <ul class="next-list">
+            @for (c of proximos5(); track c.id) {
+              <li class="next-item">
+                <div class="next-when">
+                  <span class="next-day">{{ c.fecha_hora_inicio | date:'d MMM':'':'es-UY' }}</span>
+                  <span class="next-time">{{ c.fecha_hora_inicio | date:'HH:mm' }}</span>
+                </div>
+                <div class="next-who">
+                  <span class="next-patient">{{ c.nombre_paciente }} {{ c.apellido_paciente }}</span>
+                  <span class="next-meta">{{ c.duracion_minutos }} min</span>
+                </div>
+                <app-status-chip [estado]="c.estado" />
+              </li>
+            }
+          </ul>
         }
-      </ul>
-    }
-  </section>
+      </section>
+
+      <div class="dashboard-aside">
+        @if (citasPendientes().length > 0) {
+          <section class="dashboard-section">
+            <h2 class="section-title">Por confirmar</h2>
+            <ul class="pending-list">
+              @for (c of citasPendientes(); track c.id) {
+                <li class="pending-item">
+                  <div class="pending-info">
+                    <span class="pending-patient">{{ c.nombre_paciente }} {{ c.apellido_paciente }}</span>
+                    <span class="pending-date">{{ c.fecha_hora_inicio | date:'d MMM HH:mm':'':'es-UY' }}</span>
+                  </div>
+                  <a mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', c.id]" matTooltip="Confirmar cita">
+                    <mat-icon>edit</mat-icon>
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+      </div>
+    </div>
+  }
 </section>

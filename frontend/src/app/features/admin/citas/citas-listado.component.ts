@@ -13,10 +13,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTableModule } from '@angular/material/table';
 import { CitaService, ResultadoCita } from './cita.service';
 import { Cita } from '../../../core/models/cita.model';
 import { ConfirmarCancelarDialogComponent } from './confirmar-cancelar-dialog.component';
 import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip.component';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-citas-listado',
@@ -36,7 +39,10 @@ import { StatusChipComponent } from '../../../shared/components/status-chip/stat
     MatFormFieldModule,
     MatInputModule,
     MatNativeDateModule,
-    StatusChipComponent
+    MatTableModule,
+    StatusChipComponent,
+    PageHeaderComponent,
+    EmptyStateComponent
   ],
   templateUrl: './citas-listado.component.html',
   styleUrl: './citas-listado.component.scss'
@@ -46,6 +52,7 @@ export class CitasListadoComponent implements OnInit {
   cargando = true;
   errorMensaje: string | null = null;
   fechaFiltro: Date | null = null;
+  readonly displayedColumns = ['paciente', 'fecha', 'duracion', 'estado', 'acciones'];
 
   get citasFiltradas(): Cita[] {
     if (!this.fechaFiltro) return this.citas;

@@ -1,16 +1,15 @@
-<div class="pacientes-header">
-  <div class="header-content">
-    <h1 class="page-title">Pacientes</h1>
-    <p class="page-subtitle">Gestiona los pacientes del consultorio</p>
-    <button mat-raised-button color="primary" (click)="abrirNuevo()" class="btn-nueva">
-      <mat-icon>person_add</mat-icon>
-      Nuevo paciente
-    </button>
-  </div>
-</div>
+<app-page-header
+  title="Pacientes"
+  subtitle="Gestiona los pacientes del consultorio"
+  icon="group">
+  <button mat-flat-button color="primary" (click)="abrirNuevo()">
+    <mat-icon>person_add</mat-icon>
+    Nuevo paciente
+  </button>
+</app-page-header>
 
 <div class="pacientes-container">
-  <mat-card class="list-card">
+  <mat-card class="table-card">
     @if (cargando) {
       <div class="loading">
         <mat-spinner diameter="48"></mat-spinner>
@@ -23,50 +22,87 @@
         <button mat-raised-button (click)="cargar()">Reintentar</button>
       </div>
     } @else if (pacientes.length === 0) {
-      <div class="empty-state">
-        <mat-icon class="empty-icon">inbox</mat-icon>
-        <h3>No hay pacientes todavía</h3>
-        <p>Empezá agregando tu primer paciente.</p>
+      <app-empty-state
+        icon="group"
+        title="No hay pacientes todavía"
+        description="Empezá agregando tu primer paciente.">
         <button mat-flat-button color="primary" (click)="abrirNuevo()">
-          <mat-icon>add</mat-icon> Nuevo paciente
+          <mat-icon>person_add</mat-icon> Nuevo paciente
         </button>
-      </div>
+      </app-empty-state>
     } @else {
-      <div class="pacientes-list">
-        @for (p of pacientes; track p.id) {
-          <mat-card class="paciente-card">
-            <mat-card-content>
-              <div class="paciente-info">
-                <div class="nombre-row">
-                  <span class="nombre">{{ p.nombre }} {{ p.apellido }}</span>
-                  @if (saldos.has(p.id)) {
-                    @if ((saldos.get(p.id) ?? 0) > 0) {
-                      <mat-chip class="chip-deuda" disableRipple>
-                        <mat-icon matChipAvatar>warning</mat-icon>
-                        UY$ {{ saldos.get(p.id) | number:'1.0-0' }}
-                      </mat-chip>
-                    } @else {
-                      <mat-chip class="chip-al-dia" disableRipple>Al día</mat-chip>
-                    }
-                  }
-                </div>
-                <span class="detalle">{{ p.email }} · {{ p.telefono }}</span>
-              </div>
-              <div class="paciente-actions">
-                <button mat-icon-button [routerLink]="['/admin/pacientes', p.id]" matTooltip="Ver detalle">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="abrirEditar(p)" matTooltip="Editar">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="eliminar(p)" matTooltip="Eliminar">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        }
+      <div class="search-bar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar paciente</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [formControl]="busqueda" placeholder="Nombre o apellido...">
+          @if (busqueda.value) {
+            <button matSuffix mat-icon-button aria-label="Limpiar" (click)="busqueda.setValue('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
       </div>
+
+      @if (pacientesFiltrados.length === 0) {
+        <div class="no-results">
+          <mat-icon>search_off</mat-icon>
+          <p>No se encontraron pacientes con "{{ busqueda.value }}"</p>
+        </div>
+      } @else {
+      <div class="table-scroll-wrapper">
+        <table mat-table [dataSource]="pacientesFiltrados" class="pacientes-table">
+
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let p">
+              <span class="cell-name">{{ p.nombre }} {{ p.apellido }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let p" class="cell-muted">{{ p.email || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+            <td mat-cell *matCellDef="let p" class="cell-muted cell-nowrap">{{ p.telefono || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="saldo">
+            <th mat-header-cell *matHeaderCellDef>Saldo</th>
+            <td mat-cell *matCellDef="let p">
+              @if (saldos.has(p.id)) {
+                @if ((saldos.get(p.id) ?? 0) > 0) {
+                  <span class="chip chip-danger">UY$ {{ saldos.get(p.id) | number:'1.0-0' }}</span>
+                } @else {
+                  <span class="chip chip-success">Al día</span>
+                }
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+            <td mat-cell *matCellDef="let p" class="acciones-cell">
+              <button mat-icon-button [routerLink]="['/admin/pacientes', p.id]" matTooltip="Ver detalle">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="abrirEditar(p)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="eliminar(p)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+      }
     }
   </mat-card>
 </div>

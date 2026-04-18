@@ -29,6 +29,12 @@ export class PagoService {
     };
   }
 
+  listarTodos(): Observable<Pago[]> {
+    return this.http.get<Pago[]>(this.apiUrl).pipe(
+      catchError((err) => throwError(() => this.extraerError(err)))
+    );
+  }
+
   listarPorPaciente(pacienteId: number): Observable<Pago[]> {
     return this.http.get<Pago[]>(`${this.apiUrl}/paciente/${pacienteId}`).pipe(
       catchError((err) => throwError(() => this.extraerError(err)))

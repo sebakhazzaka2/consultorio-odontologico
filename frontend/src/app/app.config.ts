@@ -1,4 +1,5 @@
 import { ApplicationConfig, LOCALE_ID, APP_INITIALIZER } from '@angular/core';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -20,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideNativeDateAdapter(),
     { provide: LOCALE_ID, useValue: 'es' },
+    provideCharts(withDefaultRegisterables()),
     {
       provide: APP_INITIALIZER,
       useFactory: (service: ClinicConfigService) => () => firstValueFrom(service.load()),

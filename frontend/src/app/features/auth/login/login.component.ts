@@ -51,7 +51,7 @@ export class LoginComponent {
     this.authService.login(email!, password!).subscribe({
       next: () => {
         this.cargando = false;
-        this.router.navigate(['/admin/pacientes']);
+        this.router.navigate(['/admin']);
       },
       error: () => {
         this.cargando = false;

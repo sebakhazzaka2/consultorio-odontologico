@@ -1,156 +1,55 @@
-.tratamientos-header {
-  background: linear-gradient(135deg, var(--color-navy-900) 0%, var(--color-navy-700) 100%);
-  padding: 2rem;
-  color: white;
-
-  .header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-
-    .page-subtitle {
-      margin: 0;
-      opacity: 0.85;
-      font-size: 0.95rem;
-      width: 100%;
-      order: -1;
-    }
-
-    .page-title {
-      margin: 0;
-      font-size: 1.8rem;
-      font-weight: 500;
-      flex: 1;
-    }
-
-    .btn-nuevo {
-      margin-left: auto;
-    }
-  }
-}
-
-@media (max-width: 599px) {
-  .tratamientos-header {
-    padding: 1.25rem;
-
-    .header-content {
-      .page-title {
-        font-size: 1.4rem;
-      }
-    }
-  }
-}
-
 .tratamientos-container {
-  padding: 1.5rem 2rem;
+  padding: var(--space-6) var(--space-8);
   max-width: 1200px;
   margin: 0 auto;
 
   @media (max-width: 599px) {
-    padding: 1rem 0.75rem;
-  }
-
-  .table-card {
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .table-scroll-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .tratamientos-table {
-    width: 100%;
-
-    .descripcion-cell {
-      max-width: 260px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--color-text-muted);
-      font-size: 0.9rem;
-    }
-
-    .precio-cell {
-      font-weight: 500;
-      white-space: nowrap;
-    }
-  }
-
-  .loading,
-  .error-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 3rem 2rem;
-    gap: 1rem;
-    color: #666;
-
-    mat-icon {
-      font-size: 3rem;
-      height: 3rem;
-      width: 3rem;
-    }
-
-    p {
-      margin: 0;
-      font-size: 1rem;
-    }
-  }
-
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 56px 24px;
-    text-align: center;
-    color: var(--color-text-muted);
-
-    .empty-icon {
-      font-size: 3rem;
-      width: 3rem;
-      height: 3rem;
-      color: var(--color-ink-300);
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text);
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.9rem;
-    }
+    padding: var(--space-4) var(--space-4);
   }
 }
 
-// Semantic chip for activo/inactivo
-.activo-chip {
-  display: inline-flex;
+.table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.table-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tratamientos-table {
+  width: 100%;
+
+  .descripcion-cell {
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .precio-cell {
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+  }
+}
+
+.loading,
+.error-box {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
+  padding: var(--space-10) var(--space-6);
+  gap: var(--space-4);
+  color: var(--color-text-muted);
 
-  &--on {
-    background: rgba(16, 185, 129, 0.12);
-    color: var(--color-success);
+  mat-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
   }
 
-  &--off {
-    background: rgba(100, 116, 139, 0.12);
-    color: var(--color-ink-500);
-  }
+  p { margin: 0; }
 }
