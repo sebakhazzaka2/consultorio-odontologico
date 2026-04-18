@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, effect } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CitaService } from '../citas/cita.service';
 import { PacienteService } from '../pacientes/paciente.service';
 import { PagoService } from '../pacientes/pago.service';
@@ -22,10 +23,12 @@ import { Cita } from '../../../core/models/cita.model';
 import { Pago } from '../../../core/models/pago.model';
 import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip.component';
 
+type ChartVista = 'semana' | 'mes';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, StatusChipComponent, BaseChartDirective],
+  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatTooltipModule, StatusChipComponent, BaseChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   animations: [
@@ -54,6 +57,14 @@ export class DashboardComponent implements OnInit {
   ingresosMes = signal<number>(0);
   periodoFinanciero = signal<'dia' | 'semana' | 'mes'>('mes');
   loading = signal(true);
+
+  citas = signal<Cita[]>([]);
+  chartVista = signal<ChartVista>('semana');
+  chartOffset = signal<number>(0);
+  chartRangeLabel = signal<string>('');
+
+  private static readonly SEMANAS_VISIBLES = 8;
+  private static readonly MESES_VISIBLES = 6;
 
   readonly today = new Date();
 
@@ -86,7 +97,7 @@ export class DashboardComponent implements OnInit {
     }}},
     scales: {
       x: { grid: { display: false }, ticks: { font: { family: 'Inter, sans-serif', size: 11 }, color: '#64748B' } },
-      y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter, sans-serif', size: 11 }, color: '#64748B' }, grid: { color: '#E2E8F0' } }
+      y: { beginAtZero: true, ticks: { stepSize: 5, font: { family: 'Inter, sans-serif', size: 11 }, color: '#64748B' }, grid: { color: '#E2E8F0' } }
     }
   };
 
@@ -102,7 +113,14 @@ export class DashboardComponent implements OnInit {
     private citaService: CitaService,
     private pacienteService: PacienteService,
     private pagoService: PagoService
-  ) {}
+  ) {
+    effect(() => {
+      this.citas();
+      this.chartVista();
+      this.chartOffset();
+      this.rebuildChart();
+    });
+  }
 
   ngOnInit(): void {
     forkJoin({
@@ -114,7 +132,6 @@ export class DashboardComponent implements OnInit {
         const ahora = new Date();
         const hoyStr = ahora.toISOString().slice(0, 10);
 
-        // Inicio y fin de la semana actual (lunes–domingo)
         const lunes = new Date(ahora);
         lunes.setDate(ahora.getDate() - ((ahora.getDay() + 6) % 7));
         lunes.setHours(0, 0, 0, 0);
@@ -122,7 +139,6 @@ export class DashboardComponent implements OnInit {
         domingo.setDate(lunes.getDate() + 6);
         domingo.setHours(23, 59, 59, 999);
 
-        // Inicio y fin del mes actual
         const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
         const finMes = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0, 23, 59, 59, 999);
 
@@ -177,29 +193,117 @@ export class DashboardComponent implements OnInit {
           return f >= inicioMes && f <= finMes;
         })));
 
-        const semanas: { label: string; count: number }[] = [];
-        for (let i = 3; i >= 0; i--) {
-          const ini = new Date(lunes);
-          ini.setDate(lunes.getDate() - i * 7);
-          const fin = new Date(ini);
-          fin.setDate(ini.getDate() + 6);
-          fin.setHours(23, 59, 59, 999);
-          const count = citas.filter(c => {
-            const f = new Date(c.fecha_hora_inicio);
-            return f >= ini && f <= fin && c.estado !== 'CANCELADA';
-          }).length;
-          semanas.push({ label: `${ini.getDate()}/${ini.getMonth() + 1}`, count });
-        }
-        this.chartData = {
-          labels: semanas.map(s => s.label),
-          datasets: [{ data: semanas.map(s => s.count), backgroundColor: '#3B5BDB', borderRadius: 6, borderSkipped: false }]
-        };
-
+        this.citas.set(citas);
         this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
       }
     });
+  }
+
+  setVista(v: ChartVista): void {
+    if (this.chartVista() === v) return;
+    this.chartVista.set(v);
+    this.chartOffset.set(0);
+  }
+
+  shiftChart(delta: number): void {
+    this.chartOffset.update(o => o + delta);
+  }
+
+  resetChart(): void {
+    this.chartOffset.set(0);
+  }
+
+  private rebuildChart(): void {
+    const citas = this.citas();
+    if (this.chartVista() === 'semana') {
+      this.buildWeeklyChart(citas);
+    } else {
+      this.buildMonthlyChart(citas);
+    }
+  }
+
+  private buildWeeklyChart(citas: Cita[]): void {
+    const ahora = new Date();
+    const lunes = new Date(ahora);
+    lunes.setDate(ahora.getDate() - ((ahora.getDay() + 6) % 7));
+    lunes.setHours(0, 0, 0, 0);
+
+    const offset = this.chartOffset();
+    const total = DashboardComponent.SEMANAS_VISIBLES;
+
+    const semanas: { label: string; count: number }[] = [];
+    let primerInicio: Date | null = null;
+    let ultimoFin: Date | null = null;
+
+    for (let i = total - 1; i >= 0; i--) {
+      const ini = new Date(lunes);
+      ini.setDate(lunes.getDate() + (offset - i) * 7);
+      const fin = new Date(ini);
+      fin.setDate(ini.getDate() + 6);
+      fin.setHours(23, 59, 59, 999);
+      if (!primerInicio) primerInicio = ini;
+      ultimoFin = fin;
+      const count = citas.filter(c => {
+        const f = new Date(c.fecha_hora_inicio);
+        return f >= ini && f <= fin && c.estado !== 'CANCELADA';
+      }).length;
+      semanas.push({ label: `${ini.getDate()}/${ini.getMonth() + 1}`, count });
+    }
+
+    this.chartData = {
+      labels: semanas.map(s => s.label),
+      datasets: [{ data: semanas.map(s => s.count), backgroundColor: '#3B5BDB', borderRadius: 6, borderSkipped: false }]
+    };
+
+    if (primerInicio && ultimoFin) {
+      this.chartRangeLabel.set(
+        `${this.formatFecha(primerInicio)} – ${this.formatFecha(ultimoFin)}`
+      );
+    }
+  }
+
+  private buildMonthlyChart(citas: Cita[]): void {
+    const ahora = new Date();
+    const offset = this.chartOffset();
+    const total = DashboardComponent.MESES_VISIBLES;
+    const nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    const meses: { label: string; count: number }[] = [];
+    let primerInicio: Date | null = null;
+    let ultimoFin: Date | null = null;
+
+    for (let i = total - 1; i >= 0; i--) {
+      const base = new Date(ahora.getFullYear(), ahora.getMonth() + (offset - i), 1);
+      const ini = new Date(base.getFullYear(), base.getMonth(), 1, 0, 0, 0, 0);
+      const fin = new Date(base.getFullYear(), base.getMonth() + 1, 0, 23, 59, 59, 999);
+      if (!primerInicio) primerInicio = ini;
+      ultimoFin = fin;
+      const count = citas.filter(c => {
+        const f = new Date(c.fecha_hora_inicio);
+        return f >= ini && f <= fin && c.estado !== 'CANCELADA';
+      }).length;
+      const yy = String(ini.getFullYear()).slice(2);
+      meses.push({ label: `${nombres[ini.getMonth()]} ${yy}`, count });
+    }
+
+    this.chartData = {
+      labels: meses.map(m => m.label),
+      datasets: [{ data: meses.map(m => m.count), backgroundColor: '#3B5BDB', borderRadius: 6, borderSkipped: false }]
+    };
+
+    if (primerInicio && ultimoFin) {
+      const yyIni = String(primerInicio.getFullYear()).slice(2);
+      const yyFin = String(ultimoFin.getFullYear()).slice(2);
+      this.chartRangeLabel.set(
+        `${nombres[primerInicio.getMonth()]} ${yyIni} – ${nombres[ultimoFin.getMonth()]} ${yyFin}`
+      );
+    }
+  }
+
+  private formatFecha(d: Date): string {
+    return `${d.getDate()}/${d.getMonth() + 1}`;
   }
 }

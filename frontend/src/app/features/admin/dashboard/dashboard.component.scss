@@ -185,6 +185,54 @@
   margin-bottom: var(--space-6);
 }
 
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+
+  .section-title {
+    margin: 0;
+  }
+}
+
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.chart-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.chart-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.chart-range {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 120px;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-primary-light);
+  }
+}
+
 .chart-wrapper {
   height: 180px;
   position: relative;
