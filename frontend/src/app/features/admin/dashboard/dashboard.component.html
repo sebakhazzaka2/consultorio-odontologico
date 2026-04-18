@@ -4,6 +4,20 @@
       <h1>Panel</h1>
       <p class="dashboard-date">{{ today | date:'EEEE, d MMMM y':'':'es-UY' }}</p>
     </div>
+    <div class="header-actions">
+      <a mat-flat-button color="primary" routerLink="/admin/citas/nueva" class="header-btn header-btn--primary">
+        <mat-icon>add_circle_outline</mat-icon>
+        Nueva cita
+      </a>
+      <a mat-stroked-button routerLink="/admin/pacientes" class="header-btn">
+        <mat-icon>person_add</mat-icon>
+        Pacientes
+      </a>
+      <a mat-stroked-button routerLink="/admin/agenda" class="header-btn">
+        <mat-icon>calendar_month</mat-icon>
+        Ver agenda
+      </a>
+    </div>
   </header>
 
   @if (loading()) {
@@ -107,23 +121,6 @@
           </section>
         }
 
-        <section class="dashboard-section">
-          <h2 class="section-title">Accesos rápidos</h2>
-          <div class="quick-actions">
-            <a mat-stroked-button routerLink="/admin/citas/nueva" class="quick-btn">
-              <mat-icon>add_circle_outline</mat-icon>
-              Nueva cita
-            </a>
-            <a mat-stroked-button routerLink="/admin/pacientes" class="quick-btn">
-              <mat-icon>person_add</mat-icon>
-              Pacientes
-            </a>
-            <a mat-stroked-button routerLink="/admin/agenda" class="quick-btn">
-              <mat-icon>calendar_month</mat-icon>
-              Ver agenda
-            </a>
-          </div>
-        </section>
       </div>
     </div>
   }
