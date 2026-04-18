@@ -110,13 +110,27 @@ export class CitaFormComponent implements OnInit {
     const fechaIso = fecha.toISOString().slice(0, 10);
     this.citaService.getDisponibilidad(fechaIso, duracion).subscribe({
       next: (slots: string[]) => {
-        this.horariosDisponibles = slots;
+        this.horariosDisponibles = this.filtrarSlotsPasados(fecha, slots);
         this.cargandoHorarios = false;
       },
       error: () => {
         this.snackBar.open('Error al cargar horarios disponibles', 'Cerrar', { duration: 4000 });
         this.cargandoHorarios = false;
       }
+    });
+  }
+
+  private filtrarSlotsPasados(fecha: Date, slots: string[]): string[] {
+    const hoy = new Date();
+    const esHoy =
+      fecha.getFullYear() === hoy.getFullYear() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getDate() === hoy.getDate();
+    if (!esHoy) return slots;
+    const minutosAhora = hoy.getHours() * 60 + hoy.getMinutes();
+    return slots.filter((s) => {
+      const [h, m] = s.split(':').map(Number);
+      return h * 60 + m > minutosAhora;
     });
   }
 
