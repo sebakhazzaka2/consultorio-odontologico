@@ -53,15 +53,43 @@ consultorio-odontologico/
 
 **Rama:** `feat/admin-polish`
 
-**Completado:**
-- ✅ MVP1 backend + frontend
-- ✅ P1 hardening, P2 infra Docker/CI, P3 Fase A UX, P3 Fase B deploy
+## Estado actual (2026-04-18)
 
-**En curso:**
-- ⏳ Admin polish (login oscuro, sidebar oscuro, dashboard, chips de estado)
-
-**Próximo:**
-- ⏳ `feat/public-page` — página pública con tratamientos activos
-- ⏳ Deploy real (requiere pagar: Hetzner + Cloudflare + dominio)
+Rama: feat/Admin-Polish-v2.
+Completado: MVP1, P1 hardening, P2 infra, P3 Fase A UX, P3 Fase B código deploy, página pública, admin polish base.
+En curso: Claude Design sobre el front (atractivo visual), arranque MVP2.
 
 Ver detalles completos en `ROADMAP.md`.
+## Prioridades actuales (pivote 2026-04-18)
+Orden explícito, con criticidad:
+
+🔴 Claude Design polish del front — más atractivo, activo ya, en paralelo con MVP2.
+🔴 MVP2 — rol paciente — urgente, antes del deploy. Scope: registro/login paciente, JWT con rol PACIENTE, RBAC @PreAuthorize + roleGuard, paciente pide slot → cita PENDIENTE, refresh tokens, passwords fuertes, "Mi cuenta".
+🔴 WhatsApp respuestas automáticas — inmediatamente después de MVP2. A investigar: provider (Twilio / WhatsApp Cloud API / Meta Business), casos (confirmación de cita, recordatorio, respuestas a FAQ).
+🟡 Deploy real — pospuesto (hoy no, tal vez mañana). Bloqueantes técnicos siguen vigentes (ver abajo).
+🟡 Legal / compliance Ley 18.331 — privacidad, términos, consentimiento, auditoría de acceso al historial. Antes del primer cliente real, no antes del deploy técnico.
+
+# Bloqueantes pre-deploy (checklist vital)
+Extracto condensado de la Tabla 1 del audit, sólo headlines accionables:
+
+Reverse proxy HTTPS (Caddy/Traefik + Cloudflare Origin CA).
+CI: flip push: true + secrets GHCR + workflow de deploy.
+DEPLOY.md runbook (Hetzner + Cloudflare + dominio).
+Validación fail-fast de envs (JWT_SECRET, DB_PASSWORD, CORS_ALLOWED_ORIGINS).
+Endpoint + UI de cambio de password del admin.
+Cron de backup diario + test de restore.
+Páginas 404/500 Angular + error_page nginx.
+Índice compuesto citas(paciente_id, fecha_hora_inicio).
+Smoke test en staging antes de apuntar DNS.
+
+## Post-deploy semana 1-2 (headlines)
+Extracto de la Tabla 2, sólo lo que importa retener:
+
+Sentry (Angular + Spring Boot).
+Uptime monitoring (Uptime Kuma / UptimeRobot).
+Logs estructurados JSON + correlationId.
+Email transaccional (Brevo/Resend) — puerta de entrada para password reset y WhatsApp.
+Paginación Pageable en listados.
+Soft delete + auditoría de acceso a historial.
+
+Todo el resto (prosa de snapshot, rutas de archivos clave, preguntas abiertas, tabla 4 futuro, secuencia narrativa) no se copia a CLAUDE.md. Vive o en el commit history o se regenera si hace falta.
