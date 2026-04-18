@@ -53,7 +53,7 @@ export class CitaFormComponent implements OnInit {
   horariosDisponibles: string[] = [];
   cargandoHorarios = false;
 
-  duraciones = [15, 30, 45, 60, 90];
+  duraciones = [15, 30, 45, 60, 75, 90, 120];
 
   minDate = new Date();
 
