@@ -33,10 +33,10 @@ public class DataInitializer implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    if (userRepository.findByEmail(adminEmail).isEmpty()) {
-      User admin = new User(adminEmail, passwordEncoder.encode(adminPassword), "ADMIN");
-      userRepository.save(admin);
-      log.info("Admin user created: {}", adminEmail);
-    }
+    User admin = userRepository.findByEmail(adminEmail)
+        .orElseGet(() -> new User(adminEmail, null, "ADMIN"));
+    admin.setPassword(passwordEncoder.encode(adminPassword));
+    userRepository.save(admin);
+    log.info("Admin user synced: {}", adminEmail);
   }
 }
