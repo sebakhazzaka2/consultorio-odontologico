@@ -33,10 +33,12 @@ public class DataInitializer implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    User admin = userRepository.findByEmail(adminEmail)
-        .orElseGet(() -> new User(adminEmail, null, "ADMIN"));
-    admin.setPassword(passwordEncoder.encode(adminPassword));
+    if (userRepository.findByEmail(adminEmail).isPresent()) {
+      log.info("Admin user already exists, skipping seed: {}", adminEmail);
+      return;
+    }
+    User admin = new User(adminEmail, passwordEncoder.encode(adminPassword), "ADMIN");
     userRepository.save(admin);
-    log.info("Admin user synced: {}", adminEmail);
+    log.info("Admin user created from env: {}", adminEmail);
   }
 }

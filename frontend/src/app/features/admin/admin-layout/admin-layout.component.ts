@@ -6,10 +6,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ChangePasswordDialogComponent } from './change-password-dialog.component';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -38,7 +40,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private breakpointObserver: BreakpointObserver,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +63,10 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+  }
+
+  onChangePassword(): void {
+    this.dialog.open(ChangePasswordDialogComponent, { disableClose: true });
   }
 
   onLogout(): void {

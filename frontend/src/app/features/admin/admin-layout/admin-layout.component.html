@@ -40,6 +40,9 @@
         </button>
       }
       <span class="toolbar-title">{{ businessName }}</span>
+      <button mat-icon-button (click)="onChangePassword()" aria-label="Cambiar contraseña" matTooltip="Cambiar contraseña">
+        <mat-icon>lock_reset</mat-icon>
+      </button>
       <button mat-icon-button (click)="onLogout()" class="logout-btn" aria-label="Cerrar sesión" matTooltip="Cerrar sesión">
         <mat-icon>logout</mat-icon>
       </button>

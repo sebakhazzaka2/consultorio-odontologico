@@ -53,8 +53,9 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 - ✅ Admin seeding desde env vars, nginx proxy fix, CORS configurado
 
 ### Post-deploy hardening ⏳ (`feat/post-deploy-hardening`)
-- ✅ Cron backup diario 2am — `scripts/backup.sh` + `scripts/restore.sh`
-- ⏳ Endpoint + UI cambio de password del admin
+- ✅ Cron backup diario 2am — `scripts/backup.sh`
++ `scripts/restore.sh`
+- ✅ Endpoint + UI cambio de password del admin
 - ⏳ CI flip `push: true` + secrets GHCR
 - ⏳ Sentry + Uptime monitoring
 - ⏳ Validación fail-fast de env vars al startup
