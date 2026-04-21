@@ -55,7 +55,7 @@ Archivo: `/home/sebastian/consultorio-odontologico/.env.prod`
 ```env
 DB_PASSWORD=<password segura>
 JWT_SECRET=<string random 64 chars>
-CORS_ALLOWED_ORIGINS=https://turnouy.com
+CORS_ALLOWED_ORIGINS=https://turnosuy.com
 ```
 
 Para generar valores seguros:
