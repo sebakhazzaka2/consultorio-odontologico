@@ -54,9 +54,17 @@ services:
       - caddy_config:/config
     depends_on:
       - frontend
+      - uptime-kuma
+    restart: unless-stopped
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    volumes:
+      - kuma_data:/app/data
     restart: unless-stopped
 
 volumes:
   mysql_data:
   caddy_data:
   caddy_config:
+  kuma_data:

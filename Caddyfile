@@ -1,3 +1,7 @@
 {$DOMAIN} {
     reverse_proxy frontend:80
 }
+
+status.{$DOMAIN} {
+    reverse_proxy uptime-kuma:3001
+}

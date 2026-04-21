@@ -57,7 +57,7 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 + `scripts/restore.sh`
 - ✅ Endpoint + UI cambio de password del admin
 - ✅ CI flip `push: true` + secrets GHCR
-- ⏳ Sentry + Uptime monitoring
+- ✅ Sentry + Uptime monitoring
 - ⏳ Validación fail-fast de env vars al startup
 
 ### MVP2 scope
