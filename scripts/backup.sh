@@ -17,7 +17,8 @@ if [[ -z "${DB_PASSWORD:-}" && -f "${ENV_FILE}" ]]; then
 fi
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/backups"
+BACKUP_DIR="${SCRIPT_DIR}/../backups"
+mkdir -p "${BACKUP_DIR}"
 CONTAINER="consultorio-odontologico-db-1"
 DB_NAME="consultorio_db"
 RETENTION_DAYS=7
