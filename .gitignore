@@ -40,6 +40,7 @@ testem.log
 
 # Environment / secrets (backend)
 .env
+.env.prod
 .env.local
 .env.*.local
 *.env
