@@ -59,12 +59,13 @@ export interface PacienteFormDialogData {
           <input matInput [matDatepicker]="picker" formControlName="fecha_nacimiento" />
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="form.get('fecha_nacimiento')?.hasError('matDatepickerParse')">Fecha inválida — se ignorará</mat-error>
         </mat-form-field>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="cancelar()">Cancelar</button>
-      <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">
+      <button mat-raised-button color="primary" (click)="guardar()" [disabled]="!isFormSubmittable">
         {{ data.paciente ? 'Guardar' : 'Crear' }}
       </button>
     </mat-dialog-actions>
@@ -92,11 +93,23 @@ export class PacienteFormDialogComponent {
     });
   }
 
+  get isFormSubmittable(): boolean {
+    const fechaCtrl = this.form.get('fecha_nacimiento');
+    const onlyDateParseError = !!fechaCtrl?.hasError('matDatepickerParse') &&
+      !['nombre', 'apellido', 'telefono', 'email'].some(k => this.form.get(k)?.invalid);
+    return this.form.valid || onlyDateParseError;
+  }
+
   cancelar(): void {
     this.dialogRef.close(null);
   }
 
   guardar(): void {
+    const fechaCtrl = this.form.get('fecha_nacimiento');
+    if (fechaCtrl?.hasError('matDatepickerParse')) {
+      fechaCtrl.setValue(null);
+      fechaCtrl.updateValueAndValidity();
+    }
     if (this.form.invalid) return;
     const v = this.form.value;
     const payload: PacientePayload = {
@@ -104,7 +117,7 @@ export class PacienteFormDialogComponent {
       apellido: v.apellido.trim(),
       telefono: v.telefono.trim(),
       email: v.email.trim(),
-      fecha_nacimiento: v.fecha_nacimiento ? (v.fecha_nacimiento as Date).toISOString().slice(0, 10) : null
+      fecha_nacimiento: v.fecha_nacimiento instanceof Date ? (v.fecha_nacimiento as Date).toISOString().slice(0, 10) : null
     };
     this.dialogRef.close(payload);
   }
