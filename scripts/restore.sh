@@ -9,7 +9,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="${SCRIPT_DIR}/../.env.prod"
 if [[ -z "${DB_PASSWORD:-}" && -f "${ENV_FILE}" ]]; then
-  set -a; source "${ENV_FILE}"; set +a
+  DB_PASSWORD=$(grep '^DB_PASSWORD=' "${ENV_FILE}" | cut -d'=' -f2-)
 fi
 
 if [[ -z "${1:-}" ]]; then
