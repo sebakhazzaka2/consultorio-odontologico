@@ -2,32 +2,31 @@
 
 ## Secuencia recomendada
 ```
-Claude Design + MVP2 (paralelo) → WhatsApp automatizado → [pagar] deploy → primer cliente → P3C/P4 con feedback real
+Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer cliente → P3C/P4 con feedback real
 ```
 
 ## Estado por fase
 
-| Fase | Estado | Requiere pagar |
+| Fase | Estado |
 |------|--------|---------------|
-| MVP1 — Backend | ✅ Completo (mergeado a main) | No |
-| MVP1 — Frontend | ✅ Completo (mergeado a main) | No |
-| P1 — Hardening pre-producción | ✅ Completo (mergeado a main) | No |
-| P2 — Infraestructura profesional | ✅ Completo (mergeado a main) | No |
-| P3 Fase A — Producto usable | ✅ Completo (mergeado a main) | No |
-| **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) | No |
-| **Página pública clínica** | ⏳ ✅ Completo (mergeado a main) | No |
-| **Admin polish** | ⏳ ✅ Completo (mergeado a main) | No |
-| **Claude Design polish** | ⏳ En curso | — |
-| **MVP2 — Rol paciente** | ⏳ Después del primer cliente | — |
-| **WhatsApp automatizado** | ⏳ Mientras tanto | — |
-|**Deploy real** | ⏳ Al final (Hetzner + Cloudflare + dominio) | **Sí** |
-|
-| 🎯 Primer cliente | ⏳ Meta inmediata post-deploy | — |
+| MVP1 — Backend | ✅ Completo (mergeado a main) |
+| MVP1 — Frontend | ✅ Completo (mergeado a main) |
+| P1 — Hardening pre-producción | ✅ Completo (mergeado a main) |
+| P2 — Infraestructura profesional | ✅ Completo (mergeado a main) |
+| P3 Fase A — Producto usable | ✅ Completo (mergeado a main) |
+| **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) |
+| **Página pública clínica** | ✅ Completo (mergeado a main) |
+| **Admin polish** | ✅ Completo (mergeado a main) |
+| **Deploy real** | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) | 
+| **Post-deploy hardening** | ⏳ En curso (`feat/post-deploy-hardening`) | — |
+| **MVP2 — Rol paciente** | ⏳ Próximo ciclo grande | — |
+| **WhatsApp automatizado** | ⏳ Después de MVP2 | — |
+| 🎯 Primer cliente | ⏳ Meta inmediata | — |
 | P3 Fase C — Producto premium | ⏳ Con feedback real | — |
 | V3 — Historial avanzado + Gastos | ⏳ Futuro | — |
 | V4 — Notificaciones email/WhatsApp | ⏳ Futuro | — |
 | P4 — Producción hardened | ⏳ Intercalado con V3/V4 | — |
-| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) | No |
+| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) | 
 | V5 — Multi-tenant SaaS | ⏳ Futuro | — |
 
 ---
@@ -36,7 +35,7 @@ Claude Design + MVP2 (paralelo) → WhatsApp automatizado → [pagar] deploy →
 
 ### P3 Fase B — código ✅ (`feat/production-deploy`, mergeado)
 - ✅ CORS, rate limiting, JWT 2h, MySQL aislado, healthchecks, appuser, backup.sh, actuator
-- ⏳ Flip `push: true` en CI + secrets GHCR — hacer cuando haya server
+- ✅ Flip `push: true` en CI + secrets GHCR — hacer cuando haya server
 
 ### Página pública clínica ⏳ (`feat/public-page`)
 - ✅`''` → `PublicComponent` — muestra tratamientos activos vía `GET /api/tratamientos`
@@ -48,10 +47,17 @@ Claude Design + MVP2 (paralelo) → WhatsApp automatizado → [pagar] deploy →
 - ✅Dashboard component en `/admin` con cards de turnos/pacientes
 - ✅Tablas: íconos de acción, empty states, chips semánticos por estado de cita
 
-### Deploy real ⏳ (requiere pagar)
-- Comprar dominio + Hetzner CAX11 (€3.79/mes) + Cloudflare Full strict SSL
-- Firewall Hetzner: 80, 443, 22 únicamente
-- Flip `push: true` en CI, configurar secrets GHCR
+### Deploy real ✅ (live 2026-04-21)
+- ✅ Hetzner CX-23, Ubuntu 22.04 — `167.235.134.150`
+- ✅ `dentalmontecaseros.turnosuy.com` — Caddy + TLS Let's Encrypt
+- ✅ Admin seeding desde env vars, nginx proxy fix, CORS configurado
+
+### Post-deploy hardening ⏳ (`feat/post-deploy-hardening`)
+- ✅ Cron backup diario 2am — `scripts/backup.sh` + `scripts/restore.sh`
+- ✅ Endpoint + UI cambio de password del admin
+- ✅ CI flip `push: true` + secrets GHCR
+- ✅ Sentry + Uptime monitoring
+- ✅ Validación fail-fast de env vars al startup
 
 ### MVP2 scope
 - Registro y login de pacientes

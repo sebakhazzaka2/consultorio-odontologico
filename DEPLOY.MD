@@ -99,8 +99,8 @@ Los backups se guardan en `/backups/` con retención de 7 días.
 
 ## Pendientes antes de ir a producción
 
-- [ ] Caddy como reverse proxy con TLS automático
-- [ ] CI/CD — push imágenes a GHCR + workflow de deploy SSH
-- [ ] Cron de backup configurado en el server
-- [ ] Validación fail-fast de variables de entorno en el backend
-- [ ] Smoke test completo antes de apuntar DNS definitivo
+- [x] Caddy como reverse proxy con TLS automático
+- [x] CI/CD — push imágenes a GHCR + workflow de deploy SSH
+- [x] Cron de backup configurado en el server
+- [x] Validación fail-fast de variables de entorno en el backend
+- [] Smoke test completo antes de apuntar DNS definitivo

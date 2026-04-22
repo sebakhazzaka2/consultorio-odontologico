@@ -60,4 +60,18 @@ public class AuthService {
     log.info("Nuevo usuario registrado — email: {}", email);
     return Map.of("message", "Usuario registrado exitosamente");
   }
+
+  public void changePassword(String email, String currentPassword, String newPassword) {
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+      log.warn("Cambio de contraseña fallido — contraseña actual incorrecta para: {}", email);
+      throw new IllegalArgumentException("Contraseña actual incorrecta");
+    }
+    user.setPassword(passwordEncoder.encode(newPassword));
+    userRepository.save(user);
+    log.info("Contraseña actualizada — usuario: {}", email);
+  }
 }
