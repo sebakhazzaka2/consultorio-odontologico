@@ -7,17 +7,17 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 
 ## Estado por fase
 
-| Fase | Estado | Requiere pagar |
+| Fase | Estado |
 |------|--------|---------------|
-| MVP1 — Backend | ✅ Completo (mergeado a main) | No |
-| MVP1 — Frontend | ✅ Completo (mergeado a main) | No |
-| P1 — Hardening pre-producción | ✅ Completo (mergeado a main) | No |
-| P2 — Infraestructura profesional | ✅ Completo (mergeado a main) | No |
-| P3 Fase A — Producto usable | ✅ Completo (mergeado a main) | No |
-| **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) | No |
-| **Página pública clínica** | ✅ Completo (mergeado a main) | No |
-| **Admin polish** | ✅ Completo (mergeado a main) | No |
-| **Deploy real** | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) | Sí |
+| MVP1 — Backend | ✅ Completo (mergeado a main) |
+| MVP1 — Frontend | ✅ Completo (mergeado a main) |
+| P1 — Hardening pre-producción | ✅ Completo (mergeado a main) |
+| P2 — Infraestructura profesional | ✅ Completo (mergeado a main) |
+| P3 Fase A — Producto usable | ✅ Completo (mergeado a main) |
+| **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) |
+| **Página pública clínica** | ✅ Completo (mergeado a main) |
+| **Admin polish** | ✅ Completo (mergeado a main) |
+| **Deploy real** | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) | 
 | **Post-deploy hardening** | ⏳ En curso (`feat/post-deploy-hardening`) | — |
 | **MVP2 — Rol paciente** | ⏳ Próximo ciclo grande | — |
 | **WhatsApp automatizado** | ⏳ Después de MVP2 | — |
@@ -26,7 +26,7 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 | V3 — Historial avanzado + Gastos | ⏳ Futuro | — |
 | V4 — Notificaciones email/WhatsApp | ⏳ Futuro | — |
 | P4 — Producción hardened | ⏳ Intercalado con V3/V4 | — |
-| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) | No |
+| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) | 
 | V5 — Multi-tenant SaaS | ⏳ Futuro | — |
 
 ---
@@ -35,7 +35,7 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 
 ### P3 Fase B — código ✅ (`feat/production-deploy`, mergeado)
 - ✅ CORS, rate limiting, JWT 2h, MySQL aislado, healthchecks, appuser, backup.sh, actuator
-- ⏳ Flip `push: true` en CI + secrets GHCR — hacer cuando haya server
+- ✅ Flip `push: true` en CI + secrets GHCR — hacer cuando haya server
 
 ### Página pública clínica ⏳ (`feat/public-page`)
 - ✅`''` → `PublicComponent` — muestra tratamientos activos vía `GET /api/tratamientos`
@@ -53,12 +53,11 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 - ✅ Admin seeding desde env vars, nginx proxy fix, CORS configurado
 
 ### Post-deploy hardening ⏳ (`feat/post-deploy-hardening`)
-- ✅ Cron backup diario 2am — `scripts/backup.sh`
-+ `scripts/restore.sh`
+- ✅ Cron backup diario 2am — `scripts/backup.sh` + `scripts/restore.sh`
 - ✅ Endpoint + UI cambio de password del admin
 - ✅ CI flip `push: true` + secrets GHCR
 - ✅ Sentry + Uptime monitoring
-- ⏳ Validación fail-fast de env vars al startup
+- ✅ Validación fail-fast de env vars al startup
 
 ### MVP2 scope
 - Registro y login de pacientes
