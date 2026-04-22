@@ -6,6 +6,7 @@ import com.consultorio.service.TratamientoService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/tratamientos")
@@ -58,6 +61,13 @@ public class TratamientoController {
   @PatchMapping("/{id}/toggle")
   public ResponseEntity<TratamientoResponse> toggleActivo(@PathVariable("id") Long id) {
     return new ResponseEntity<>(tratamientoService.toggleActivo(id), HttpStatus.OK);
+  }
+
+  @PatchMapping(value = "/{id}/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<TratamientoResponse> uploadFoto(
+      @PathVariable("id") Long id,
+      @RequestParam("foto") MultipartFile foto) {
+    return ResponseEntity.ok(tratamientoService.uploadFoto(id, foto));
   }
 
   @DeleteMapping("/{id}")

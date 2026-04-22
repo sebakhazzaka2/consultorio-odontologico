@@ -64,6 +64,9 @@ Thumbs.db
 # Backup files (generados por scripts/backup.sh)
 backups/*.sql.gz
 
+# Uploads — imágenes subidas por el admin (se persisten en volumen Docker en prod)
+uploads/
+
 .vscode/
 target/
 .claude/

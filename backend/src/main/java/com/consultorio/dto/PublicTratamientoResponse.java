@@ -9,4 +9,5 @@ public record PublicTratamientoResponse(
     Long id,
     String nombre,
     String descripcion,
-    BigDecimal precio) {}
+    BigDecimal precio,
+    String fotoUrl) {}
