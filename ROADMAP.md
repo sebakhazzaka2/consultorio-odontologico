@@ -2,13 +2,13 @@
 
 ## Secuencia recomendada
 ```
-Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer cliente → P3C/P4 con feedback real
+Deploy real ✅ → post-deploy hardening ✅ → public page polish → MVP2 → WhatsApp → primer cliente → P3C/P4 con feedback real
 ```
 
 ## Estado por fase
 
 | Fase | Estado |
-|------|--------|---------------|
+|------|--------|
 | MVP1 — Backend | ✅ Completo (mergeado a main) |
 | MVP1 — Frontend | ✅ Completo (mergeado a main) |
 | P1 — Hardening pre-producción | ✅ Completo (mergeado a main) |
@@ -17,17 +17,38 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 | **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) |
 | **Página pública clínica** | ✅ Completo (mergeado a main) |
 | **Admin polish** | ✅ Completo (mergeado a main) |
-| **Deploy real** | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) | 
-| **Post-deploy hardening** | ⏳ En curso (`feat/post-deploy-hardening`) | — |
-| **MVP2 — Rol paciente** | ⏳ Próximo ciclo grande | — |
-| **WhatsApp automatizado** | ⏳ Después de MVP2 | — |
-| 🎯 Primer cliente | ⏳ Meta inmediata | — |
-| P3 Fase C — Producto premium | ⏳ Con feedback real | — |
-| V3 — Historial avanzado + Gastos | ⏳ Futuro | — |
-| V4 — Notificaciones email/WhatsApp | ⏳ Futuro | — |
-| P4 — Producción hardened | ⏳ Intercalado con V3/V4 | — |
-| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) | 
-| V5 — Multi-tenant SaaS | ⏳ Futuro | — |
+| **Deploy real** | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) |
+| **Post-deploy hardening** | ✅ Completo (mergeado a main, PR #19, 2026-04-22) |
+| **Public page polish** | ⏳ En curso (`feat/public-page-polish`) |
+| **MVP2 — Rol paciente** | ⏳ Próximo ciclo grande |
+| **WhatsApp automatizado** | ⏳ Después de MVP2 |
+| 🎯 Primer cliente | ⏳ Meta inmediata |
+| P3 Fase C — Producto premium | ⏳ Con feedback real |
+| V3 — Historial avanzado + Gastos | ⏳ Futuro |
+| V4 — Notificaciones email/WhatsApp | ⏳ Futuro |
+| P4 — Producción hardened | ⏳ Intercalado con V3/V4 |
+| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) |
+| V5 — Multi-tenant SaaS | ⏳ Futuro (~5 clientes activos) |
+
+---
+
+## Pre-ventas — checklist mínimo antes de vender
+
+Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de prioridad):
+
+**Imprescindible — sin esto no se vende:**
+- ⬜ Script de provisioning: dado dominio + datos de clínica, levanta la instancia en < 15 min
+- ⬜ Configuración dinámica de clínica desde el admin (nombre, logo, horarios, tratamientos) — rama actual
+- ⬜ Backup automático por cliente verificado (cron + test de restore)
+- ⬜ HTTPS automático por dominio/subdominio (Caddy ya lo da)
+
+**Necesario para paquete Web (paquete 2 y 3):**
+- ⬜ MVP2 — login y pedir turno como paciente (sin esto la página pública es solo vitrina)
+- ⬜ Email transaccional básico — confirmación de turno
+
+**Necesario para paquete WhatsApp (paquete 3):**
+- ⬜ WhatsApp Business API integrado (Twilio / UltraMsg / Meta directo)
+- ⬜ Costo por mensaje trasladado al precio del paquete
 
 ---
 
@@ -52,12 +73,22 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 - ✅ `dentalmontecaseros.turnosuy.com` — Caddy + TLS Let's Encrypt
 - ✅ Admin seeding desde env vars, nginx proxy fix, CORS configurado
 
-### Post-deploy hardening ⏳ (`feat/post-deploy-hardening`)
+### Post-deploy hardening ✅ (mergeado a main, PR #19, 2026-04-22)
 - ✅ Cron backup diario 2am — `scripts/backup.sh` + `scripts/restore.sh`
 - ✅ Endpoint + UI cambio de password del admin
-- ✅ CI flip `push: true` + secrets GHCR
-- ✅ Sentry + Uptime monitoring
-- ✅ Validación fail-fast de env vars al startup
+- ✅ CI/CD: push GHCR habilitado + deploy SSH automático + `workflow_dispatch`
+- ✅ Sentry (Angular + Spring Boot) + Uptime Kuma (status subdomain vía Caddy)
+- ✅ Validación fail-fast de env vars al startup (`StartupEnvValidator`)
+- ✅ H2 en tests de CI (no requiere MySQL en pipeline)
+
+### Public page polish ⏳ (`feat/public-page-polish`)
+- ⬜ Backend: `ClinicProperties` + endpoint `GET /public/config` (datos de clínica configurables)
+- ⬜ Backend: `FileStorageService` + endpoint `PATCH /api/tratamientos/{id}/foto` (fotos de tratamientos)
+- ⬜ Backend: `GooglePlacesService` + endpoint `GET /public/reviews` (reseñas de Google)
+- ⬜ Frontend: `ClinicConfigService` — consume `/public/config` en lugar de `clinic.config.ts` hardcodeado
+- ⬜ Frontend: sección "Nosotros" + mapa embebido + sección "Reseñas"
+- ⬜ Frontend: fotos en cards de tratamientos + upload en form dialog del admin
+- ⬜ Docker: var `GOOGLE_PLACES_API_KEY` + volumen `uploads` en `docker-compose.prod.yml`
 
 ### MVP2 scope
 - Registro y login de pacientes
