@@ -2,15 +2,21 @@ package com.consultorio.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ClinicConfigResponse {
+
+  public record FeatureResponse(String titulo, String texto, String icono) {}
 
   private String nombre;
   private String tagline;
   private String direccion;
   private String ciudad;
   private String horario;
+  private String horarioApertura;
+  private String horarioCierre;
+  private String diasLaborales;
   private String telefono;
   private String whatsapp;
   private String email;
@@ -20,6 +26,7 @@ public class ClinicConfigResponse {
   private String statsPacientes;
   private String statsAnosExperiencia;
   private String statsCalificacion;
+  private List<FeatureResponse> features;
 
   public String getNombre() { return nombre; }
   public void setNombre(String nombre) { this.nombre = nombre; }
@@ -35,6 +42,15 @@ public class ClinicConfigResponse {
 
   public String getHorario() { return horario; }
   public void setHorario(String horario) { this.horario = horario; }
+
+  public String getHorarioApertura() { return horarioApertura; }
+  public void setHorarioApertura(String h) { this.horarioApertura = h; }
+
+  public String getHorarioCierre() { return horarioCierre; }
+  public void setHorarioCierre(String h) { this.horarioCierre = h; }
+
+  public String getDiasLaborales() { return diasLaborales; }
+  public void setDiasLaborales(String d) { this.diasLaborales = d; }
 
   public String getTelefono() { return telefono; }
   public void setTelefono(String telefono) { this.telefono = telefono; }
@@ -62,4 +78,7 @@ public class ClinicConfigResponse {
 
   public String getStatsCalificacion() { return statsCalificacion; }
   public void setStatsCalificacion(String statsCalificacion) { this.statsCalificacion = statsCalificacion; }
+
+  public List<FeatureResponse> getFeatures() { return features; }
+  public void setFeatures(List<FeatureResponse> features) { this.features = features; }
 }

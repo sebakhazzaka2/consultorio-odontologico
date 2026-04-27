@@ -2,6 +2,8 @@ package com.consultorio.controller;
 
 import com.consultorio.config.ClinicProperties;
 import com.consultorio.dto.ClinicConfigResponse;
+import com.consultorio.dto.ClinicConfigResponse.FeatureResponse;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,9 @@ public class PublicClinicController {
     response.setDireccion(clinic.getDireccion());
     response.setCiudad(clinic.getCiudad());
     response.setHorario(clinic.getHorario());
+    response.setHorarioApertura(clinic.getHorarioApertura());
+    response.setHorarioCierre(clinic.getHorarioCierre());
+    response.setDiasLaborales(clinic.getDiasLaborales());
     response.setTelefono(clinic.getTelefono());
     response.setWhatsapp(clinic.getWhatsapp());
     response.setEmail(clinic.getEmail());
@@ -34,6 +39,10 @@ public class PublicClinicController {
     response.setStatsPacientes(clinic.getStatsPacientes());
     response.setStatsAnosExperiencia(clinic.getStatsAnosExperiencia());
     response.setStatsCalificacion(clinic.getStatsCalificacion());
+    List<FeatureResponse> features = clinic.getFeatures().stream()
+        .map(f -> new FeatureResponse(f.getTitulo(), f.getTexto(), f.getIcono()))
+        .toList();
+    response.setFeatures(features);
     return ResponseEntity.ok(response);
   }
 }

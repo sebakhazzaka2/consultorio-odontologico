@@ -109,38 +109,44 @@
       </p>
     </div>
 
-    <div class="features-grid" [@staggerList]="4">
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        </div>
-        <h3 class="feature-title">Agenda online</h3>
-        <p class="feature-text">Reservá tu turno con confirmación inmediata, sin llamadas ni esperas.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        </div>
-        <h3 class="feature-title">Historial seguro</h3>
-        <p class="feature-text">Tu ficha clínica completa, tratamientos y notas accesibles en cualquier momento.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <h3 class="feature-title">Atención personalizada</h3>
-        <p class="feature-text">Profesionales matriculados que te acompañan durante todo el tratamiento.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
-        <h3 class="feature-title">Tecnología actual</h3>
-        <p class="feature-text">Equipamiento moderno y protocolos clínicos actualizados.</p>
-      </article>
+    <div class="features-grid" [@staggerList]="visibleFeatures().length">
+      @for (f of visibleFeatures(); track f.titulo) {
+        <article class="feature-card">
+          <div class="feature-icon">
+            @switch (f.icono) {
+              @case ('calendario') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              }
+              @case ('documento') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+              }
+              @case ('usuario') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              }
+              @case ('estrella') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              }
+              @case ('corazon') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              }
+              @case ('escudo') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              }
+              @case ('reloj') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              }
+              @case ('diente') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3C9.2 3 7 5.2 7 8c0 1.5.6 2.9 1.5 3.9L9.8 19c.1.5.5.9 1 .9h.7l.5-3 .5 3h.7c.5 0 .9-.4 1-.9l1.3-7.1C16.4 10.9 17 9.5 17 8c0-2.8-2.2-5-5-5z"/></svg>
+              }
+              @default {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              }
+            }
+          </div>
+          <h3 class="feature-title">{{ f.titulo }}</h3>
+          <p class="feature-text">{{ f.texto }}</p>
+        </article>
+      }
     </div>
   </div>
 </section>
@@ -367,9 +373,11 @@
           <span class="contact-detail-label">Horario</span>
           <span class="contact-detail-value">{{ clinica().horario }}</span>
         </div>
-        <div class="contact-hours-badge">
+        <div class="contact-hours-badge"
+             [class.contact-hours-badge--closed]="clinicStatus().type === 'closed'"
+             [class.contact-hours-badge--soon]="clinicStatus().type === 'closing-soon'">
           <span class="hours-dot"></span>
-          Abierto hoy
+          {{ clinicStatus().label }}
         </div>
       </aside>
     </div>
