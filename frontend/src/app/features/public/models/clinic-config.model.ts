@@ -8,5 +8,6 @@ export interface ClinicConfig {
   whatsapp: string;
   email: string;
   nosotros: string;
+  foto_ubicacion_url: string;
   reviews_enabled: boolean;
 }

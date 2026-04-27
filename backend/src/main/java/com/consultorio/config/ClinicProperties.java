@@ -14,6 +14,7 @@ public class ClinicProperties {
   private String whatsapp = "59899572537";
   private String email = "dentalmontecaseros@gmail.com";
   private String nosotros = "";
+  private String fotoUbicacionUrl = "";
   private String googlePlaceId = "";
 
   public String getNombre() { return nombre; }
@@ -42,6 +43,9 @@ public class ClinicProperties {
 
   public String getNosotros() { return nosotros; }
   public void setNosotros(String nosotros) { this.nosotros = nosotros; }
+
+  public String getFotoUbicacionUrl() { return fotoUbicacionUrl; }
+  public void setFotoUbicacionUrl(String fotoUbicacionUrl) { this.fotoUbicacionUrl = fotoUbicacionUrl; }
 
   public String getGooglePlaceId() { return googlePlaceId; }
   public void setGooglePlaceId(String googlePlaceId) { this.googlePlaceId = googlePlaceId; }

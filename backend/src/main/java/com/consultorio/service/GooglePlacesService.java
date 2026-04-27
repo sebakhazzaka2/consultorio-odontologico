@@ -71,9 +71,11 @@ public class GooglePlacesService {
 
     List<ReviewResponse> result = new ArrayList<>();
     for (JsonNode r : reviews) {
+      int rating = r.path("rating").asInt(0);
+      if (rating < 4) continue;
       result.add(new ReviewResponse(
           r.path("authorAttribution").path("displayName").asText(""),
-          r.path("rating").asInt(0),
+          rating,
           r.path("text").path("text").asText(""),
           r.path("relativePublishTimeDescription").asText(""),
           r.path("authorAttribution").path("photoUri").asText("")));

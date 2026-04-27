@@ -29,6 +29,7 @@ public class PublicClinicController {
     response.setWhatsapp(clinic.getWhatsapp());
     response.setEmail(clinic.getEmail());
     response.setNosotros(clinic.getNosotros());
+    response.setFotoUbicacionUrl(clinic.getFotoUbicacionUrl());
     response.setReviewsEnabled(!clinic.getGooglePlaceId().isBlank());
     return ResponseEntity.ok(response);
   }

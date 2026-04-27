@@ -15,6 +15,7 @@ public class ClinicConfigResponse {
   private String whatsapp;
   private String email;
   private String nosotros;
+  private String fotoUbicacionUrl;
   private boolean reviewsEnabled;
 
   public String getNombre() { return nombre; }
@@ -43,6 +44,9 @@ public class ClinicConfigResponse {
 
   public String getNosotros() { return nosotros; }
   public void setNosotros(String nosotros) { this.nosotros = nosotros; }
+
+  public String getFotoUbicacionUrl() { return fotoUbicacionUrl; }
+  public void setFotoUbicacionUrl(String fotoUbicacionUrl) { this.fotoUbicacionUrl = fotoUbicacionUrl; }
 
   public boolean isReviewsEnabled() { return reviewsEnabled; }
   public void setReviewsEnabled(boolean reviewsEnabled) { this.reviewsEnabled = reviewsEnabled; }
