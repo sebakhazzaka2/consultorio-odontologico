@@ -144,6 +144,11 @@
       <div class="tratamientos-grid" [@staggerList]="tratamientos().length">
         @for (t of tratamientos(); track t.id) {
           <article class="tratamiento-card">
+            @if (t.foto_url) {
+              <div class="card-foto">
+                <img [src]="apiUrl + t.foto_url" [alt]="t.nombre" loading="lazy">
+              </div>
+            }
             <div class="card-header">
               <h3 class="card-title">{{ t.nombre }}</h3>
             </div>

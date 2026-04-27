@@ -10,8 +10,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { TratamientoService, ResultadoTratamiento } from './tratamiento.service';
-import { Tratamiento, TratamientoPayload } from '../../../core/models/tratamiento.model';
-import { TratamientoFormDialogComponent } from './tratamiento-form-dialog.component';
+import { Tratamiento } from '../../../core/models/tratamiento.model';
+import { TratamientoFormDialogComponent, TratamientoFormDialogResult } from './tratamiento-form-dialog.component';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
@@ -100,15 +100,25 @@ export class TratamientosListadoComponent implements OnInit {
 
   abrirNuevo(): void {
     const ref = this.dialog.open(TratamientoFormDialogComponent, {
-      width: '420px',
+      width: '440px',
       data: { tratamiento: null }
     });
-    ref.afterClosed().subscribe((payload: TratamientoPayload | null) => {
-      if (!payload) return;
-      this.tratamientoService.crear(payload).subscribe({
+    ref.afterClosed().subscribe((result: TratamientoFormDialogResult | null) => {
+      if (!result) return;
+      this.tratamientoService.crear(result.payload).subscribe({
         next: (t: Tratamiento) => {
           this.snackBar.open(`Tratamiento "${t.nombre}" creado`, 'Cerrar', { duration: 4000 });
-          this.cargar();
+          if (result.fotoFile) {
+            this.tratamientoService.uploadFoto(t.id, result.fotoFile).subscribe({
+              next: () => this.cargar(),
+              error: () => {
+                this.snackBar.open('Tratamiento creado pero no se pudo subir la foto', 'Cerrar', { duration: 5000 });
+                this.cargar();
+              }
+            });
+          } else {
+            this.cargar();
+          }
         },
         error: (res: ResultadoTratamiento) => {
           this.snackBar.open((res.detalles?.length ? res.mensaje + ' ' + res.detalles.join('. ') : res.mensaje) ?? '', 'Cerrar', { duration: 6000 });
@@ -119,12 +129,12 @@ export class TratamientosListadoComponent implements OnInit {
 
   abrirEditar(t: Tratamiento): void {
     const ref = this.dialog.open(TratamientoFormDialogComponent, {
-      width: '420px',
+      width: '440px',
       data: { tratamiento: t }
     });
-    ref.afterClosed().subscribe((payload: TratamientoPayload | null) => {
-      if (!payload) return;
-      this.tratamientoService.actualizar(t.id, payload).subscribe({
+    ref.afterClosed().subscribe((result: TratamientoFormDialogResult | null) => {
+      if (!result) return;
+      this.tratamientoService.actualizar(t.id, result.payload).subscribe({
         next: (updated: Tratamiento) => {
           this.snackBar.open(`Tratamiento "${updated.nombre}" actualizado`, 'Cerrar', { duration: 4000 });
           this.cargar();

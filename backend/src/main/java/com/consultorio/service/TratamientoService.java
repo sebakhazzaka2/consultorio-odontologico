@@ -77,7 +77,6 @@ public class TratamientoService {
     existente.setDescripcion(request.getDescripcion());
     existente.setPrecio(request.getPrecio());
     existente.setActivo(request.getActivo());
-    existente.setFotoUrl(request.getFotoUrl());
 
     Tratamiento actualizado = tratamientoRepository.save(existente);
     log.info("Tratamiento actualizado — id: {}, nombre: '{}'", actualizado.getId(), actualizado.getNombre());

@@ -10,6 +10,7 @@ import { PublicTratamiento } from './models/public-tratamiento.model';
 import { ClinicConfig } from './models/clinic-config.model';
 import { Review } from './models/review.model';
 import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
+import { environment } from '../../../environments/environment';
 import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
 
 const FALLBACK: ClinicConfig = {
@@ -55,6 +56,7 @@ export class PublicComponent implements OnInit {
   });
 
   readonly currentYear = new Date().getFullYear();
+  readonly apiUrl = environment.apiUrl;
 
   constructor(
     private readonly tratamientoService: PublicTratamientoService,

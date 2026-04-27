@@ -59,19 +59,19 @@ Trigger para migrar a multitenancy real: ~5 clientes activos pagando.
 
 ---
 
-## Estado actual (2026-04-22)
+## Estado actual (2026-04-27)
 
 **Rama:** `feat/public-page-polish`
 
 Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19).
-En curso: polish de la página pública — fotos de tratamientos, config dinámica, sección de reseñas.
+En curso: public page polish — 6/7 commits listos, falta solo commit 7 (Docker).
 Siguiente: MVP2 (rol paciente).
 
 Ver detalles completos en `ROADMAP.md`.
 
-## Prioridades actuales (2026-04-22)
+## Prioridades actuales (2026-04-27)
 
-🔴 Public page polish (`feat/public-page-polish`) — fotos tratamientos, ClinicConfig dinámico, reseñas Google, sección Nosotros + mapa.
+🔴 Commit 7 — Docker: `GOOGLE_PLACES_API_KEY` + volumen `uploads` en `docker-compose.prod.yml`. Luego merge a main.
 🔴 MVP2 — rol paciente — próximo ciclo grande. Scope: registro/login paciente, JWT PACIENTE, RBAC, pedir turno → PENDIENTE, refresh tokens, "Mi cuenta".
 🟡 WhatsApp automatizado — después de MVP2.
 🟡 Legal / compliance Ley 18.331 — antes del primer cliente real.
