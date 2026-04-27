@@ -141,25 +141,53 @@
         <p>Próximamente publicaremos nuestra carta de tratamientos.</p>
       </div>
     } @else {
-      <div class="tratamientos-grid" [@staggerList]="tratamientos().length">
-        @for (t of tratamientos(); track t.id) {
-          <article class="tratamiento-card">
-            @if (t.foto_url) {
-              <div class="card-foto">
-                <img [src]="apiUrl + t.foto_url" [alt]="t.nombre" loading="lazy">
+      <div class="tratamientos-carousel-wrapper">
+        <button
+          class="carousel-btn carousel-btn--prev"
+          (click)="prevTratamientos()"
+          [disabled]="!canPrevTratamientos()"
+          [class.carousel-btn--hidden]="tratamientos().length <= tratamientosPageSize"
+          aria-label="Tratamientos anteriores">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+
+        <div class="tratamientos-grid" [@pageSlide]="tratamientosPage()">
+          @for (t of visibleTratamientos(); track t.id) {
+            <article class="tratamiento-card">
+              @if (t.foto_url) {
+                <div class="card-foto">
+                  <img [src]="apiUrl + t.foto_url" [alt]="t.nombre" loading="lazy">
+                </div>
+              }
+              <div class="card-header">
+                <h3 class="card-title">{{ t.nombre }}</h3>
               </div>
-            }
-            <div class="card-header">
-              <h3 class="card-title">{{ t.nombre }}</h3>
-            </div>
-            <p class="card-description">{{ t.descripcion }}</p>
-            <div class="card-footer">
-              <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
-              <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
-            </div>
-          </article>
-        }
+              <p class="card-description">{{ t.descripcion }}</p>
+              <div class="card-footer">
+                <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
+                <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
+              </div>
+            </article>
+          }
+        </div>
+
+        <button
+          class="carousel-btn carousel-btn--next"
+          (click)="nextTratamientos()"
+          [disabled]="!canNextTratamientos()"
+          [class.carousel-btn--hidden]="tratamientos().length <= tratamientosPageSize"
+          aria-label="Más tratamientos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
       </div>
+
+      @if (tratamientosTotalPages() > 1) {
+        <div class="tratamientos-pager">
+          @for (i of tratamientosDots(); track i) {
+            <span class="pager-dot" [class.pager-dot--active]="i === tratamientosPage()"></span>
+          }
+        </div>
+      }
     }
   </div>
 </section>
@@ -181,48 +209,56 @@
         <div class="reviews-carousel-wrapper">
           <button
             class="carousel-btn carousel-btn--prev"
-            (click)="prevReview()"
-            [disabled]="reviewIndex() === 0"
-            aria-label="Reseña anterior">
+            (click)="prevReviews()"
+            [disabled]="!canPrevReviews()"
+            [class.carousel-btn--hidden]="reviewsDots().length <= 1"
+            aria-label="Reseñas anteriores">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
 
-          <div class="reviews-carousel">
-            <div class="reviews-track" #carouselTrack>
-              @for (review of reviews(); track review.author_name) {
-                <article class="review-card">
-                  <div class="review-stars">
-                    @for (star of starArray(5); track star) {
-                      <svg class="review-star" [class.review-star--filled]="star <= review.rating" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                    }
+          <div class="reviews-grid" [@pageSlide]="reviewsPage()">
+            @for (review of visibleReviews(); track review.author_name) {
+              <article class="review-card">
+                <div class="review-stars">
+                  @for (star of starArray(5); track star) {
+                    <svg class="review-star" [class.review-star--filled]="star <= review.rating" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  }
+                </div>
+                <p class="review-text">{{ review.text }}</p>
+                <div class="review-author">
+                  @if (review.photo_url) {
+                    <img [src]="review.photo_url" [alt]="review.author_name" class="review-avatar" loading="lazy">
+                  } @else {
+                    <div class="review-avatar-placeholder">{{ review.author_name.charAt(0) }}</div>
+                  }
+                  <div class="review-author-info">
+                    <span class="review-author-name">{{ review.author_name }}</span>
+                    <span class="review-time">{{ review.relative_time }}</span>
                   </div>
-                  <p class="review-text">{{ review.text }}</p>
-                  <div class="review-author">
-                    @if (review.photo_url) {
-                      <img [src]="review.photo_url" [alt]="review.author_name" class="review-avatar" loading="lazy">
-                    } @else {
-                      <div class="review-avatar-placeholder">{{ review.author_name.charAt(0) }}</div>
-                    }
-                    <div class="review-author-info">
-                      <span class="review-author-name">{{ review.author_name }}</span>
-                      <span class="review-time">{{ review.relative_time }}</span>
-                    </div>
-                  </div>
-                </article>
-              }
-            </div>
+                </div>
+              </article>
+            }
           </div>
 
           <button
             class="carousel-btn carousel-btn--next"
-            (click)="nextReview()"
-            [disabled]="reviewIndex() >= reviews().length - 1"
-            aria-label="Siguiente reseña">
+            (click)="nextReviews()"
+            [disabled]="!canNextReviews()"
+            [class.carousel-btn--hidden]="reviewsDots().length <= 1"
+            aria-label="Siguientes reseñas">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
+
+        @if (reviewsDots().length > 1) {
+          <div class="tratamientos-pager">
+            @for (i of reviewsDots(); track i) {
+              <span class="pager-dot" [class.pager-dot--active]="i === reviewsPage()"></span>
+            }
+          </div>
+        }
       }
     </div>
   </section>
