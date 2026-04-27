@@ -16,6 +16,9 @@ public class ClinicProperties {
   private String nosotros = "";
   private String fotoUbicacionUrl = "";
   private String googlePlaceId = "";
+  private String statsPacientes = "";
+  private String statsAnosExperiencia = "";
+  private String statsCalificacion = "";
 
   public String getNombre() { return nombre; }
   public void setNombre(String nombre) { this.nombre = nombre; }
@@ -49,4 +52,13 @@ public class ClinicProperties {
 
   public String getGooglePlaceId() { return googlePlaceId; }
   public void setGooglePlaceId(String googlePlaceId) { this.googlePlaceId = googlePlaceId; }
+
+  public String getStatsPacientes() { return statsPacientes; }
+  public void setStatsPacientes(String statsPacientes) { this.statsPacientes = statsPacientes; }
+
+  public String getStatsAnosExperiencia() { return statsAnosExperiencia; }
+  public void setStatsAnosExperiencia(String statsAnosExperiencia) { this.statsAnosExperiencia = statsAnosExperiencia; }
+
+  public String getStatsCalificacion() { return statsCalificacion; }
+  public void setStatsCalificacion(String statsCalificacion) { this.statsCalificacion = statsCalificacion; }
 }

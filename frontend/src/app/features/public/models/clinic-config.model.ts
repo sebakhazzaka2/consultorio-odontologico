@@ -10,4 +10,7 @@ export interface ClinicConfig {
   nosotros: string;
   foto_ubicacion_url: string;
   reviews_enabled: boolean;
+  stats_pacientes: string;
+  stats_anos_experiencia: string;
+  stats_calificacion: string;
 }

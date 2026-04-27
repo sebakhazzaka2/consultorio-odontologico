@@ -17,6 +17,9 @@ public class ClinicConfigResponse {
   private String nosotros;
   private String fotoUbicacionUrl;
   private boolean reviewsEnabled;
+  private String statsPacientes;
+  private String statsAnosExperiencia;
+  private String statsCalificacion;
 
   public String getNombre() { return nombre; }
   public void setNombre(String nombre) { this.nombre = nombre; }
@@ -50,4 +53,13 @@ public class ClinicConfigResponse {
 
   public boolean isReviewsEnabled() { return reviewsEnabled; }
   public void setReviewsEnabled(boolean reviewsEnabled) { this.reviewsEnabled = reviewsEnabled; }
+
+  public String getStatsPacientes() { return statsPacientes; }
+  public void setStatsPacientes(String statsPacientes) { this.statsPacientes = statsPacientes; }
+
+  public String getStatsAnosExperiencia() { return statsAnosExperiencia; }
+  public void setStatsAnosExperiencia(String statsAnosExperiencia) { this.statsAnosExperiencia = statsAnosExperiencia; }
+
+  public String getStatsCalificacion() { return statsCalificacion; }
+  public void setStatsCalificacion(String statsCalificacion) { this.statsCalificacion = statsCalificacion; }
 }

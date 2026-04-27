@@ -31,6 +31,9 @@ public class PublicClinicController {
     response.setNosotros(clinic.getNosotros());
     response.setFotoUbicacionUrl(clinic.getFotoUbicacionUrl());
     response.setReviewsEnabled(!clinic.getGooglePlaceId().isBlank());
+    response.setStatsPacientes(clinic.getStatsPacientes());
+    response.setStatsAnosExperiencia(clinic.getStatsAnosExperiencia());
+    response.setStatsCalificacion(clinic.getStatsCalificacion());
     return ResponseEntity.ok(response);
   }
 }

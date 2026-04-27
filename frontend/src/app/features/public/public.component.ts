@@ -33,6 +33,9 @@ const FALLBACK: ClinicConfig = {
   nosotros: '',
   foto_ubicacion_url: '',
   reviews_enabled: false,
+  stats_pacientes: '',
+  stats_anos_experiencia: '',
+  stats_calificacion: '',
 };
 
 @Component({
