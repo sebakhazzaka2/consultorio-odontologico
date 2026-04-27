@@ -1,6 +1,6 @@
 <header class="public-nav">
   <div class="nav-container">
-    <a class="nav-brand" href="#top">Dental Montecaseros</a>
+    <a class="nav-brand" href="#top">{{ clinica().nombre }}</a>
     <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
       <a href="#tratamientos" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
       <a href="#contacto" (click)="mobileMenuOpen.set(false)">Contacto</a>
@@ -23,8 +23,8 @@
         <span class="hero-eyebrow-dot"></span>
         Clínica odontológica en Montevideo
       </span>
-      <h1 class="hero-title">Dental Montecaseros</h1>
-      <p class="hero-subtitle">Odontología integral con atención cercana</p>
+      <h1 class="hero-title">{{ clinica().nombre }}</h1>
+      <p class="hero-subtitle">{{ clinica().tagline }}</p>
       <div class="hero-actions">
         <button class="btn-primary" disabled>
           Reservar turno
@@ -40,11 +40,11 @@
       <div class="hero-meta">
         <div class="hero-meta-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span>Lunes a Viernes 09:00 – 18:00</span>
+          <span>{{ clinica().horario }}</span>
         </div>
         <div class="hero-meta-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Montevideo, Uruguay</span>
+          <span>{{ clinica().ciudad }}</span>
         </div>
       </div>
     </div>
@@ -163,7 +163,7 @@
           Estamos para responder tus consultas. Escribinos por WhatsApp, llamá o envianos un correo.
         </p>
         <div class="contact-channels">
-          <a [href]="'https://wa.me/' + clinica.whatsapp" target="_blank" rel="noopener" class="contact-channel contact-channel--whatsapp">
+          <a [href]="'https://wa.me/' + clinica().whatsapp" target="_blank" rel="noopener" class="contact-channel contact-channel--whatsapp">
             <div class="contact-channel-icon">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.94 11.94 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 6L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12a11.94 11.94 0 0 0-3.48-8.52zM12 22c-1.86 0-3.66-.5-5.24-1.45l-.38-.22-3.67.96.98-3.58-.25-.37A9.94 9.94 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10z"/></svg>
             </div>
@@ -172,22 +172,22 @@
               <span class="contact-channel-value">Respuesta rápida</span>
             </div>
           </a>
-          <a [href]="'tel:' + clinica.phone" class="contact-channel">
+          <a [href]="'tel:' + clinica().telefono" class="contact-channel">
             <div class="contact-channel-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </div>
             <div class="contact-channel-body">
               <span class="contact-channel-label">Teléfono</span>
-              <span class="contact-channel-value">{{ clinica.phone }}</span>
+              <span class="contact-channel-value">{{ clinica().telefono }}</span>
             </div>
           </a>
-          <a [href]="'mailto:' + clinica.email" class="contact-channel">
+          <a [href]="'mailto:' + clinica().email" class="contact-channel">
             <div class="contact-channel-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
             </div>
             <div class="contact-channel-body">
               <span class="contact-channel-label">Email</span>
-              <span class="contact-channel-value">{{ clinica.email }}</span>
+              <span class="contact-channel-value">{{ clinica().email }}</span>
             </div>
           </a>
         </div>
@@ -197,11 +197,11 @@
         <h3>Visitanos</h3>
         <div class="contact-detail">
           <span class="contact-detail-label">Dirección</span>
-          <span class="contact-detail-value">{{ clinica.address }}</span>
+          <span class="contact-detail-value">{{ clinica().direccion }}</span>
         </div>
         <div class="contact-detail">
           <span class="contact-detail-label">Horario</span>
-          <span class="contact-detail-value">{{ clinica.hours }}</span>
+          <span class="contact-detail-value">{{ clinica().horario }}</span>
         </div>
         <div class="contact-hours-badge">
           <span class="hours-dot"></span>
@@ -216,9 +216,9 @@
   <div class="section-container">
     <div class="footer-grid">
       <div class="footer-col footer-col--brand">
-        <h3 class="footer-clinic">{{ clinica.nombre }}</h3>
-        <p class="footer-tagline">{{ clinica.tagline }}</p>
-        <p class="footer-address">{{ clinica.address }}</p>
+        <h3 class="footer-clinic">{{ clinica().nombre }}</h3>
+        <p class="footer-tagline">{{ clinica().tagline }}</p>
+        <p class="footer-address">{{ clinica().direccion }}</p>
       </div>
 
       <div class="footer-col">
@@ -234,9 +234,9 @@
       <div class="footer-col">
         <h4>Atención</h4>
         <ul>
-          <li>{{ clinica.hours }}</li>
-          <li>{{ clinica.phone }}</li>
-          <li><a [href]="'mailto:' + clinica.email">{{ clinica.email }}</a></li>
+          <li>{{ clinica().horario }}</li>
+          <li>{{ clinica().telefono }}</li>
+          <li><a [href]="'mailto:' + clinica().email">{{ clinica().email }}</a></li>
         </ul>
       </div>
 
@@ -249,7 +249,7 @@
     </div>
 
     <div class="footer-bottom">
-      <p class="footer-copy">© {{ currentYear }} {{ clinica.nombre }}. Todos los derechos reservados.</p>
+      <p class="footer-copy">© {{ currentYear }} {{ clinica().nombre }}. Todos los derechos reservados.</p>
       <div class="powered-by">
         <span>Powered by</span>
         <app-brand-logo size="sm" [showWordmark]="true"></app-brand-logo>
