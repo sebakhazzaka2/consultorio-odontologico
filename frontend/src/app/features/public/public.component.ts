@@ -7,18 +7,17 @@ import { ClinicConfigService } from './services/clinic-config.service';
 import { PublicTratamiento } from './models/public-tratamiento.model';
 import { ClinicConfig } from './models/clinic-config.model';
 import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
-import { CLINIC_CONFIG } from './clinic.config';
 import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
 
 const FALLBACK: ClinicConfig = {
-  nombre: CLINIC_CONFIG.nombre,
-  tagline: CLINIC_CONFIG.tagline,
-  direccion: CLINIC_CONFIG.address,
-  ciudad: CLINIC_CONFIG.city,
-  horario: CLINIC_CONFIG.hours,
-  telefono: CLINIC_CONFIG.phone,
-  whatsapp: CLINIC_CONFIG.whatsapp,
-  email: CLINIC_CONFIG.email,
+  nombre: '',
+  tagline: '',
+  direccion: '',
+  ciudad: '',
+  horario: '',
+  telefono: '',
+  whatsapp: '',
+  email: '',
   nosotros: '',
   reviews_enabled: false,
 };
@@ -51,18 +50,7 @@ export class PublicComponent implements OnInit {
 
   ngOnInit(): void {
     this.clinicConfigService.getConfig().subscribe({
-      next: (config) => this.clinica.set({
-        nombre:          config.nombre   || FALLBACK.nombre,
-        tagline:         config.tagline  || FALLBACK.tagline,
-        direccion:       config.direccion || FALLBACK.direccion,
-        ciudad:          config.ciudad   || FALLBACK.ciudad,
-        horario:         config.horario  || FALLBACK.horario,
-        telefono:        config.telefono || FALLBACK.telefono,
-        whatsapp:        config.whatsapp || FALLBACK.whatsapp,
-        email:           config.email    || FALLBACK.email,
-        nosotros:        config.nosotros,
-        reviews_enabled: config.reviews_enabled,
-      }),
+      next: (config) => this.clinica.set(config),
       error: () => {},
     });
 
