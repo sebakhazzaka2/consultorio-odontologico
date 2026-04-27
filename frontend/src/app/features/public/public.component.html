@@ -57,10 +57,26 @@
 
     <div class="hero-visual">
       <div class="hero-visual-frame">
-        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
+        <img [@heroFade]="heroPage()"
+             [src]="heroImagenes()[heroPage()]"
              alt="Clínica odontológica"
              loading="eager"
              fetchpriority="high" />
+        @if (heroImagenes().length > 1) {
+          <div class="hero-img-nav">
+            <button class="hero-img-btn" (click)="prevHero()" aria-label="Imagen anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="hero-img-dots">
+              @for (img of heroImagenes(); track $index) {
+                <span class="hero-img-dot" [class.hero-img-dot--active]="$index === heroPage()"></span>
+              }
+            </div>
+            <button class="hero-img-btn" (click)="nextHero()" aria-label="Siguiente imagen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        }
       </div>
       <div class="hero-visual-card hero-visual-card--top" [@fadeInUp]>
         <span class="hero-card-label">Agenda</span>

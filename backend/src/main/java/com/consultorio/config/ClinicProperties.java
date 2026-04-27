@@ -41,6 +41,9 @@ public class ClinicProperties {
   private String statsPacientes = "";
   private String statsAnosExperiencia = "";
   private String statsCalificacion = "";
+  private List<String> heroImagenes = new ArrayList<>(List.of(
+    "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
+  ));
   private List<Feature> features = new ArrayList<>(List.of(
     new Feature("Agenda online", "Reserva tu turno con confirmacion inmediata, sin llamadas ni esperas.", "calendario"),
     new Feature("Historial seguro", "Tu ficha clinica completa, tratamientos y notas accesibles en cualquier momento.", "documento"),
@@ -98,6 +101,9 @@ public class ClinicProperties {
 
   public String getStatsCalificacion() { return statsCalificacion; }
   public void setStatsCalificacion(String statsCalificacion) { this.statsCalificacion = statsCalificacion; }
+
+  public List<String> getHeroImagenes() { return heroImagenes; }
+  public void setHeroImagenes(List<String> heroImagenes) { this.heroImagenes = heroImagenes; }
 
   public List<Feature> getFeatures() { return features; }
   public void setFeatures(List<Feature> features) { this.features = features; }

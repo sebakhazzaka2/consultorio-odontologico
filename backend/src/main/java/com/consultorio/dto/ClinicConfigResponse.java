@@ -26,6 +26,7 @@ public class ClinicConfigResponse {
   private String statsPacientes;
   private String statsAnosExperiencia;
   private String statsCalificacion;
+  private List<String> heroImagenes;
   private List<FeatureResponse> features;
 
   public String getNombre() { return nombre; }
@@ -78,6 +79,9 @@ public class ClinicConfigResponse {
 
   public String getStatsCalificacion() { return statsCalificacion; }
   public void setStatsCalificacion(String statsCalificacion) { this.statsCalificacion = statsCalificacion; }
+
+  public List<String> getHeroImagenes() { return heroImagenes; }
+  public void setHeroImagenes(List<String> heroImagenes) { this.heroImagenes = heroImagenes; }
 
   public List<FeatureResponse> getFeatures() { return features; }
   public void setFeatures(List<FeatureResponse> features) { this.features = features; }

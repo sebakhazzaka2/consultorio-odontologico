@@ -43,6 +43,7 @@ public class PublicClinicController {
         .map(f -> new FeatureResponse(f.getTitulo(), f.getTexto(), f.getIcono()))
         .toList();
     response.setFeatures(features);
+    response.setHeroImagenes(clinic.getHeroImagenes());
     return ResponseEntity.ok(response);
   }
 }

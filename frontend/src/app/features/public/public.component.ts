@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -15,6 +15,13 @@ import { environment } from '../../../environments/environment';
 import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
 import { ClinicFeature } from './models/clinic-config.model';
 
+const heroFade = trigger('heroFade', [
+  transition('* => *', [
+    style({ opacity: 0 }),
+    animate('500ms ease-in-out', style({ opacity: 1 })),
+  ]),
+]);
+
 const pageSlide = trigger('pageSlide', [
   transition('* => *', [
     style({ opacity: 0, transform: 'translateY(16px)' }),
@@ -28,6 +35,7 @@ const FALLBACK: ClinicConfig = {
   telefono: '', whatsapp: '', email: '', nosotros: '', foto_ubicacion_url: '',
   reviews_enabled: false,
   stats_pacientes: '', stats_anos_experiencia: '', stats_calificacion: '',
+  hero_imagenes: [],
   features: [],
 };
 
@@ -37,9 +45,18 @@ const FALLBACK: ClinicConfig = {
   imports: [RouterLink, CurrencyPipe, MatProgressSpinnerModule, BrandLogoComponent],
   templateUrl: './public.component.html',
   styleUrl: './public.component.scss',
-  animations: [fadeInUp, staggerList, pageSlide],
+  animations: [fadeInUp, staggerList, pageSlide, heroFade],
 })
-export class PublicComponent implements OnInit {
+export class PublicComponent implements OnInit, OnDestroy {
+  heroPage = signal(0);
+  private heroTimer: ReturnType<typeof setInterval> | null = null;
+  private readonly HERO_FALLBACK = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80';
+
+  readonly heroImagenes = computed(() => {
+    const imgs = this.clinica().hero_imagenes;
+    return imgs?.length ? imgs : [this.HERO_FALLBACK];
+  });
+
   tratamientos = signal<PublicTratamiento[]>([]);
   tratamientosPage = signal(0);
   readonly tratamientosPageSize = 6;
@@ -149,10 +166,15 @@ export class PublicComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.stopHeroTimer();
+  }
+
   ngOnInit(): void {
     this.clinicConfigService.getConfig().subscribe({
       next: (config) => {
         this.clinica.set(config);
+        this.startHeroTimer();
         if (config.reviews_enabled) {
           this.loadReviews();
         }
@@ -170,6 +192,37 @@ export class PublicComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  prevHero(): void {
+    const len = this.heroImagenes().length;
+    this.heroPage.update(i => (i - 1 + len) % len);
+    this.resetHeroTimer();
+  }
+
+  nextHero(): void {
+    const len = this.heroImagenes().length;
+    this.heroPage.update(i => (i + 1) % len);
+    this.resetHeroTimer();
+  }
+
+  private startHeroTimer(): void {
+    if (this.heroImagenes().length <= 1) return;
+    this.heroTimer = setInterval(() => {
+      this.heroPage.update(i => (i + 1) % this.heroImagenes().length);
+    }, 5000);
+  }
+
+  private stopHeroTimer(): void {
+    if (this.heroTimer) {
+      clearInterval(this.heroTimer);
+      this.heroTimer = null;
+    }
+  }
+
+  private resetHeroTimer(): void {
+    this.stopHeroTimer();
+    this.startHeroTimer();
   }
 
   prevTratamientos(): void {

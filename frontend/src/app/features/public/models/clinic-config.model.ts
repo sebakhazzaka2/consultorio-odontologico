@@ -22,5 +22,6 @@ export interface ClinicConfig {
   stats_pacientes: string;
   stats_anos_experiencia: string;
   stats_calificacion: string;
+  hero_imagenes: string[];
   features: ClinicFeature[];
 }
