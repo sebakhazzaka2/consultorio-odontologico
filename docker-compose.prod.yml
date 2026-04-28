@@ -21,7 +21,7 @@ services:
     image: ${GHCR_IMAGE_PREFIX}/consultorio-backend:latest
     build: ./backend
     env_file:
-      - .env
+      - .env.prod
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_HOST: db
