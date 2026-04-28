@@ -10,6 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class TratamientoService {
@@ -17,9 +18,12 @@ public class TratamientoService {
   private static final Logger log = LoggerFactory.getLogger(TratamientoService.class);
 
   private final TratamientoRepository tratamientoRepository;
+  private final FileStorageService fileStorageService;
 
-  public TratamientoService(TratamientoRepository tratamientoRepository) {
+  public TratamientoService(TratamientoRepository tratamientoRepository,
+      FileStorageService fileStorageService) {
     this.tratamientoRepository = tratamientoRepository;
+    this.fileStorageService = fileStorageService;
   }
 
   public List<TratamientoResponse> findAll() {
@@ -73,7 +77,6 @@ public class TratamientoService {
     existente.setDescripcion(request.getDescripcion());
     existente.setPrecio(request.getPrecio());
     existente.setActivo(request.getActivo());
-    existente.setFotoUrl(request.getFotoUrl());
 
     Tratamiento actualizado = tratamientoRepository.save(existente);
     log.info("Tratamiento actualizado — id: {}, nombre: '{}'", actualizado.getId(), actualizado.getNombre());
@@ -100,12 +103,24 @@ public class TratamientoService {
     log.info("Tratamiento eliminado — id: {}", id);
   }
 
+  public TratamientoResponse uploadFoto(Long id, MultipartFile foto) {
+    Tratamiento tratamiento = tratamientoRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Tratamiento no encontrado con id: " + id));
+    fileStorageService.deleteFile(tratamiento.getFotoUrl());
+    String fotoUrl = fileStorageService.storeTratamientoFoto(foto);
+    tratamiento.setFotoUrl(fotoUrl);
+    Tratamiento actualizado = tratamientoRepository.save(tratamiento);
+    log.info("Foto actualizada — tratamiento id: {}, url: {}", id, fotoUrl);
+    return toResponse(actualizado);
+  }
+
   private PublicTratamientoResponse toPublicResponse(Tratamiento tratamiento) {
     return new PublicTratamientoResponse(
         tratamiento.getId(),
         tratamiento.getNombre(),
         tratamiento.getDescripcion(),
-        tratamiento.getPrecio());
+        tratamiento.getPrecio(),
+        tratamiento.getFotoUrl());
   }
 
   private TratamientoResponse toResponse(Tratamiento tratamiento) {

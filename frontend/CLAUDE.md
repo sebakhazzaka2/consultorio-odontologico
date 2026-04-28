@@ -137,7 +137,7 @@ Para **botones en Material** usar `mat-flat-button` (primary fill) o `mat-stroke
 - Diseño coherente con el admin (Inter font, paleta azul/slate)
 - MVP2: desde esta página los pacientes podrán elegir turno
 
-{MARCA_SISTEMA} = "NexaClinic"
+{MARCA_SISTEMA} = "TurnosUy"
 {MARCA_TAGLINE} = "Simple, integrated clinical system"
 {CLINICA_NOMBRE} = "Dental Montecaseros"
 {CLINICA_TAGLINE} = "Odontología integral con atención cercana"

@@ -27,5 +27,6 @@ USER appuser
 EXPOSE 8080
 
 ENV SPRING_PROFILES_ACTIVE=prod
+ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

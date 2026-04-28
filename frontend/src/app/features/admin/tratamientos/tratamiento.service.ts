@@ -58,6 +58,14 @@ export class TratamientoService {
     );
   }
 
+  uploadFoto(id: number, file: File): Observable<Tratamiento> {
+    const form = new FormData();
+    form.append('foto', file);
+    return this.http.patch<Tratamiento>(`${this.apiUrl}/${id}/foto`, form).pipe(
+      catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
+    );
+  }
+
   toggleActivo(id: number): Observable<Tratamiento> {
     return this.http.patch<Tratamiento>(`${this.apiUrl}/${id}/toggle`, {}).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))

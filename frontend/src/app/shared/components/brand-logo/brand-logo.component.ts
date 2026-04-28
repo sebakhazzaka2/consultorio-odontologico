@@ -25,8 +25,8 @@ const SIZE_PX: Record<LogoSize, string> = {
       <path d="M12 1L2 4v10c0 6.5 4.5 11.5 10 13 5.5-1.5 10-6.5 10-13V4L12 1z" fill="currentColor"/>
       <path d="M10.5 9h3v3h3v3h-3v3h-3v-3h-3v-3h3V9z" fill="#fff"/>
     </svg>
-    <span *ngIf="showWordmark" class="wordmark" aria-label="NexaClinic">
-      <span class="wordmark-nexa">Nexa</span><span class="wordmark-clinic">Clinic</span>
+    <span *ngIf="showWordmark" class="wordmark" aria-label="TurnosUy">
+      <span class="wordmark-nexa">Turnos</span><span class="wordmark-clinic">Uy</span>
     </span>
   `,
   styleUrl: './brand-logo.component.scss'

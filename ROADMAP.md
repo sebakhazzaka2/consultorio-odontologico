@@ -1,33 +1,59 @@
 # Roadmap — Consultorio Odontológico
 
+> **Última actualización:** 2026-04-27 — review completa post `feat/public-page-polish`. Reordenado: Balance/Gastos → SEO → Mails → MVP2.
+
 ## Secuencia recomendada
 ```
-Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer cliente → P3C/P4 con feedback real
+Public page polish ✅ → Balance/Gastos → SEO multi-subdominio → Mails (Brevo)
+→ MVP2 → Observability+Rollback → WhatsApp → primer cliente → cliente #2 con automatizaciones
 ```
 
 ## Estado por fase
 
 | Fase | Estado |
-|------|--------|---------------|
+|------|--------|
 | MVP1 — Backend | ✅ Completo (mergeado a main) |
 | MVP1 — Frontend | ✅ Completo (mergeado a main) |
 | P1 — Hardening pre-producción | ✅ Completo (mergeado a main) |
 | P2 — Infraestructura profesional | ✅ Completo (mergeado a main) |
 | P3 Fase A — Producto usable | ✅ Completo (mergeado a main) |
-| **P3 Fase B — código deploy** | ✅ Completo (mergeado a main) |
-| **Página pública clínica** | ✅ Completo (mergeado a main) |
-| **Admin polish** | ✅ Completo (mergeado a main) |
-| **Deploy real** | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) | 
-| **Post-deploy hardening** | ⏳ En curso (`feat/post-deploy-hardening`) | — |
-| **MVP2 — Rol paciente** | ⏳ Próximo ciclo grande | — |
-| **WhatsApp automatizado** | ⏳ Después de MVP2 | — |
-| 🎯 Primer cliente | ⏳ Meta inmediata | — |
-| P3 Fase C — Producto premium | ⏳ Con feedback real | — |
-| V3 — Historial avanzado + Gastos | ⏳ Futuro | — |
-| V4 — Notificaciones email/WhatsApp | ⏳ Futuro | — |
-| P4 — Producción hardened | ⏳ Intercalado con V3/V4 | — |
-| Landing SaaS proveedor | ⏳ Futuro (repo separado, post primer cliente) | 
-| V5 — Multi-tenant SaaS | ⏳ Futuro | — |
+| P3 Fase B — código deploy | ✅ Completo (mergeado a main) |
+| Página pública clínica | ✅ Completo (mergeado a main) |
+| Admin polish | ✅ Completo (mergeado a main) |
+| Deploy real | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) |
+| Post-deploy hardening | ✅ Completo (mergeado a main, PR #19, 2026-04-22) |
+| **Public page polish** | ✅ 13 commits listos en `feat/public-page-polish` — PR a main inminente |
+| **Sprint 1 — Balance + Gastos** | ⏳ Próximo (3-5 días) |
+| **Sprint 2 — SEO multi-subdominio** | ⏳ Tras Balance (3-5 días) |
+| **Sprint 3 — Mails (Brevo)** | ⏳ Tras SEO (5-8 días) |
+| **Sprint 4-5 — MVP2 rol paciente** | ⏳ Tras Mails (3-4 semanas) |
+| **Sprint 6 — Observability + rollback** | ⏳ Tras MVP2 (1 semana) |
+| **Sprint 7 — WhatsApp automatizado** | ⏳ Tras observability (1-2 semanas) |
+| 🎯 Primer cliente Web | ⏳ Tras MVP2 + Mails |
+| 🎯 Cliente #2 | ⏳ Trigger para Terraform + Prometheus + script provisioning |
+| Landing SaaS proveedor | ⏳ Post primer cliente pagando con caso de éxito |
+| V5 — Multi-tenant SaaS | ⏳ Post ~5 clientes activos |
+| Multi-rubro (psicólogos/nutricionistas) | ⏳ Postergado hasta 2-3 clientes odontológicos |
+
+---
+
+## Pre-ventas — checklist mínimo antes de vender
+
+Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de prioridad):
+
+**Imprescindible — sin esto no se vende:**
+- ⬜ Script de provisioning: dado dominio + datos de clínica, levanta la instancia en < 15 min
+- ⬜ Configuración dinámica de clínica desde el admin (nombre, logo, horarios, tratamientos) — rama actual
+- ⬜ Backup automático por cliente verificado (cron + test de restore)
+- ⬜ HTTPS automático por dominio/subdominio (Caddy ya lo da)
+
+**Necesario para paquete Web (paquete 2 y 3):**
+- ⬜ MVP2 — login y pedir turno como paciente (sin esto la página pública es solo vitrina)
+- ⬜ Email transaccional básico — confirmación de turno
+
+**Necesario para paquete WhatsApp (paquete 3):**
+- ⬜ WhatsApp Business API integrado (Twilio / UltraMsg / Meta directo)
+- ⬜ Costo por mensaje trasladado al precio del paquete
 
 ---
 
@@ -52,36 +78,115 @@ Deploy real ✅ → post-deploy hardening → MVP2 → WhatsApp → primer clien
 - ✅ `dentalmontecaseros.turnosuy.com` — Caddy + TLS Let's Encrypt
 - ✅ Admin seeding desde env vars, nginx proxy fix, CORS configurado
 
-### Post-deploy hardening ⏳ (`feat/post-deploy-hardening`)
+### Post-deploy hardening ✅ (mergeado a main, PR #19, 2026-04-22)
 - ✅ Cron backup diario 2am — `scripts/backup.sh` + `scripts/restore.sh`
 - ✅ Endpoint + UI cambio de password del admin
-- ✅ CI flip `push: true` + secrets GHCR
-- ✅ Sentry + Uptime monitoring
-- ✅ Validación fail-fast de env vars al startup
+- ✅ CI/CD: push GHCR habilitado + deploy SSH automático + `workflow_dispatch`
+- ✅ Sentry (Angular + Spring Boot) + Uptime Kuma (status subdomain vía Caddy)
+- ✅ Validación fail-fast de env vars al startup (`StartupEnvValidator`)
+- ✅ H2 en tests de CI (no requiere MySQL en pipeline)
 
-### MVP2 scope
+### Public page polish ✅ (`feat/public-page-polish`, 13 commits, listo para PR)
+- ✅ Backend: `ClinicProperties` + endpoint `GET /public/config` (datos de clínica configurables)
+- ✅ Backend: `FileStorageService` + endpoint `PATCH /api/tratamientos/{id}/foto` (fotos de tratamientos)
+- ✅ Backend: `GooglePlacesService` + endpoint `GET /public/reviews` con cache 24h + filtro 4★
+- ✅ Frontend: `ClinicConfigService` — consume `/public/config` en lugar de `clinic.config.ts` hardcodeado
+- ✅ Frontend: sección "Ubicación" (texto + foto exterior + mapa embebido) + sección "Reseñas" carousel
+- ✅ Frontend: fotos en cards de tratamientos + upload en form dialog del admin (create y edit)
+- ✅ Frontend: stats strip, WhatsApp FAB, rebrand TurnosUy, estado open/closed dinámico, features section configurable
+- ✅ Docker: var `GOOGLE_PLACES_API_KEY` + volumen `uploads_data` en `docker-compose.prod.yml`
+- ⚠️ Verificar tras deploy: encoding de acentos en `/api/public/config` (defaults Java rotos en local pero env vars `.env.prod` UTF-8 deberían sobreescribirlos)
+
+---
+
+## Sprints planificados (post merge `feat/public-page-polish`)
+
+### Sprint 1 — Balance + Gastos (3-5 días)
+**Por qué primero:** la base ya existe (Pago, HistorialClinico, getSaldoPaciente, dashboard ingresos). Quick win de alto valor para Samara.
+- Migración Flyway `V5__create_gastos.sql`: `gastos(id, fecha, monto, categoria, descripcion, comprobante_url, created_at, created_by)`
+- Backend: entidad, repository, service, controller, DTO con `@JsonNaming(SnakeCaseStrategy)`
+- Endpoint `GET /reportes/balance?desde&hasta` → ingresos, gastos por categoría, neto
+- Frontend pestaña "Balance": tarjetas (Ingresos, Gastos, Neto), tabla de gastos, form alta, filtro período
+- Tests unitarios del service + tests integración del controller
+
+### Sprint 2 — SEO multi-subdominio (3-5 días)
+**Por qué importante:** cada subdominio (`clienteX.turnosuy.com`) es un sitio independiente para Google. El código se hace una sola vez y aplica a todos los clientes futuros — escala con el negocio.
+- Prerender estático con `@angular/ssr` (build-time, sin runtime overhead)
+- Meta tags dinámicos desde `ClinicConfig` usando `Title` + `Meta` services
+- JSON-LD `Dentist` con datos de clínica (nombre, dirección, teléfono, horarios, ratingValue, reviewCount)
+- Endpoint backend `/sitemap.xml` por subdominio (arma desde `ClinicProperties`)
+- `robots.txt` estático con `Sitemap: https://{dominio}/sitemap.xml`
+- Headers HTTP de seguridad en `Caddyfile` (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
+- Documentar checklist post-deploy de cliente nuevo: Search Console + GBP
+- Acompañar a Samara para reclamar Google Business Profile (causa raíz de "no aparece en Google")
+
+### Sprint 3 — Infraestructura de mail (5-8 días)
+**Por qué después de SEO:** bloqueante de MVP2 (password reset). Stack: Brevo (free tier 300 mails/día) + Spring Boot Mail + Thymeleaf.
+- `spring-boot-starter-mail` + Brevo SMTP en `application-prod.properties`
+- Templates Thymeleaf base con header/footer compartido
+- Mail confirmación turno agendado / cancelado / reagendado
+- Mail entrada en historia clínica con detalle tratamiento + precio + deuda
+- Password reset endpoint (token + expiración + UI)
+- Cron backup: alerta de fallo (mail al admin si backup no se ejecutó)
+
+### Sprint 4-5 — MVP2 patient portal (3-4 semanas)
+- Registro/login paciente + JWT con rol PACIENTE + RBAC efectivo (`@PreAuthorize` + `roleGuard`)
+- Pedir turno desde página pública → cita PENDIENTE → admin confirma
+- Refresh tokens con rotación + revocación
+- Página "Mi cuenta" (citas, historial resumido)
+- Consentimiento explícito de datos (Ley 18.331)
+- Política de privacidad + términos
+- JWT en cookie HttpOnly + SameSite=Strict (mover desde localStorage)
+- Notificación por mail (reusa Sprint 3)
+
+### Sprint 6 — Observability + rollback (1 semana)
+- Logs JSON + correlationId/MDC
+- Micrometer + actuator/prometheus expuesto
+- Smoke test post-deploy: `curl /api/actuator/health` con retry
+- `scripts/rollback.sh` que vuelve al SHA anterior
+- Tag de imagen por SHA en `docker-compose.prod.yml` (no `:latest`)
+- Backup automático pre-deploy en CI/CD
+- Notificación de deploy a Telegram/Discord
+- Reglas Sentry + alertas Uptime Kuma a canal real
+
+### Sprint 7 — WhatsApp automatizado (1-2 semanas)
+- Twilio Business API o UltraMsg
+- Recordatorio 24h antes de turno
+- Notificación al cliente de cambios
+
+### Sprint 8+ — Pre-cliente #2
+- Script de provisioning (15 min para nueva clínica) — incluye Search Console + GBP en checklist
+- Terraform módulo Hetzner Cloud + Cloudflare
+- Prometheus + Grafana (free tier o self-hosted)
+
+---
+
+### MVP2 scope (referencia)
 - Registro y login de pacientes
 - Paciente elige slot → cita queda PENDIENTE
 - Admin confirma (asigna duración), cancela o reagenda
 - HTTPS, rate limiting, passwords fuertes
 - `pacientes.user_id` FK ya está en la DB
 
-### P3 Fase C — Producto premium (con feedback real)
-- ✅Dashboard avanzado (ingresos, gráfico 30 días)
-- Historial UX mejorado (cards, colores por tratamiento)
-- Dark mode toggle
-- Pageable cuando haya volumen
-- Email automático (Fase 1 notificaciones)
-
-### P4 — Producción hardened (intercalado con V3/V4)
+### Backlog medio plazo (intercalado con sprints)
+- Soft delete + auditoría acceso historial clínico (Ley 18.331)
 - Paginación con `Pageable` en endpoints de listado
-- Refresh tokens con rotación + blacklist en DB
-- `FileStorageService` + `BackblazeStorageServiceImpl` para attachments (V3)
+- Export PDF historial clínico + recetas
+- Dark mode toggle
+- Historial UX mejorado (cards, colores por tratamiento)
+- Cobertura tests backend ~50% / frontend ~40%
+- Subir `FileStorageService` a `BackblazeStorageServiceImpl` (S3-compatible) cuando los uploads escalen
 
-### Landing SaaS proveedor ⏳ (repo `consultorio-landing`, post primer cliente)
-- No urgente — es la página de ventas del software para atraer nuevas clínicas
+### Backlog largo plazo (post 5 clientes activos)
+- Multi-tenancy real (DB por tenant en una sola instancia, schema por cliente)
+- i18n (es/pt/en)
+- App móvil PWA
+- Búsqueda global cross-módulo
+
+### Landing SaaS proveedor ⏳ (repo `consultorio-landing`, post primer cliente con caso de éxito)
+- No urgente — la página de ventas del software para atraer nuevas clínicas
 - Stack: Astro + Tailwind v4, deploy en Cloudflare Pages (gratis)
-- Formulario demo vía EmailJS
+- Formulario demo vía EmailJS / Resend
 
 Auditoría del proyecto y priorización pre/post deploy                                                                         Context                                                       
 

@@ -1,8 +1,14 @@
 <header class="public-nav">
   <div class="nav-container">
-    <a class="nav-brand" href="#top">Dental Montecaseros</a>
+    <a class="nav-brand" href="#top">{{ clinica().nombre }}</a>
     <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
       <a href="#tratamientos" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
+      @if (clinica().reviews_enabled) {
+        <a href="#resenas" (click)="mobileMenuOpen.set(false)">Reseñas</a>
+      }
+      @if (clinica().nosotros) {
+        <a href="#ubicacion" (click)="mobileMenuOpen.set(false)">Ubicación</a>
+      }
       <a href="#contacto" (click)="mobileMenuOpen.set(false)">Contacto</a>
       <a routerLink="/login" class="nav-cta" (click)="mobileMenuOpen.set(false)">Iniciar sesión</a>
     </nav>
@@ -23,8 +29,8 @@
         <span class="hero-eyebrow-dot"></span>
         Clínica odontológica en Montevideo
       </span>
-      <h1 class="hero-title">Dental Montecaseros</h1>
-      <p class="hero-subtitle">Odontología integral con atención cercana</p>
+      <h1 class="hero-title">{{ clinica().nombre }}</h1>
+      <p class="hero-subtitle">{{ clinica().tagline }}</p>
       <div class="hero-actions">
         <button class="btn-primary" disabled>
           Reservar turno
@@ -40,21 +46,37 @@
       <div class="hero-meta">
         <div class="hero-meta-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span>Lunes a Viernes 09:00 – 18:00</span>
+          <span>{{ clinica().horario }}</span>
         </div>
         <div class="hero-meta-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Montevideo, Uruguay</span>
+          <span>{{ clinica().ciudad }}</span>
         </div>
       </div>
     </div>
 
     <div class="hero-visual">
       <div class="hero-visual-frame">
-        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
+        <img [@heroFade]="heroPage()"
+             [src]="heroImagenes()[heroPage()]"
              alt="Clínica odontológica"
              loading="eager"
              fetchpriority="high" />
+        @if (heroImagenes().length > 1) {
+          <div class="hero-img-nav">
+            <button class="hero-img-btn" (click)="prevHero()" aria-label="Imagen anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="hero-img-dots">
+              @for (img of heroImagenes(); track $index) {
+                <span class="hero-img-dot" [class.hero-img-dot--active]="$index === heroPage()"></span>
+              }
+            </div>
+            <button class="hero-img-btn" (click)="nextHero()" aria-label="Siguiente imagen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        }
       </div>
       <div class="hero-visual-card hero-visual-card--top" [@fadeInUp]>
         <span class="hero-card-label">Agenda</span>
@@ -68,6 +90,31 @@
   </div>
 </section>
 
+@if (clinica().stats_pacientes || clinica().stats_anos_experiencia || clinica().stats_calificacion) {
+  <section class="stats-strip">
+    <div class="stats-container">
+      @if (clinica().stats_pacientes) {
+        <div class="stat-item">
+          <span class="stat-value">{{ clinica().stats_pacientes }}</span>
+          <span class="stat-label">Pacientes atendidos</span>
+        </div>
+      }
+      @if (clinica().stats_anos_experiencia) {
+        <div class="stat-item">
+          <span class="stat-value">{{ clinica().stats_anos_experiencia }}</span>
+          <span class="stat-label">Años de experiencia</span>
+        </div>
+      }
+      @if (clinica().stats_calificacion) {
+        <div class="stat-item">
+          <span class="stat-value">{{ clinica().stats_calificacion }} <span class="stat-star">★</span></span>
+          <span class="stat-label">Calificación Google</span>
+        </div>
+      }
+    </div>
+  </section>
+}
+
 <section class="features-section" id="features">
   <div class="section-container">
     <div class="section-header">
@@ -78,38 +125,44 @@
       </p>
     </div>
 
-    <div class="features-grid" [@staggerList]="4">
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        </div>
-        <h3 class="feature-title">Agenda online</h3>
-        <p class="feature-text">Reservá tu turno con confirmación inmediata, sin llamadas ni esperas.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        </div>
-        <h3 class="feature-title">Historial seguro</h3>
-        <p class="feature-text">Tu ficha clínica completa, tratamientos y notas accesibles en cualquier momento.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <h3 class="feature-title">Atención personalizada</h3>
-        <p class="feature-text">Profesionales matriculados que te acompañan durante todo el tratamiento.</p>
-      </article>
-
-      <article class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
-        <h3 class="feature-title">Tecnología actual</h3>
-        <p class="feature-text">Equipamiento moderno y protocolos clínicos actualizados.</p>
-      </article>
+    <div class="features-grid" [@staggerList]="visibleFeatures().length">
+      @for (f of visibleFeatures(); track f.titulo) {
+        <article class="feature-card">
+          <div class="feature-icon">
+            @switch (f.icono) {
+              @case ('calendario') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              }
+              @case ('documento') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+              }
+              @case ('usuario') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              }
+              @case ('estrella') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              }
+              @case ('corazon') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              }
+              @case ('escudo') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              }
+              @case ('reloj') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              }
+              @case ('diente') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3C9.2 3 7 5.2 7 8c0 1.5.6 2.9 1.5 3.9L9.8 19c.1.5.5.9 1 .9h.7l.5-3 .5 3h.7c.5 0 .9-.4 1-.9l1.3-7.1C16.4 10.9 17 9.5 17 8c0-2.8-2.2-5-5-5z"/></svg>
+              }
+              @default {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              }
+            }
+          </div>
+          <h3 class="feature-title">{{ f.titulo }}</h3>
+          <p class="feature-text">{{ f.texto }}</p>
+        </article>
+      }
     </div>
   </div>
 </section>
@@ -135,35 +188,169 @@
         <p>Próximamente publicaremos nuestra carta de tratamientos.</p>
       </div>
     } @else {
-      <div class="tratamientos-grid" [@staggerList]="tratamientos().length">
-        @for (t of tratamientos(); track t.id) {
-          <article class="tratamiento-card">
-            <div class="card-header">
-              <h3 class="card-title">{{ t.nombre }}</h3>
-            </div>
-            <p class="card-description">{{ t.descripcion }}</p>
-            <div class="card-footer">
-              <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
-              <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
-            </div>
-          </article>
-        }
+      <div class="tratamientos-carousel-wrapper">
+        <button
+          class="carousel-btn carousel-btn--prev"
+          (click)="prevTratamientos()"
+          [disabled]="!canPrevTratamientos()"
+          [class.carousel-btn--hidden]="tratamientos().length <= tratamientosPageSize"
+          aria-label="Tratamientos anteriores">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+
+        <div class="tratamientos-grid" [@pageSlide]="tratamientosPage()">
+          @for (t of visibleTratamientos(); track t.id) {
+            <article class="tratamiento-card">
+              @if (t.foto_url) {
+                <div class="card-foto">
+                  <img [src]="apiUrl + t.foto_url" [alt]="t.nombre" loading="lazy">
+                </div>
+              }
+              <div class="card-header">
+                <h3 class="card-title">{{ t.nombre }}</h3>
+              </div>
+              <p class="card-description">{{ t.descripcion }}</p>
+              <div class="card-footer">
+                <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
+                <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
+              </div>
+            </article>
+          }
+        </div>
+
+        <button
+          class="carousel-btn carousel-btn--next"
+          (click)="nextTratamientos()"
+          [disabled]="!canNextTratamientos()"
+          [class.carousel-btn--hidden]="tratamientos().length <= tratamientosPageSize"
+          aria-label="Más tratamientos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
       </div>
+
+      @if (tratamientosTotalPages() > 1) {
+        <div class="tratamientos-pager">
+          @for (i of tratamientosDots(); track i) {
+            <span class="pager-dot" [class.pager-dot--active]="i === tratamientosPage()"></span>
+          }
+        </div>
+      }
     }
   </div>
 </section>
 
+@if (clinica().reviews_enabled) {
+  <section class="reviews-section" id="resenas">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">Reseñas</span>
+        <h2 class="section-title">Lo que dicen nuestros pacientes</h2>
+        <p class="section-lead">Opiniones reales de Google de quienes ya nos eligieron.</p>
+      </div>
+
+      @if (reviewsLoading()) {
+        <div class="reviews-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else if (reviews().length > 0) {
+        <div class="reviews-carousel-wrapper">
+          <button
+            class="carousel-btn carousel-btn--prev"
+            (click)="prevReviews()"
+            [disabled]="!canPrevReviews()"
+            [class.carousel-btn--hidden]="reviewsDots().length <= 1"
+            aria-label="Reseñas anteriores">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+
+          <div class="reviews-grid" [@pageSlide]="reviewsPage()">
+            @for (review of visibleReviews(); track review.author_name) {
+              <article class="review-card">
+                <div class="review-stars">
+                  @for (star of starArray(5); track star) {
+                    <svg class="review-star" [class.review-star--filled]="star <= review.rating" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  }
+                </div>
+                <p class="review-text">{{ review.text }}</p>
+                <div class="review-author">
+                  @if (review.photo_url) {
+                    <img [src]="review.photo_url" [alt]="review.author_name" class="review-avatar" loading="lazy">
+                  } @else {
+                    <div class="review-avatar-placeholder">{{ review.author_name.charAt(0) }}</div>
+                  }
+                  <div class="review-author-info">
+                    <span class="review-author-name">{{ review.author_name }}</span>
+                    <span class="review-time">{{ review.relative_time }}</span>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+
+          <button
+            class="carousel-btn carousel-btn--next"
+            (click)="nextReviews()"
+            [disabled]="!canNextReviews()"
+            [class.carousel-btn--hidden]="reviewsDots().length <= 1"
+            aria-label="Siguientes reseñas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        @if (reviewsDots().length > 1) {
+          <div class="tratamientos-pager">
+            @for (i of reviewsDots(); track i) {
+              <span class="pager-dot" [class.pager-dot--active]="i === reviewsPage()"></span>
+            }
+          </div>
+        }
+      }
+    </div>
+  </section>
+}
+
+@if (clinica().nosotros) {
+  <section class="nosotros-section" id="ubicacion">
+    <div class="section-container">
+      <div class="nosotros-header">
+        <span class="section-eyebrow">Ubicación</span>
+        <h2 class="section-title">Dónde nos encontramos</h2>
+        <p class="nosotros-text">{{ clinica().nosotros }}</p>
+      </div>
+      <div class="nosotros-layout">
+        @if (clinica().foto_ubicacion_url) {
+          <div class="nosotros-foto">
+            <img [src]="clinica().foto_ubicacion_url" alt="Clínica {{ clinica().nombre }}" loading="lazy">
+          </div>
+        }
+        <div class="nosotros-map">
+          <iframe
+            [src]="mapsUrl()"
+            title="Ubicación de la clínica"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+}
+
 <section class="contacto-section" id="contacto">
   <div class="section-container">
+    <div class="contact-header">
+      <span class="section-eyebrow">Contactanos</span>
+      <h2 class="section-title">Coordiná tu consulta</h2>
+      <p class="section-lead">
+        Estamos para responder tus consultas. Escribinos por WhatsApp, llamá o envianos un correo.
+      </p>
+    </div>
     <div class="contact-layout">
-      <div class="contact-info">
-        <span class="section-eyebrow">Contactanos</span>
-        <h2 class="section-title">Coordiná tu consulta</h2>
-        <p class="section-lead">
-          Estamos para responder tus consultas. Escribinos por WhatsApp, llamá o envianos un correo.
-        </p>
-        <div class="contact-channels">
-          <a [href]="'https://wa.me/' + clinica.whatsapp" target="_blank" rel="noopener" class="contact-channel contact-channel--whatsapp">
+      <div class="contact-channels">
+          <a [href]="'https://wa.me/' + clinica().whatsapp" target="_blank" rel="noopener" class="contact-channel contact-channel--whatsapp">
             <div class="contact-channel-icon">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.94 11.94 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 6L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12a11.94 11.94 0 0 0-3.48-8.52zM12 22c-1.86 0-3.66-.5-5.24-1.45l-.38-.22-3.67.96.98-3.58-.25-.37A9.94 9.94 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10z"/></svg>
             </div>
@@ -172,53 +359,67 @@
               <span class="contact-channel-value">Respuesta rápida</span>
             </div>
           </a>
-          <a [href]="'tel:' + clinica.phone" class="contact-channel">
+          <a [href]="'tel:' + clinica().telefono" class="contact-channel">
             <div class="contact-channel-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </div>
             <div class="contact-channel-body">
               <span class="contact-channel-label">Teléfono</span>
-              <span class="contact-channel-value">{{ clinica.phone }}</span>
+              <span class="contact-channel-value">{{ clinica().telefono }}</span>
             </div>
           </a>
-          <a [href]="'mailto:' + clinica.email" class="contact-channel">
+          <a [href]="'mailto:' + clinica().email" class="contact-channel">
             <div class="contact-channel-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
             </div>
             <div class="contact-channel-body">
               <span class="contact-channel-label">Email</span>
-              <span class="contact-channel-value">{{ clinica.email }}</span>
+              <span class="contact-channel-value">{{ clinica().email }}</span>
             </div>
           </a>
-        </div>
       </div>
 
       <aside class="contact-card">
         <h3>Visitanos</h3>
         <div class="contact-detail">
           <span class="contact-detail-label">Dirección</span>
-          <span class="contact-detail-value">{{ clinica.address }}</span>
+          <span class="contact-detail-value">{{ clinica().direccion }}</span>
         </div>
         <div class="contact-detail">
           <span class="contact-detail-label">Horario</span>
-          <span class="contact-detail-value">{{ clinica.hours }}</span>
+          <span class="contact-detail-value">{{ clinica().horario }}</span>
         </div>
-        <div class="contact-hours-badge">
+        <div class="contact-hours-badge"
+             [class.contact-hours-badge--closed]="clinicStatus().type === 'closed'"
+             [class.contact-hours-badge--soon]="clinicStatus().type === 'closing-soon'">
           <span class="hours-dot"></span>
-          Abierto hoy
+          {{ clinicStatus().label }}
         </div>
       </aside>
     </div>
   </div>
 </section>
 
+@if (clinica().whatsapp) {
+  <a
+    [href]="'https://wa.me/' + clinica().whatsapp"
+    target="_blank"
+    rel="noopener"
+    class="whatsapp-fab"
+    aria-label="Contactar por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.52 3.48A11.94 11.94 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 6L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12a11.94 11.94 0 0 0-3.48-8.52zM12 22c-1.86 0-3.66-.5-5.24-1.45l-.38-.22-3.67.96.98-3.58-.25-.37A9.94 9.94 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.2-7.6c-.28-.14-1.67-.82-1.93-.91-.26-.1-.45-.14-.64.14-.19.28-.73.91-.9 1.1-.16.18-.33.2-.61.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.28-.02-.43.12-.57.13-.12.28-.33.42-.49.14-.16.19-.28.28-.46.1-.18.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.47-.47-.64-.48H8.2c-.19 0-.49.07-.75.35-.26.28-1 .98-1 2.39s1.02 2.77 1.17 2.96c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.67-.68 1.9-1.34.24-.66.24-1.22.17-1.34-.07-.12-.26-.19-.54-.33z"/>
+    </svg>
+  </a>
+}
+
 <footer class="public-footer">
   <div class="section-container">
     <div class="footer-grid">
       <div class="footer-col footer-col--brand">
-        <h3 class="footer-clinic">{{ clinica.nombre }}</h3>
-        <p class="footer-tagline">{{ clinica.tagline }}</p>
-        <p class="footer-address">{{ clinica.address }}</p>
+        <h3 class="footer-clinic">{{ clinica().nombre }}</h3>
+        <p class="footer-tagline">{{ clinica().tagline }}</p>
+        <p class="footer-address">{{ clinica().direccion }}</p>
       </div>
 
       <div class="footer-col">
@@ -227,6 +428,12 @@
           <li><a href="#top">Inicio</a></li>
           <li><a href="#features">Por qué elegirnos</a></li>
           <li><a href="#tratamientos">Tratamientos</a></li>
+          @if (clinica().reviews_enabled) {
+            <li><a href="#resenas">Reseñas</a></li>
+          }
+          @if (clinica().nosotros) {
+            <li><a href="#ubicacion">Ubicación</a></li>
+          }
           <li><a href="#contacto">Contacto</a></li>
         </ul>
       </div>
@@ -234,9 +441,9 @@
       <div class="footer-col">
         <h4>Atención</h4>
         <ul>
-          <li>{{ clinica.hours }}</li>
-          <li>{{ clinica.phone }}</li>
-          <li><a [href]="'mailto:' + clinica.email">{{ clinica.email }}</a></li>
+          <li>{{ clinica().horario }}</li>
+          <li>{{ clinica().telefono }}</li>
+          <li><a [href]="'mailto:' + clinica().email">{{ clinica().email }}</a></li>
         </ul>
       </div>
 
@@ -249,7 +456,7 @@
     </div>
 
     <div class="footer-bottom">
-      <p class="footer-copy">© {{ currentYear }} {{ clinica.nombre }}. Todos los derechos reservados.</p>
+      <p class="footer-copy">© {{ currentYear }} {{ clinica().nombre }}. Todos los derechos reservados.</p>
       <div class="powered-by">
         <span>Powered by</span>
         <app-brand-logo size="sm" [showWordmark]="true"></app-brand-logo>
