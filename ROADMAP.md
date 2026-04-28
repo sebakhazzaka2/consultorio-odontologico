@@ -22,7 +22,8 @@ Public page polish ✅ → Balance/Gastos → SEO multi-subdominio → Mails (Br
 | Admin polish | ✅ Completo (mergeado a main) |
 | Deploy real | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) |
 | Post-deploy hardening | ✅ Completo (mergeado a main, PR #19, 2026-04-22) |
-| **Public page polish** | ✅ 13 commits listos en `feat/public-page-polish` — PR a main inminente |
+| **Public page polish** | ✅ Completo (mergeado a main, PR #20, 2026-04-28) |
+| **CI — frontend lint/build job** | ⏳ Pendiente (agregar a `.github/workflows/ci.yml` antes del Sprint 1) |
 | **Sprint 1 — Balance + Gastos** | ⏳ Próximo (3-5 días) |
 | **Sprint 2 — SEO multi-subdominio** | ⏳ Tras Balance (3-5 días) |
 | **Sprint 3 — Mails (Brevo)** | ⏳ Tras SEO (5-8 días) |
