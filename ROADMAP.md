@@ -1,11 +1,11 @@
 # Roadmap — Consultorio Odontológico
 
-> **Última actualización:** 2026-04-27 — review completa post `feat/public-page-polish`. Reordenado: Balance/Gastos → SEO → Mails → MVP2.
+> **Última actualización:** 2026-05-04 — Balance + Gastos vuelve al pipeline (Sprint 5, tras MVP2); Sprint 6 = instancia demo + README pro para portfolio y demo comercial.
 
 ## Secuencia recomendada
 ```
-Public page polish ✅ → Balance/Gastos → SEO multi-subdominio → Mails (Brevo)
-→ MVP2 → Observability+Rollback → WhatsApp → primer cliente → cliente #2 con automatizaciones
+Public page polish ✅ → Multi-rubro genérico → Mails (Brevo) → MVP2 (novia como piloto)
+→ Balance + Gastos → Demo instance + README pro → SEO multi-subdominio → Observability+Rollback → WhatsApp → primer cliente pagando
 ```
 
 ## Estado por fase
@@ -24,17 +24,18 @@ Public page polish ✅ → Balance/Gastos → SEO multi-subdominio → Mails (Br
 | Post-deploy hardening | ✅ Completo (mergeado a main, PR #19, 2026-04-22) |
 | **Public page polish** | ✅ Completo (mergeado a main, PR #20, 2026-04-28) |
 | **CI — frontend lint/build job** | ⏳ Pendiente (agregar a `.github/workflows/ci.yml` antes del Sprint 1) |
-| **Sprint 1 — Balance + Gastos** | ⏳ Próximo (3-5 días) |
-| **Sprint 2 — SEO multi-subdominio** | ⏳ Tras Balance (3-5 días) |
-| **Sprint 3 — Mails (Brevo)** | ⏳ Tras SEO (5-8 días) |
-| **Sprint 4-5 — MVP2 rol paciente** | ⏳ Tras Mails (3-4 semanas) |
-| **Sprint 6 — Observability + rollback** | ⏳ Tras MVP2 (1 semana) |
-| **Sprint 7 — WhatsApp automatizado** | ⏳ Tras observability (1-2 semanas) |
+| **Sprint 1 — Multi-rubro genérico** | ⏳ Próximo (2-3 días) — renombramientos + config por instancia |
+| **Sprint 2 — Mails (Brevo)** | ⏳ Tras multi-rubro (5-8 días) — bloqueante de MVP2 |
+| **Sprint 3-4 — MVP2 rol paciente** | ⏳ Tras Mails (3-4 semanas) — novia como usuario piloto |
+| **Sprint 5 — Balance + Gastos** | ⏳ Tras MVP2 — novia como piloto activa genera el driver de feedback |
+| **Sprint 6 — Demo instance + README pro** | ⏳ Tras Balance+Gastos — producto completo → instancia demo con datos fake + README portfolio |
+| **Sprint 7 — SEO multi-subdominio** | ⏳ Tras demo (3-5 días) — con 2 subdominios reales el ROI es mayor |
+| **Sprint 8 — Observability + rollback** | ⏳ Tras SEO (1 semana) |
+| **Sprint 9 — WhatsApp automatizado** | ⏳ Tras observability (1-2 semanas) |
 | 🎯 Primer cliente Web | ⏳ Tras MVP2 + Mails |
 | 🎯 Cliente #2 | ⏳ Trigger para Terraform + Prometheus + script provisioning |
 | Landing SaaS proveedor | ⏳ Post primer cliente pagando con caso de éxito |
 | V5 — Multi-tenant SaaS | ⏳ Post ~5 clientes activos |
-| Multi-rubro (psicólogos/nutricionistas) | ⏳ Postergado hasta 2-3 clientes odontológicos |
 
 ---
 
@@ -102,27 +103,20 @@ Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de pr
 
 ## Sprints planificados (post merge `feat/public-page-polish`)
 
-### Sprint 1 — Balance + Gastos (3-5 días)
-**Por qué primero:** la base ya existe (Pago, HistorialClinico, getSaldoPaciente, dashboard ingresos). Quick win de alto valor para Samara.
-- Migración Flyway `V5__create_gastos.sql`: `gastos(id, fecha, monto, categoria, descripcion, comprobante_url, created_at, created_by)`
-- Backend: entidad, repository, service, controller, DTO con `@JsonNaming(SnakeCaseStrategy)`
-- Endpoint `GET /reportes/balance?desde&hasta` → ingresos, gastos por categoría, neto
-- Frontend pestaña "Balance": tarjetas (Ingresos, Gastos, Neto), tabla de gastos, form alta, filtro período
-- Tests unitarios del service + tests integración del controller
+### Sprint 1 — Multi-rubro genérico (2-3 días)
+**Por qué primero:** la novia (estética, cejas/pestañas) es el nuevo usuario piloto. Antes de mails y MVP2 necesitamos que el sistema hable "estética" y no "odontología". El código es ~60% genérico; el 40% restante es mecánico de renombrar.
 
-### Sprint 2 — SEO multi-subdominio (3-5 días)
-**Por qué importante:** cada subdominio (`clienteX.turnosuy.com`) es un sitio independiente para Google. El código se hace una sola vez y aplica a todos los clientes futuros — escala con el negocio.
-- Prerender estático con `@angular/ssr` (build-time, sin runtime overhead)
-- Meta tags dinámicos desde `ClinicConfig` usando `Title` + `Meta` services
-- JSON-LD `Dentist` con datos de clínica (nombre, dirección, teléfono, horarios, ratingValue, reviewCount)
-- Endpoint backend `/sitemap.xml` por subdominio (arma desde `ClinicProperties`)
-- `robots.txt` estático con `Sitemap: https://{dominio}/sitemap.xml`
-- Headers HTTP de seguridad en `Caddyfile` (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
-- Documentar checklist post-deploy de cliente nuevo: Search Console + GBP
-- Acompañar a Samara para reclamar Google Business Profile (causa raíz de "no aparece en Google")
+**Relevamiento previo (2026-04-29):** el código es 60-70% genérico. Lo que requiere cambio:
+- **Config/env (30 min):** `CLINIC_NOMBRE`, `CLINIC_TAGLINE`, features, lista de servicios pública en `servicios.component.ts`
+- **Renombramientos mecánicos (3-4 horas):** `Tratamiento` → `Servicio` (entidad + DTO + controller + service + frontend models), endpoint `/api/tratamientos` → `/api/servicios`, `HistorialClinico` → `HistorialProcedimientos` o similar
+- **Migración Flyway:** renombrar tabla `tratamientos` → `servicios` (V5)
+- **UI labels:** "Tratamientos" → "Servicios", "Historial Clínico" → "Procedimientos realizados" en templates Angular
+- **No requiere cambios de lógica:** citas, pagos, agenda, auth son completamente genéricos
 
-### Sprint 3 — Infraestructura de mail (5-8 días)
-**Por qué después de SEO:** bloqueante de MVP2 (password reset). Stack: Brevo (free tier 300 mails/día) + Spring Boot Mail + Thymeleaf.
+**Resultado:** mismo codebase sirve para dental y estética solo cambiando variables de entorno + subdominio.
+
+### Sprint 2 — Infraestructura de mail (5-8 días)
+**Por qué segundo:** bloqueante de MVP2 (password reset sin mail = no hay registro de paciente). Stack: Brevo (free tier 300 mails/día) + Spring Boot Mail + Thymeleaf.
 - `spring-boot-starter-mail` + Brevo SMTP en `application-prod.properties`
 - Templates Thymeleaf base con header/footer compartido
 - Mail confirmación turno agendado / cancelado / reagendado
@@ -130,7 +124,8 @@ Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de pr
 - Password reset endpoint (token + expiración + UI)
 - Cron backup: alerta de fallo (mail al admin si backup no se ejecutó)
 
-### Sprint 4-5 — MVP2 patient portal (3-4 semanas)
+### Sprint 3-4 — MVP2 patient portal (3-4 semanas)
+**Driver:** la novia (usuaria piloto) necesita poder pedir turno por su cuenta. Sin MVP2, el sistema es solo admin-only y ella no puede interactuar.
 - Registro/login paciente + JWT con rol PACIENTE + RBAC efectivo (`@PreAuthorize` + `roleGuard`)
 - Pedir turno desde página pública → cita PENDIENTE → admin confirma
 - Refresh tokens con rotación + revocación
@@ -140,7 +135,30 @@ Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de pr
 - JWT en cookie HttpOnly + SameSite=Strict (mover desde localStorage)
 - Notificación por mail (reusa Sprint 3)
 
-### Sprint 6 — Observability + rollback (1 semana)
+### Sprint 5 — Balance + Gastos (1-2 semanas)
+**Por qué después de MVP2:** con la novia usando el sistema activamente, el módulo financiero tiene un driver real de feedback. Registrar ingresos/egresos del negocio, balance mensual, gráficos.
+- CRUD de gastos con categorías
+- Balance mensual: Σ cobros − Σ gastos del período
+- Vista resumen en dashboard admin
+- Export básico (CSV o PDF)
+
+### Sprint 6 — Demo instance + README pro (2-4 días)
+**Por qué después de Balance+Gastos:** el producto está completo — tiene todo lo que hay que mostrar. Hacerlo antes implica rehacer los datos demo con cada sprint.
+- Docker Compose separado (`docker-compose.demo.yml`) con datos fake realistas
+- Subdominio `demo.turnosuy.com` con user/pass públicos en el README
+- README pro: badges, screenshot/GIF del admin, arquitectura de deploy, decisiones de diseño, link live + demo
+- Sirve doble: portfolio personal + demo comercial para clientes potenciales
+
+### Sprint 7 — SEO multi-subdominio (3-5 días)
+**Por qué después de demo:** con 2 subdominios reales (dental + estética) el ROI es inmediato y el JSON-LD necesita ser genérico (no solo `Dentist` schema). El código se hace una vez y aplica a todos los clientes futuros.
+- Prerender estático con `@angular/ssr` (build-time, sin runtime overhead)
+- Meta tags dinámicos desde `ClinicConfig` usando `Title` + `Meta` services
+- JSON-LD genérico (`LocalBusiness` + tipo específico por instancia) desde `ClinicProperties`
+- Endpoint backend `/sitemap.xml` por subdominio
+- `robots.txt` estático con `Sitemap:`
+- Headers HTTP de seguridad en `Caddyfile` (CSP, HSTS, X-Frame-Options, etc.)
+
+### Sprint 8 — Observability + rollback (1 semana)
 - Logs JSON + correlationId/MDC
 - Micrometer + actuator/prometheus expuesto
 - Smoke test post-deploy: `curl /api/actuator/health` con retry
@@ -150,12 +168,12 @@ Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de pr
 - Notificación de deploy a Telegram/Discord
 - Reglas Sentry + alertas Uptime Kuma a canal real
 
-### Sprint 7 — WhatsApp automatizado (1-2 semanas)
+### Sprint 9 — WhatsApp automatizado (1-2 semanas)
 - Twilio Business API o UltraMsg
 - Recordatorio 24h antes de turno
 - Notificación al cliente de cambios
 
-### Sprint 8+ — Pre-cliente #2
+### Sprint 10+ — Pre-cliente #2
 - Script de provisioning (15 min para nueva clínica) — incluye Search Console + GBP en checklist
 - Terraform módulo Hetzner Cloud + Cloudflare
 - Prometheus + Grafana (free tier o self-hosted)
@@ -188,448 +206,3 @@ Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de pr
 - No urgente — la página de ventas del software para atraer nuevas clínicas
 - Stack: Astro + Tailwind v4, deploy en Cloudflare Pages (gratis)
 - Formulario demo vía EmailJS / Resend
-
-Auditoría del proyecto y priorización pre/post deploy                                                                         Context                                                       
-
- Estado: rama feat/Admin-Polish-v2, ROADMAP dice que falta el  
- deploy real (Hetzner + Cloudflare + dominio, requiere pagar). 
-  El usuario pide una revisión del estado actual del proyecto, 
-  mejoras posibles y una tabla de prioridad antes y después    
- del deploy, identificando qué debería estar y no está.        
-
- Este documento no modifica código. Es el entregable de        
- planificación: un snapshot de hallazgos más tablas de
- prioridad accionables. Cada ítem listado después puede        
- convertirse en una tarea o PR independiente.
-
- ---
- Snapshot de estado
-
- Backend (Spring Boot 3.2.5 + Java 17 + MySQL): CRUD completo  
- para Pacientes, Citas, Tratamientos, Historial y Pagos (Pagos 
-  sin PUT). JWT + BCrypt + CORS + validación @Valid
- funcionales. Flyway V1-V4, Actuator habilitado en 8081        
- interno, Dockerfile multi-stage con usuario non-root,
- application-prod.properties con envs externalizados. Tests de 
-  integración básicos (~20% cobertura estimada).
-
- Frontend (Angular 19 + Material): Standalone components,      
- signals, lazy loading, locale es-UY, Design System en
- _design-system.scss con tokens CSS. Auth con JWT en
- localStorage + authInterceptor + authGuard +
- httpErrorInterceptor (401 → logout). Dashboard con stats y    
- gráfico, agenda semanal, detalle paciente con pagos y saldo,  
- página pública con tratamientos activos, búsqueda de
- pacientes, pagos en flujo de historial.
-
- Infra: docker-compose.prod.yml con MySQL no expuesto, nginx   
- en contenedor frontend con limit_req_zone para login y proxy  
- /api/, actuator bloqueado. CI (.github/workflows/ci.yml)      
- corre tests + build pero push: false (GHCR no activado).      
- scripts/backup.sh existe pero sin cron.
-
- ---
- Hallazgos críticos (paths de referencia)
-
- Bloqueantes de deploy
-
- - Sin HTTPS en el stack: frontend/nginx.conf solo HTTP. No    
- hay reverse proxy con Cloudflare Origin CA ni Let's Encrypt   
- configurado.
- - CI no publica imágenes: .github/workflows/ci.yml tiene      
- push: false. El server Hetzner no podrá pullear nada.
- - Sin runbook de deploy: ni DEPLOY.md ni RUNBOOK.md. El       
- ROADMAP menciona pasos pero no hay secuencia ejecutable.      
- - Backup manual: scripts/backup.sh existe pero sin cron en    
- servidor ni test de restore documentado.
- - Sin reset/cambio de password para admin: si el único        
- usuario olvida la contraseña queda locked-out
- (frontend/src/app/core/auth/auth.service.ts, sin endpoint en  
- AuthController).
- - Sin validación fail-fast de envs: si falta JWT_SECRET o     
- DB_PASSWORD, la app arranca con defaults silenciosos.
- - Sin páginas 404/500 en frontend ni error_page en nginx.     
-
- Gaps de producto / UX
-
- - Sin perfil de usuario: el admin no tiene pantalla para      
- cambiar su propia contraseña.
- - Logout sin confirmación: un clic accidental en la toolbar   
- desloguea.
- - JWT en localStorage: riesgo XSS conocido; aceptable para    
- MVP1 admin-only, replantear en MVP2.
- - Sin refresh token: sesión muere a las 2h sin aviso
- (interceptor la cierra, pero no hay renovación).
- - Sin paginación en listados (Pacientes, Citas). OK hoy (1    
- clínica), rompe a escala.
- - Sin índice compuesto citas(paciente_id, fecha_hora_inicio)  
- (consulta de disponibilidad).
-
- Gaps legales / compliance (Uruguay — Ley 18.331)
-
- - Sin política de privacidad ni términos en la página pública 
-  — obligatorio al manejar datos sensibles de salud.
- - Sin consentimiento de datos al registrar pacientes.
- - Sin auditoría de acceso a historial clínico (quién vio qué  
- y cuándo).
-
- Gaps de observabilidad
-
- - Sin error tracking (Sentry o similar).
- - Sin uptime monitoring (Uptime Kuma / UptimeRobot).
- - Sin métricas de app (Micrometer/Prometheus).
- - Sin logs estructurados (JSON con correlationId).
-
- ---
- Tabla 1 — ANTES del deploy (bloqueantes y alta prioridad)     
-
- #: 1
- Ítem: Reverse proxy con HTTPS (Caddy o Traefik delante del    
-   stack, Cloudflare Origin CA)
- Categoría: Infra
- Criticidad: 🔴 Bloqueante
- Esfuerzo: M
- Razón: No se puede servir un consultorio por HTTP en 2026     
- ────────────────────────────────────────
- #: 2
- Ítem: Flip push: true en CI + secrets GHCR + workflow de      
-   deploy (pull + compose up en Hetzner)
- Categoría: CI/CD
- Criticidad: 🔴 Bloqueante
- Esfuerzo: M
- Razón: Sin esto no hay forma repetible de deployar
- ────────────────────────────────────────
- #: 3
- Ítem: DEPLOY.md / RUNBOOK con pasos Hetzner + Cloudflare +    
-   dominio + primer deploy
- Categoría: Docs
- Criticidad: 🔴 Bloqueante
- Esfuerzo: S
- Razón: Evita errores la noche del deploy
- ────────────────────────────────────────
- #: 4
- Ítem: Validación fail-fast de envs críticas (JWT_SECRET,      
-   DB_PASSWORD, CORS_ALLOWED_ORIGINS) al startup
- Categoría: Backend
- Criticidad: 🔴 Alta
- Esfuerzo: XS
- Razón: Evita prod con defaults inseguros
- ────────────────────────────────────────
- #: 5
- Ítem: Endpoint + UI de cambio de password del admin
-   autenticado
- Categoría: Fullstack
- Criticidad: 🔴 Alta
- Esfuerzo: S
- Razón: Sin esto no se puede rotar la contraseña entregada al  
-   cliente
- ────────────────────────────────────────
- #: 6
- Ítem: Cron de backup diario + test de restore manual
-   documentado
- Categoría: Infra
- Criticidad: 🔴 Alta
- Esfuerzo: S
- Razón: Datos de salud — sin backup funcional no se despliega  
- ────────────────────────────────────────
- #: 7
- Ítem: Página 404 + 500 en Angular y error_page en nginx       
- Categoría: Frontend
- Criticidad: 🟡 Media
- Esfuerzo: XS
- Razón: Rutas inválidas o errores quedan en blanco
- ────────────────────────────────────────
- #: 8
- Ítem: Política de privacidad + términos + aviso legal básico  
-   (Ley 18.331)
- Categoría: Legal
- Criticidad: 🔴 Alta
- Esfuerzo: S
- Razón: Obligación legal al tratar datos de salud
- ────────────────────────────────────────
- #: 9
- Ítem: Confirmación de logout + mostrar email del admin en     
-   toolbar
- Categoría: UX
- Criticidad: 🟡 Media
- Esfuerzo: XS
- Razón: Evita desloguear por error; mejora claridad
- ────────────────────────────────────────
- #: 10
- Ítem: Título dinámico por ruta (Title service de Angular)     
- Categoría: SEO/UX
- Criticidad: 🟡 Media
- Esfuerzo: XS
- Razón: Hoy todas las pestañas dicen lo mismo
- ────────────────────────────────────────
- #: 11
- Ítem: Índice compuesto citas(paciente_id, fecha_hora_inicio)  
-   en nueva migración Flyway
- Categoría: Backend
- Criticidad: 🟡 Media
- Esfuerzo: XS
- Razón: Consulta de disponibilidad se degrada rápido
- ────────────────────────────────────────
- #: 12
- Ítem: Verificar .env.example completo + .env fuera del repo + 
-
-   doc de rotación de secretos
- Categoría: Seguridad
- Criticidad: 🔴 Alta
- Esfuerzo: XS
- Razón: Riesgo de commitear secrets accidental
- ────────────────────────────────────────
- #: 13
- Ítem: robots.txt (allow público, disallow /admin y /api) +    
-   favicon revisado
- Categoría: SEO
- Criticidad: 🟢 Baja
- Esfuerzo: XS
- Razón: Higiene básica SEO
- ────────────────────────────────────────
- #: 14
- Ítem: Smoke test manual completo en staging (Hetzner antes de 
-
-   apuntar DNS)
- Categoría: QA
- Criticidad: 🔴 Alta
- Esfuerzo: S
- Razón: Primera vez en prod ≠ primera vez en Docker
-
- Esfuerzo total aprox pre-deploy: 2–4 días de trabajo
- focalizado.
-
- ---
- Tabla 2 — DESPUÉS del deploy (Semana 1–2 en producción)       
-
- #: 1
- Ítem: Sentry (plan free) en Angular y Spring Boot
- Categoría: Observabilidad
- Criticidad: 🔴 Alta
- Esfuerzo: S
- Razón: Detectar errores del cliente sin que él los reporte    
- ────────────────────────────────────────
- #: 2
- Ítem: Uptime Kuma auto-hosteado o UptimeRobot free
- Categoría: Observabilidad
- Criticidad: 🔴 Alta
- Esfuerzo: XS
- Razón: Aviso si el server se cae
- ────────────────────────────────────────
- #: 3
- Ítem: Analytics ligero (Plausible self-hosted o GA4)
- Categoría: Producto
- Criticidad: 🟡 Media
- Esfuerzo: S
- Razón: Saber si entra tráfico a la página pública
- ────────────────────────────────────────
- #: 4
- Ítem: Logs estructurados JSON + correlationId + rotación de   
-   logs
- Categoría: Observabilidad
- Criticidad: 🟡 Media
- Esfuerzo: S
- Razón: Debugging serio post primer usuario
- ────────────────────────────────────────
- #: 5
- Ítem: Email transaccional (welcome admin, recordatorio cita)  
- —
-   provider gratis tier (Brevo/Resend)
- Categoría: Producto
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Paso hacia MVP2
- ────────────────────────────────────────
- #: 6
- Ítem: Password reset flow con token por email
- Categoría: Seguridad
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Una vez haya email funcionando
- ────────────────────────────────────────
- #: 7
- Ítem: Paginación en PacienteController y CitaController con   
-   Pageable + soporte en frontend
- Categoría: Performance
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Cuando crezca el volumen
- ────────────────────────────────────────
- #: 8
- Ítem: Soft delete en Paciente + createdBy/updatedBy
- auditables
- Categoría: Compliance
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Requisito serio de historias clínicas
- ────────────────────────────────────────
- #: 9
- Ítem: Auditoría de acceso al historial clínico (tabla
-   audit_log)
- Categoría: Compliance
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Ley 18.331 + buenas prácticas
- ────────────────────────────────────────
- #: 10
- Ítem: Dark mode toggle
- Categoría: UX
- Criticidad: 🟢 Baja
- Esfuerzo: S
- Razón: Ya está el design system; es barato sumarlo
- ────────────────────────────────────────
- #: 11
- Ítem: Export a PDF de historial clínico + impresión de        
- recetas
- Categoría: Producto
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Pedido muy probable del cliente
- ────────────────────────────────────────
- #: 12
- Ítem: Subir cobertura de tests backend a ~50% y frontend a    
-   ~40% (componentes clave)
- Categoría: Calidad
- Criticidad: 🟡 Media
- Esfuerzo: M
- Razón: Antes de que MVP2 agregue más superficie
- ────────────────────────────────────────
- #: 13
- Ítem: Meta tags OG dinámicos + structured data JSON-LD en     
-   página pública
- Categoría: SEO
- Criticidad: 🟢 Baja
- Esfuerzo: S
- Razón: Google Business Profile + compartir en WhatsApp        
-
- ---
- Tabla 3 — MVP2 (rol paciente, siguiente ciclo grande)
-
- ┌─────┬────────────────────────────┬───────────┬──────────┐   
- │  #  │            Ítem            │ Categoría │ Esfuerzo │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │     │ Registro y login de        │           │          │   
- │ 1   │ pacientes (JWT con rol     │ Fullstack │ L        │   
- │     │ PACIENTE)                  │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │     │ RBAC efectivo              │           │          │   
- │ 2   │ (@PreAuthorize en          │ Seguridad │ M        │   
- │     │ controllers + roleGuard en │           │          │   
- │     │  frontend)                 │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │     │ Paciente elige slot en la  │           │          │   
- │ 3   │ página pública → cita      │ Producto  │ L        │   
- │     │ PENDIENTE; admin confirma  │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │ 4   │ Refresh tokens con         │ Seguridad │ M        │   
- │     │ rotación + revocación      │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │ 5   │ Passwords fuertes + rate   │ Seguridad │ S        │   
- │     │ limit login reforzado      │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │ 6   │ PWA (manifest + service    │ Frontend  │ M        │   
- │     │ worker + instalable)       │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │     │ Página "Mi cuenta" del     │           │          │   
- │ 7   │ paciente (ver citas,       │ Frontend  │ M        │   
- │     │ historial resumido)        │           │          │   
- ├─────┼────────────────────────────┼───────────┼──────────┤   
- │ 8   │ Consentimiento explícito   │ Legal     │ S        │   
- │     │ de datos al registrarse    │           │          │   
- └─────┴────────────────────────────┴───────────┴──────────┘   
-
- ---
- Tabla 4 — Nice-to-have / futuro (V3–V5)
-
- ┌────────────────────────────────────┬───────────────────┐    
- │                Ítem                │      Cuándo       │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Historial avanzado con fotos       │ V3                │    
- │ (FileStorage + B2/S3)              │                   │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Notificaciones WhatsApp            │ V4                │    
- │ automatizadas                      │                   │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Búsqueda global cross-módulo       │ Cuando moleste no │    
- │                                    │  tenerla          │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Multi-tenant SaaS                  │ V5, post primer   │    
- │                                    │ cliente pagando   │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Landing comercial                  │ Post primer       │    
- │ (consultorio-landing)              │ cliente           │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Terraform/Ansible para Hetzner     │ Cuando haya       │    
- │                                    │ segundo server    │    
- ├────────────────────────────────────┼───────────────────┤    
- │ Grafana + Prometheus dashboards    │ Cuando haya >1    │    
- │                                    │ cliente           │    
- ├────────────────────────────────────┼───────────────────┤    
- │ i18n (es/pt/en)                    │ Cuando expanda de │    
- │                                    │  Uruguay          │    
- └────────────────────────────────────┴───────────────────┘    
-
- ---
- Secuencia recomendada
-
- 1. Pre-deploy polish (3–5 días): ítems 1–14 de Tabla 1. Foco  
- en HTTPS + CI push + runbook + cambio de password + backup    
- cron + legal básico.
- 2. Deploy real: pagar Hetzner + dominio + Cloudflare,
- ejecutar runbook, smoke test, apuntar DNS.
- 3. Semana 1 en prod: Sentry + Uptime monitoring + primer      
- backup verificado + observar uso real.
- 4. Semana 2–4: paginación, email, password reset, soft        
- delete/auditoría según feedback del cliente.
- 5. MVP2: abrir rama feat/patient-portal con los ítems de      
- Tabla 3.
-
- ---
- Archivos clave para futuras tareas
-
- - backend/src/main/resources/application-prod.properties —    
- envs y perfiles
- - backend/src/main/resources/db/migration/ — próximas
- migraciones (índices, auditoría, soft delete)
- - backend/src/main/java/.../auth/AuthController.java +        
- JwtService.java — password change, refresh tokens
- - backend/src/main/java/.../config/SecurityConfig.java — RBAC 
-  con @PreAuthorize
- - frontend/nginx.conf — reemplazar/ampliar con proxy a Caddy  
- o configurar TLS upstream
- - frontend/src/app/core/auth/auth.service.ts — refresh token, 
-  cambio de password
- - frontend/src/app/app.routes.ts — rutas 404, /mi-cuenta,     
- reset password
- - docker-compose.prod.yml — agregar servicio Caddy/Traefik +  
- volumen de certs
- - .github/workflows/ci.yml — flip push: true, nuevo workflow  
- de deploy
- - scripts/backup.sh — cron + script de restore complementario 
- - ROADMAP.md — actualizar estado post-deploy
- - tasks/lessons.md — registrar lo aprendido del deploy real   
- - Nuevo: DEPLOY.md (runbook), PRIVACY.md + TERMS.md (o        
- componentes Angular equivalentes)
-
- ---
- Verificación del plan
-
- Este plan es un documento de análisis; no hay "ejecución"     
- única. La verificación consiste en:
-
- 1. El usuario revisa las 4 tablas y confirma/reordena
- prioridades.
- 2. Cada ítem bloqueante de la Tabla 1 se convierte en una     
- tarea concreta (rama + PR).
- 3. Al completar la Tabla 1, ROADMAP.md se actualiza y arranca 
-  el deploy real.
- 4. Tras el deploy, se itera sobre Tabla 2 según dolor real    
- observado.
-
- Preguntas abiertas que pueden refinar esto:
- - ¿Hay deadline del cliente para deploy (urgente vs. con      
- polish)?
- - ¿Se acepta Caddy como reverse proxy (más simple) o
- preferencia por Traefik/Nginx?
- - ¿El cliente ya tiene dominio o se compra ahora?
- - ¿Analytics self-hosted (Plausible) o OK con GA4?
