@@ -34,7 +34,7 @@ public class FileStorageService {
     }
   }
 
-  public String storeTratamientoFoto(MultipartFile file) {
+  public String storeServicioFoto(MultipartFile file) {
     String ext = extractExtension(file.getOriginalFilename());
     if (!ALLOWED_EXTENSIONS.contains(ext)) {
       throw new IllegalArgumentException(
@@ -42,7 +42,7 @@ public class FileStorageService {
     }
 
     String filename = UUID.randomUUID() + "." + ext;
-    Path targetDir = uploadRoot.resolve("tratamientos");
+    Path targetDir = uploadRoot.resolve("servicios");
     try {
       Files.createDirectories(targetDir);
       Files.copy(file.getInputStream(), targetDir.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
@@ -50,7 +50,7 @@ public class FileStorageService {
       throw new RuntimeException("Error al guardar la imagen", e);
     }
 
-    String url = contextPath + "/uploads/tratamientos/" + filename;
+    String url = contextPath + "/uploads/servicios/" + filename;
     log.info("Foto guardada: {}", url);
     return url;
   }

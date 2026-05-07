@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class TratamientoRequest {
+public class ServicioRequest {
 
   @NotBlank
   private String nombre;
@@ -23,7 +23,7 @@ public class TratamientoRequest {
 
   private String fotoUrl;
 
-  public TratamientoRequest() {}
+  public ServicioRequest() {}
 
   public String getNombre() {
     return nombre;

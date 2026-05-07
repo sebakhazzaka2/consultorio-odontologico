@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record TratamientoResponse(
+public record ServicioResponse(
     Long id,
     String nombre,
     String descripcion,
