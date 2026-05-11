@@ -3,9 +3,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { Tratamiento, TratamientoPayload } from '../../../core/models/tratamiento.model';
+import { Servicio, ServicioPayload } from '../../../core/models/servicio.model';
 
-export interface ResultadoTratamiento {
+export interface ResultadoServicio {
   ok: boolean;
   mensaje?: string;
   detalles?: string[];
@@ -14,12 +14,12 @@ export interface ResultadoTratamiento {
 @Injectable({
   providedIn: 'root'
 })
-export class TratamientoService {
-  private readonly apiUrl = `${environment.apiUrl}/api/tratamientos`;
+export class ServicioService {
+  private readonly apiUrl = `${environment.apiUrl}/api/servicios`;
 
   constructor(private http: HttpClient) {}
 
-  private extraerError(err: HttpErrorResponse): ResultadoTratamiento {
+  private extraerError(err: HttpErrorResponse): ResultadoServicio {
     const body = err.error as { error?: string; detalles?: string[] } | undefined;
     return {
       ok: false,
@@ -28,46 +28,46 @@ export class TratamientoService {
     };
   }
 
-  listar(): Observable<Tratamiento[]> {
-    return this.http.get<Tratamiento[]>(this.apiUrl).pipe(
+  listar(): Observable<Servicio[]> {
+    return this.http.get<Servicio[]>(this.apiUrl).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }
 
-  listarActivos(): Observable<Tratamiento[]> {
-    return this.http.get<Tratamiento[]>(`${this.apiUrl}/activos`).pipe(
+  listarActivos(): Observable<Servicio[]> {
+    return this.http.get<Servicio[]>(`${this.apiUrl}/activos`).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }
 
-  obtener(id: number): Observable<Tratamiento> {
-    return this.http.get<Tratamiento>(`${this.apiUrl}/${id}`).pipe(
+  obtener(id: number): Observable<Servicio> {
+    return this.http.get<Servicio>(`${this.apiUrl}/${id}`).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }
 
-  crear(payload: TratamientoPayload): Observable<Tratamiento> {
-    return this.http.post<Tratamiento>(this.apiUrl, payload).pipe(
+  crear(payload: ServicioPayload): Observable<Servicio> {
+    return this.http.post<Servicio>(this.apiUrl, payload).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }
 
-  actualizar(id: number, payload: TratamientoPayload): Observable<Tratamiento> {
-    return this.http.put<Tratamiento>(`${this.apiUrl}/${id}`, payload).pipe(
+  actualizar(id: number, payload: ServicioPayload): Observable<Servicio> {
+    return this.http.put<Servicio>(`${this.apiUrl}/${id}`, payload).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }
 
-  uploadFoto(id: number, file: File): Observable<Tratamiento> {
+  uploadFoto(id: number, file: File): Observable<Servicio> {
     const form = new FormData();
     form.append('foto', file);
-    return this.http.patch<Tratamiento>(`${this.apiUrl}/${id}/foto`, form).pipe(
+    return this.http.patch<Servicio>(`${this.apiUrl}/${id}/foto`, form).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }
 
-  toggleActivo(id: number): Observable<Tratamiento> {
-    return this.http.patch<Tratamiento>(`${this.apiUrl}/${id}/toggle`, {}).pipe(
+  toggleActivo(id: number): Observable<Servicio> {
+    return this.http.patch<Servicio>(`${this.apiUrl}/${id}/toggle`, {}).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerError(err)))
     );
   }

@@ -1,4 +1,4 @@
-export interface Tratamiento {
+export interface Servicio {
   id: number;
   nombre: string;
   descripcion: string | null;
@@ -8,7 +8,7 @@ export interface Tratamiento {
   created_at: string;
 }
 
-export interface TratamientoPayload {
+export interface ServicioPayload {
   nombre: string;
   descripcion?: string;
   precio: number;

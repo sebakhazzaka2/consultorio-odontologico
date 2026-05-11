@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PublicTratamiento } from '../models/public-tratamiento.model';
+import { PublicServicio } from '../models/public-servicio.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
-export class PublicTratamientoService {
+export class PublicServicioService {
   constructor(private readonly http: HttpClient) {}
 
-  getActivos(): Observable<PublicTratamiento[]> {
-    return this.http.get<PublicTratamiento[]>(`${environment.apiUrl}/api/public/tratamientos`);
+  getActivos(): Observable<PublicServicio[]> {
+    return this.http.get<PublicServicio[]>(`${environment.apiUrl}/api/public/servicios`);
   }
 }
