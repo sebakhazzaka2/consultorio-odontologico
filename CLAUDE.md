@@ -36,10 +36,11 @@ consultorio-odontologico/
 - PRs siempre con **Squash and Merge**
 
 ### Ramas activas
-- `main` — rama estable, PR #20 (public-page-polish) mergeado 2026-04-28
+- `main` — rama estable
 
 ### Ramas mergeadas (referencia)
 - `v2-angular-frontend`, `p1-hardening-backend`, `feat/agenda-calendar`, `feat/ux-essentials`, `feat/production-deploy`
+- `feat/multi-rubro` (PR #21, 2026-05-11), `fix/safari-white-screen` (2026-05-11), `fix/admin-branding` (2026-05-11)
 
 ## Modelo de negocio
 
@@ -81,21 +82,26 @@ FEATURE_WHATSAPP=true
 
 ---
 
-## Estado actual (2026-05-04)
+## Estado actual (2026-05-11)
 
-Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20, mergeado 2026-04-28).
+Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21, live 2026-05-11).
 
-**Driver de cambio:** la hermana (Samara) no está usando el sistema activamente → sin feedback. La novia (estética, cejas/pestañas) pasa a ser la usuaria piloto en su propio subdominio.
+**Instancias en producción:**
+- `neodentalmaster.turnosuy.com` — segunda instancia live (odontología, Montevideo)
+- `dentalmontecaseros.turnosuy.com` — primera instancia (sin uso activo)
 
-Siguiente: Multi-rubro (S1) → Mails (S2) → MVP2 (S3-4) → Balance+Gastos (S5) → Demo instance + README pro (S6) → SEO (S7).
+**Driver de cambio:** la novia (estética, cejas/pestañas) es la usuaria piloto objetivo. Se onboarda cuando esté MVP2 (registro/login de pacientes).
+
+**Deuda técnica conocida:** `clinic.json` y `CLINIC_NAME` son una segunda fuente de config paralela a `CLINIC_NOMBRE`/Spring Boot. Eliminar al inicio de Sprint 2 — el admin debe leer de `/api/public/config`.
+
+Siguiente: Mails (S2) → MVP2 (S3-4) → Balance+Gastos (S5) → Demo instance + README pro (S6) → SEO (S7).
 
 Ver detalles completos y secuencia por sprint en `ROADMAP.md`.
 
-## Prioridades actuales (2026-05-04)
+## Prioridades actuales (2026-05-11)
 
-🔴 **Sprint 1 — Multi-rubro genérico** (2-3 días). Renombrar `Tratamiento`→`Servicio`, `HistorialClinico`→`HistorialProcedimientos`, endpoint `/tratamientos`→`/servicios`, migración Flyway, labels Angular. El código es 60% genérico; el resto es mecánico. Ver detalle en ROADMAP.md Sprint 1.
-🔴 **Sprint 2 — Mails (Brevo)** (5-8 días). Bloqueante de MVP2 (password reset). Eventos: turno agendado/cancelado/reagendado, historia + detalle pago/deuda.
-🔴 **Sprint 3-4 — MVP2 rol paciente** (3-4 sem). Registro/login, JWT PACIENTE, pedir turno → PENDIENTE, refresh tokens, "Mi cuenta", JWT en cookie HttpOnly, consentimiento Ley 18.331, política de privacidad + términos. **La novia es el usuario piloto.**
+🔴 **Sprint 2 — Mails (Brevo)** (5-8 días). Bloqueante de MVP2 (password reset). Eventos: turno agendado/cancelado/reagendado, historial + detalle pago/deuda. Incluye eliminar clinic.json al inicio.
+🔴 **Sprint 3-4 — MVP2 rol paciente** (3-4 sem). Onboardear a la novia como usuaria piloto al terminar esto. Registro/login, JWT PACIENTE, pedir turno → PENDIENTE, refresh tokens, "Mi cuenta", JWT en cookie HttpOnly, consentimiento Ley 18.331, política de privacidad + términos. **La novia es el usuario piloto.**
 🔴 **Sprint 5 — Balance + Gastos** (1-2 sem). Vuelve al pipeline con la novia como usuaria activa generando feedback real.
 🔴 **Sprint 6 — Demo instance + README pro** (2-4 días). `docker-compose.demo.yml` con datos fake, `demo.turnosuy.com`, README nivel portfolio. Doble ROI: portfolio personal + demo comercial para clientes.
 🟡 Sprint 7 — SEO multi-subdominio. Con 2 subdominios reales el ROI es inmediato; JSON-LD genérico (`LocalBusiness`) no solo `Dentist`.

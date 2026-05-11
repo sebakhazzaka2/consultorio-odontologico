@@ -1,10 +1,10 @@
 # Roadmap — Consultorio Odontológico
 
-> **Última actualización:** 2026-05-04 — Balance + Gastos vuelve al pipeline (Sprint 5, tras MVP2); Sprint 6 = instancia demo + README pro para portfolio y demo comercial.
+> **Última actualización:** 2026-05-11 — Sprint 1 multi-rubro completo y en producción. Segunda instancia live: neodentalmaster.turnosuy.com.
 
 ## Secuencia recomendada
 ```
-Public page polish ✅ → Multi-rubro genérico → Mails (Brevo) → MVP2 (novia como piloto)
+Public page polish ✅ → Multi-rubro genérico ✅ → Mails (Brevo) → MVP2 (novia como piloto)
 → Balance + Gastos → Demo instance + README pro → SEO multi-subdominio → Observability+Rollback → WhatsApp → primer cliente pagando
 ```
 
@@ -23,9 +23,10 @@ Public page polish ✅ → Multi-rubro genérico → Mails (Brevo) → MVP2 (nov
 | Deploy real | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) |
 | Post-deploy hardening | ✅ Completo (mergeado a main, PR #19, 2026-04-22) |
 | **Public page polish** | ✅ Completo (mergeado a main, PR #20, 2026-04-28) |
-| **CI — frontend lint/build job** | ⏳ Pendiente (agregar a `.github/workflows/ci.yml` antes del Sprint 1) |
-| **Sprint 1 — Multi-rubro genérico** | ⏳ Próximo (2-3 días) — renombramientos + config por instancia |
-| **Sprint 2 — Mails (Brevo)** | ⏳ Tras multi-rubro (5-8 días) — bloqueante de MVP2 |
+| **fix/safari-white-screen** | ✅ Completo (mergeado a main, 2026-05-11) |
+| **Sprint 1 — Multi-rubro genérico** | ✅ Completo (mergeado a main, 2026-05-11) — live en neodentalmaster.turnosuy.com |
+| **fix/admin-branding** | ✅ Completo (mergeado a main, 2026-05-11) — tab title y admin toolbar desde config |
+| **Sprint 2 — Mails (Brevo)** | ⏳ Próximo (5-8 días) — bloqueante de MVP2 |
 | **Sprint 3-4 — MVP2 rol paciente** | ⏳ Tras Mails (3-4 semanas) — novia como usuario piloto |
 | **Sprint 5 — Balance + Gastos** | ⏳ Tras MVP2 — novia como piloto activa genera el driver de feedback |
 | **Sprint 6 — Demo instance + README pro** | ⏳ Tras Balance+Gastos — producto completo → instancia demo con datos fake + README portfolio |
@@ -117,10 +118,15 @@ Lo que tiene que estar resuelto antes del primer cliente de pago (en orden de pr
 
 ### Sprint 2 — Infraestructura de mail (5-8 días)
 **Por qué segundo:** bloqueante de MVP2 (password reset sin mail = no hay registro de paciente). Stack: Brevo (free tier 300 mails/día) + Spring Boot Mail + Thymeleaf.
+
+**Al inicio del sprint — deuda técnica de Sprint 1:**
+- Eliminar `clinic.json` y `CLINIC_NAME`: hacer que el admin lea de `/api/public/config` igual que la página pública → una sola variable `CLINIC_NOMBRE`, un solo source of truth
+
+**Mails:**
 - `spring-boot-starter-mail` + Brevo SMTP en `application-prod.properties`
 - Templates Thymeleaf base con header/footer compartido
 - Mail confirmación turno agendado / cancelado / reagendado
-- Mail entrada en historia clínica con detalle tratamiento + precio + deuda
+- Mail entrada en historial con detalle servicio + precio + deuda
 - Password reset endpoint (token + expiración + UI)
 - Cron backup: alerta de fallo (mail al admin si backup no se ejecutó)
 
