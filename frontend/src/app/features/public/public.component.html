@@ -2,7 +2,7 @@
   <div class="nav-container">
     <a class="nav-brand" href="#top">{{ clinica().nombre }}</a>
     <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
-      <a href="#tratamientos" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
+      <a href="#servicios" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
       @if (clinica().reviews_enabled) {
         <a href="#resenas" (click)="mobileMenuOpen.set(false)">Reseñas</a>
       }
@@ -36,7 +36,7 @@
           Reservar turno
           <span class="btn-badge">Próximamente</span>
         </button>
-        <a class="btn-ghost" href="#tratamientos">
+        <a class="btn-ghost" href="#servicios">
           Ver tratamientos
           <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M13 5l7 7-7 7"/>
@@ -167,40 +167,40 @@
   </div>
 </section>
 
-<section class="tratamientos-section" id="tratamientos">
+<section class="servicios-section" id="tratamientos">
   <div class="section-container">
     <div class="section-header">
       <span class="section-eyebrow">Servicios</span>
-      <h2 class="section-title">Tratamientos que ofrecemos</h2>
+      <h2 class="section-title">Servicios que ofrecemos</h2>
       <p class="section-lead">Carta de servicios con precios transparentes. Consultá por planes de pago.</p>
     </div>
 
     @if (loading()) {
-      <div class="tratamientos-loading">
+      <div class="servicios-loading">
         <mat-spinner diameter="40"></mat-spinner>
       </div>
     } @else if (error()) {
-      <div class="tratamientos-error">
-        <p>No pudimos cargar los tratamientos. Intentá más tarde.</p>
+      <div class="servicios-error">
+        <p>No pudimos cargar los servicios. Intentá más tarde.</p>
       </div>
-    } @else if (tratamientos().length === 0) {
-      <div class="tratamientos-empty">
-        <p>Próximamente publicaremos nuestra carta de tratamientos.</p>
+    } @else if (servicios().length === 0) {
+      <div class="servicios-empty">
+        <p>Próximamente publicaremos nuestra carta de servicios.</p>
       </div>
     } @else {
-      <div class="tratamientos-carousel-wrapper">
+      <div class="servicios-carousel-wrapper">
         <button
           class="carousel-btn carousel-btn--prev"
-          (click)="prevTratamientos()"
-          [disabled]="!canPrevTratamientos()"
-          [class.carousel-btn--hidden]="tratamientos().length <= tratamientosPageSize"
-          aria-label="Tratamientos anteriores">
+          (click)="prevServicios()"
+          [disabled]="!canPrevServicios()"
+          [class.carousel-btn--hidden]="servicios().length <= serviciosPageSize"
+          aria-label="Servicios anteriores">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
 
-        <div class="tratamientos-grid" [@pageSlide]="tratamientosPage()">
-          @for (t of visibleTratamientos(); track t.id) {
-            <article class="tratamiento-card">
+        <div class="servicios-grid" [@pageSlide]="serviciosPage()">
+          @for (t of visibleServicios(); track t.id) {
+            <article class="servicio-card">
               @if (t.foto_url) {
                 <div class="card-foto">
                   <img [src]="apiUrl + t.foto_url" [alt]="t.nombre" loading="lazy">
@@ -220,18 +220,18 @@
 
         <button
           class="carousel-btn carousel-btn--next"
-          (click)="nextTratamientos()"
-          [disabled]="!canNextTratamientos()"
-          [class.carousel-btn--hidden]="tratamientos().length <= tratamientosPageSize"
-          aria-label="Más tratamientos">
+          (click)="nextServicios()"
+          [disabled]="!canNextServicios()"
+          [class.carousel-btn--hidden]="servicios().length <= serviciosPageSize"
+          aria-label="Más servicios">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
         </button>
       </div>
 
-      @if (tratamientosTotalPages() > 1) {
-        <div class="tratamientos-pager">
-          @for (i of tratamientosDots(); track i) {
-            <span class="pager-dot" [class.pager-dot--active]="i === tratamientosPage()"></span>
+      @if (serviciosTotalPages() > 1) {
+        <div class="servicios-pager">
+          @for (i of serviciosDots(); track i) {
+            <span class="pager-dot" [class.pager-dot--active]="i === serviciosPage()"></span>
           }
         </div>
       }
@@ -300,7 +300,7 @@
         </div>
 
         @if (reviewsDots().length > 1) {
-          <div class="tratamientos-pager">
+          <div class="servicios-pager">
             @for (i of reviewsDots(); track i) {
               <span class="pager-dot" [class.pager-dot--active]="i === reviewsPage()"></span>
             }
@@ -427,7 +427,7 @@
         <ul>
           <li><a href="#top">Inicio</a></li>
           <li><a href="#features">Por qué elegirnos</a></li>
-          <li><a href="#tratamientos">Tratamientos</a></li>
+          <li><a href="#servicios">Tratamientos</a></li>
           @if (clinica().reviews_enabled) {
             <li><a href="#resenas">Reseñas</a></li>
           }

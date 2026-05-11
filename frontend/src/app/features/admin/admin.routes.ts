@@ -28,8 +28,8 @@ export const adminRoutes: Routes = [
         loadComponent: () => import('./pacientes/paciente-detalle.component').then(m => m.PacienteDetalleComponent)
       },
       {
-        path: 'tratamientos',
-        loadComponent: () => import('./tratamientos/tratamientos-listado.component').then(m => m.TratamientosListadoComponent)
+        path: 'servicios',
+        loadComponent: () => import('./servicios/servicios-listado.component').then(m => m.ServiciosListadoComponent)
       }
     ]
   }

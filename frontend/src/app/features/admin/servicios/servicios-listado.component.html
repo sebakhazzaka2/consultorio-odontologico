@@ -1,19 +1,19 @@
 <app-page-header
-  title="Tratamientos"
-  subtitle="Gestiona los tratamientos del consultorio"
+  title="Servicios"
+  subtitle="Gestiona los servicios del consultorio"
   icon="medical_services">
   <button mat-flat-button color="primary" (click)="abrirNuevo()">
     <mat-icon>add</mat-icon>
-    Nuevo tratamiento
+    Nuevo servicio
   </button>
 </app-page-header>
 
-<div class="tratamientos-container">
+<div class="servicios-container">
   <mat-card class="table-card">
     @if (cargando) {
       <div class="loading">
         <mat-spinner diameter="48"></mat-spinner>
-        <p>Cargando tratamientos...</p>
+        <p>Cargando servicios...</p>
       </div>
     } @else if (errorMensaje) {
       <div class="error-box">
@@ -21,57 +21,57 @@
         <p>{{ errorMensaje }}</p>
         <button mat-raised-button (click)="cargar()">Reintentar</button>
       </div>
-    } @else if (tratamientos.length === 0) {
+    } @else if (servicios.length === 0) {
       <app-empty-state
         icon="medical_services"
-        title="No hay tratamientos todavía"
-        description="Agregá los tratamientos que ofrece el consultorio.">
+        title="No hay servicios todavía"
+        description="Agregá los servicios que ofrece el consultorio.">
         <button mat-flat-button color="primary" (click)="abrirNuevo()">
-          <mat-icon>add</mat-icon> Nuevo tratamiento
+          <mat-icon>add</mat-icon> Nuevo servicio
         </button>
       </app-empty-state>
     } @else {
       <div class="table-scroll-wrapper">
-      <table mat-table [dataSource]="tratamientos" class="tratamientos-table">
+      <table mat-table [dataSource]="servicios" class="servicios-table">
 
         <ng-container matColumnDef="nombre">
           <th mat-header-cell *matHeaderCellDef>Nombre</th>
-          <td mat-cell *matCellDef="let t">{{ t.nombre }}</td>
+          <td mat-cell *matCellDef="let s">{{ s.nombre }}</td>
         </ng-container>
 
         <ng-container matColumnDef="descripcion">
           <th mat-header-cell *matHeaderCellDef>Descripción</th>
-          <td mat-cell *matCellDef="let t" class="descripcion-cell">{{ t.descripcion || '—' }}</td>
+          <td mat-cell *matCellDef="let s" class="descripcion-cell">{{ s.descripcion || '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="precio">
           <th mat-header-cell *matHeaderCellDef>Precio</th>
-          <td mat-cell *matCellDef="let t" class="precio-cell">{{ t.precio | number:'1.2-2' }} UY$</td>
+          <td mat-cell *matCellDef="let s" class="precio-cell">{{ s.precio | number:'1.2-2' }} UY$</td>
         </ng-container>
 
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let t">
-            <span class="chip" [class.chip-success]="t.activo" [class.chip-neutral]="!t.activo">
-              {{ t.activo ? 'Activo' : 'Inactivo' }}
+          <td mat-cell *matCellDef="let s">
+            <span class="chip" [class.chip-success]="s.activo" [class.chip-neutral]="!s.activo">
+              {{ s.activo ? 'Activo' : 'Inactivo' }}
             </span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let t">
-            <button mat-icon-button color="primary" (click)="abrirEditar(t)" matTooltip="Editar">
+          <td mat-cell *matCellDef="let s">
+            <button mat-icon-button color="primary" (click)="abrirEditar(s)" matTooltip="Editar">
               <mat-icon>edit</mat-icon>
             </button>
             <button
               mat-icon-button
-              [color]="t.activo ? 'primary' : ''"
-              (click)="toggleActivo(t)"
-              [matTooltip]="t.activo ? 'Desactivar' : 'Activar'">
-              <mat-icon>{{ t.activo ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+              [color]="s.activo ? 'primary' : ''"
+              (click)="toggleActivo(s)"
+              [matTooltip]="s.activo ? 'Desactivar' : 'Activar'">
+              <mat-icon>{{ s.activo ? 'toggle_on' : 'toggle_off' }}</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="eliminar(t)" matTooltip="Eliminar">
+            <button mat-icon-button color="warn" (click)="eliminar(s)" matTooltip="Eliminar">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
