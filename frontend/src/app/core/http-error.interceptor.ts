@@ -20,7 +20,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
         return EMPTY;
       }
 
-      if (err.status === 0) {
+      if (err.status === 0 && !req.url.startsWith('/assets/')) {
         snackBar.open('Sin conexión al servidor. Verificá tu red.', 'Cerrar', {
           duration: 6000,
           panelClass: ['snack-error']
