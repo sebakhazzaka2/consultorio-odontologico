@@ -37,6 +37,10 @@ const FALLBACK: ClinicConfig = {
   stats_pacientes: '', stats_anos_experiencia: '', stats_calificacion: '',
   hero_imagenes: [],
   features: [],
+  label_servicio: 'Servicio',
+  label_historial: 'Historial clínico',
+  features_title: 'Una experiencia pensada en vos',
+  features_subtitle: '',
 };
 
 @Component({

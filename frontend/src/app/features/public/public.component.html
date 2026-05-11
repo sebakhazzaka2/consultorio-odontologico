@@ -2,7 +2,7 @@
   <div class="nav-container">
     <a class="nav-brand" href="#top">{{ clinica().nombre }}</a>
     <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
-      <a href="#servicios" (click)="mobileMenuOpen.set(false)">Tratamientos</a>
+      <a href="#servicios" (click)="mobileMenuOpen.set(false)">{{ clinica().label_servicio }}s</a>
       @if (clinica().reviews_enabled) {
         <a href="#resenas" (click)="mobileMenuOpen.set(false)">Reseñas</a>
       }
@@ -37,7 +37,7 @@
           <span class="btn-badge">Próximamente</span>
         </button>
         <a class="btn-ghost" href="#servicios">
-          Ver tratamientos
+          Ver {{ clinica().label_servicio }}s
           <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M13 5l7 7-7 7"/>
           </svg>
@@ -119,10 +119,8 @@
   <div class="section-container">
     <div class="section-header">
       <span class="section-eyebrow">Por qué elegirnos</span>
-      <h2 class="section-title">Una experiencia clínica pensada en vos</h2>
-      <p class="section-lead">
-        Combinamos atención profesional con herramientas modernas para que tu tratamiento sea simple de principio a fin.
-      </p>
+      <h2 class="section-title">{{ clinica().features_title }}</h2>
+      <p class="section-lead">{{ clinica().features_subtitle }}</p>
     </div>
 
     <div class="features-grid" [@staggerList]="visibleFeatures().length">
@@ -167,11 +165,11 @@
   </div>
 </section>
 
-<section class="servicios-section" id="tratamientos">
+<section class="servicios-section" id="servicios">
   <div class="section-container">
     <div class="section-header">
-      <span class="section-eyebrow">Servicios</span>
-      <h2 class="section-title">Servicios que ofrecemos</h2>
+      <span class="section-eyebrow">{{ clinica().label_servicio }}s</span>
+      <h2 class="section-title">{{ clinica().label_servicio }}s que ofrecemos</h2>
       <p class="section-lead">Carta de servicios con precios transparentes. Consultá por planes de pago.</p>
     </div>
 
@@ -427,7 +425,7 @@
         <ul>
           <li><a href="#top">Inicio</a></li>
           <li><a href="#features">Por qué elegirnos</a></li>
-          <li><a href="#servicios">Tratamientos</a></li>
+          <li><a href="#servicios">{{ clinica().label_servicio }}s</a></li>
           @if (clinica().reviews_enabled) {
             <li><a href="#resenas">Reseñas</a></li>
           }

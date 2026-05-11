@@ -28,6 +28,10 @@ public class ClinicConfigResponse {
   private String statsCalificacion;
   private List<String> heroImagenes;
   private List<FeatureResponse> features;
+  private String labelServicio;
+  private String labelHistorial;
+  private String featuresTitle;
+  private String featuresSubtitle;
 
   public String getNombre() { return nombre; }
   public void setNombre(String nombre) { this.nombre = nombre; }
@@ -85,4 +89,16 @@ public class ClinicConfigResponse {
 
   public List<FeatureResponse> getFeatures() { return features; }
   public void setFeatures(List<FeatureResponse> features) { this.features = features; }
+
+  public String getLabelServicio() { return labelServicio; }
+  public void setLabelServicio(String labelServicio) { this.labelServicio = labelServicio; }
+
+  public String getLabelHistorial() { return labelHistorial; }
+  public void setLabelHistorial(String labelHistorial) { this.labelHistorial = labelHistorial; }
+
+  public String getFeaturesTitle() { return featuresTitle; }
+  public void setFeaturesTitle(String featuresTitle) { this.featuresTitle = featuresTitle; }
+
+  public String getFeaturesSubtitle() { return featuresSubtitle; }
+  public void setFeaturesSubtitle(String featuresSubtitle) { this.featuresSubtitle = featuresSubtitle; }
 }

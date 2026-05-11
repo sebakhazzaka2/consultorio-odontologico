@@ -44,6 +44,10 @@ public class ClinicProperties {
   private List<String> heroImagenes = new ArrayList<>(List.of(
     "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
   ));
+  private String labelServicio = "Servicio";
+  private String labelHistorial = "Historial clínico";
+  private String featuresTitle = "Una experiencia clínica pensada en vos";
+  private String featuresSubtitle = "Combinamos atención profesional con herramientas modernas para que tu tratamiento sea simple de principio a fin.";
   private List<Feature> features = new ArrayList<>(List.of(
     new Feature("Agenda online", "Reserva tu turno con confirmacion inmediata, sin llamadas ni esperas.", "calendario"),
     new Feature("Historial seguro", "Tu ficha clinica completa, tratamientos y notas accesibles en cualquier momento.", "documento"),
@@ -104,6 +108,18 @@ public class ClinicProperties {
 
   public List<String> getHeroImagenes() { return heroImagenes; }
   public void setHeroImagenes(List<String> heroImagenes) { this.heroImagenes = heroImagenes; }
+
+  public String getLabelServicio() { return labelServicio; }
+  public void setLabelServicio(String labelServicio) { this.labelServicio = labelServicio; }
+
+  public String getLabelHistorial() { return labelHistorial; }
+  public void setLabelHistorial(String labelHistorial) { this.labelHistorial = labelHistorial; }
+
+  public String getFeaturesTitle() { return featuresTitle; }
+  public void setFeaturesTitle(String featuresTitle) { this.featuresTitle = featuresTitle; }
+
+  public String getFeaturesSubtitle() { return featuresSubtitle; }
+  public void setFeaturesSubtitle(String featuresSubtitle) { this.featuresSubtitle = featuresSubtitle; }
 
   public List<Feature> getFeatures() { return features; }
   public void setFeatures(List<Feature> features) { this.features = features; }

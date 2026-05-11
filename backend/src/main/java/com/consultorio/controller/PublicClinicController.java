@@ -44,6 +44,10 @@ public class PublicClinicController {
         .toList();
     response.setFeatures(features);
     response.setHeroImagenes(clinic.getHeroImagenes());
+    response.setLabelServicio(clinic.getLabelServicio());
+    response.setLabelHistorial(clinic.getLabelHistorial());
+    response.setFeaturesTitle(clinic.getFeaturesTitle());
+    response.setFeaturesSubtitle(clinic.getFeaturesSubtitle());
     return ResponseEntity.ok(response);
   }
 }
