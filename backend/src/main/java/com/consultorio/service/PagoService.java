@@ -95,7 +95,7 @@ public class PagoService {
         historialRepository.findByPacienteIdOrderByFechaHoraDesc(pacienteId);
     BigDecimal totalDeuda =
         historiales.stream()
-            .map(HistorialClinico::getPrecioAplicado)
+            .map(HistorialProcedimientos::getPrecioAplicado)
             .filter(precio -> precio != null)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 

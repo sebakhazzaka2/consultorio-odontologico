@@ -20,10 +20,10 @@ export class ServicioService {
   constructor(private http: HttpClient) {}
 
   private extraerError(err: HttpErrorResponse): ResultadoServicio {
-    const body = err.error as { error?: string; detalles?: string[] } | undefined;
+    const body = err.error as { error?: string; message?: string; detalles?: string[] } | undefined;
     return {
       ok: false,
-      mensaje: body?.error || err.message || 'Error de conexión',
+      mensaje: body?.message || body?.error || err.message || 'Error de conexión',
       detalles: body?.detalles
     };
   }
