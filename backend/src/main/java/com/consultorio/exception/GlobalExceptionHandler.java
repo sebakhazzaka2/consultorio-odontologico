@@ -2,6 +2,7 @@ package com.consultorio.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -36,6 +37,13 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
         .body(new ErrorResponse("Unprocessable Entity", firstValidationError));
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse("Conflict", "No se puede eliminar: el registro tiene datos asociados (historial u otros)"));
   }
 
   @ExceptionHandler(Exception.class)

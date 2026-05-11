@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.math.BigDecimal;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record PublicTratamientoResponse(
+public record PublicServicioResponse(
     Long id,
     String nombre,
     String descripcion,

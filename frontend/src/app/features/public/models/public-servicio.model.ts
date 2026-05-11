@@ -1,4 +1,4 @@
-export interface PublicTratamiento {
+export interface PublicServicio {
   id: number;
   nombre: string;
   descripcion: string;

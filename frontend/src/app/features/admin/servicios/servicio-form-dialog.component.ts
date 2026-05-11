@@ -8,21 +8,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Tratamiento, TratamientoPayload } from '../../../core/models/tratamiento.model';
-import { TratamientoService } from './tratamiento.service';
+import { Servicio, ServicioPayload } from '../../../core/models/servicio.model';
+import { ServicioService } from './servicio.service';
 import { environment } from '../../../../environments/environment';
 
-export interface TratamientoFormDialogData {
-  tratamiento: Tratamiento | null;
+export interface ServicioFormDialogData {
+  servicio: Servicio | null;
 }
 
-export interface TratamientoFormDialogResult {
-  payload: TratamientoPayload;
+export interface ServicioFormDialogResult {
+  payload: ServicioPayload;
   fotoFile: File | null;
 }
 
 @Component({
-  selector: 'app-tratamiento-form-dialog',
+  selector: 'app-servicio-form-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -36,7 +36,7 @@ export interface TratamientoFormDialogResult {
     MatSnackBarModule,
   ],
   template: `
-    <h2 mat-dialog-title>{{ data.tratamiento ? 'Editar tratamiento' : 'Nuevo tratamiento' }}</h2>
+    <h2 mat-dialog-title>{{ data.servicio ? 'Editar servicio' : 'Nuevo servicio' }}</h2>
     <mat-dialog-content>
       <form [formGroup]="form" class="form">
         <mat-form-field appearance="outline" class="full-width">
@@ -58,10 +58,10 @@ export interface TratamientoFormDialogResult {
       </form>
 
       <div class="foto-section">
-        <p class="foto-label">Foto del tratamiento</p>
+        <p class="foto-label">Foto del servicio</p>
         <div class="foto-preview">
           @if (previewSrc()) {
-            <img [src]="previewSrc()!" alt="Foto del tratamiento">
+            <img [src]="previewSrc()!" alt="Foto del servicio">
           } @else {
             <div class="foto-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -87,7 +87,7 @@ export interface TratamientoFormDialogResult {
     <mat-dialog-actions align="end">
       <button mat-button (click)="cancelar()">Cancelar</button>
       <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">
-        {{ data.tratamiento ? 'Guardar' : 'Crear' }}
+        {{ data.servicio ? 'Guardar' : 'Crear' }}
       </button>
     </mat-dialog-actions>
   `,
@@ -106,7 +106,7 @@ export interface TratamientoFormDialogResult {
     mat-spinner { display: inline-block; }
   `]
 })
-export class TratamientoFormDialogComponent implements OnDestroy {
+export class ServicioFormDialogComponent implements OnDestroy {
   form: FormGroup;
   previewSrc = signal<string | null>(null);
   uploading = signal(false);
@@ -116,20 +116,20 @@ export class TratamientoFormDialogComponent implements OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private tratamientoService: TratamientoService,
+    private servicioService: ServicioService,
     private snackBar: MatSnackBar,
-    public dialogRef: MatDialogRef<TratamientoFormDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: TratamientoFormDialogData
+    public dialogRef: MatDialogRef<ServicioFormDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ServicioFormDialogData
   ) {
-    const t = data.tratamiento;
-    if (t?.foto_url) {
-      this.previewSrc.set(environment.apiUrl + t.foto_url);
+    const s = data.servicio;
+    if (s?.foto_url) {
+      this.previewSrc.set(environment.apiUrl + s.foto_url);
     }
     this.form = this.fb.group({
-      nombre: [t?.nombre ?? '', [Validators.required]],
-      descripcion: [t?.descripcion ?? ''],
-      precio: [t?.precio ?? null, [Validators.required, Validators.min(0.01)]],
-      activo: [t?.activo ?? true]
+      nombre: [s?.nombre ?? '', [Validators.required]],
+      descripcion: [s?.descripcion ?? ''],
+      precio: [s?.precio ?? null, [Validators.required, Validators.min(0.01)]],
+      activo: [s?.activo ?? true]
     });
   }
 
@@ -138,12 +138,11 @@ export class TratamientoFormDialogComponent implements OnDestroy {
     if (!input.files?.length) return;
     const file = input.files[0];
 
-    if (this.data.tratamiento) {
-      // Edición — sube inmediatamente
+    if (this.data.servicio) {
       this.uploading.set(true);
-      this.tratamientoService.uploadFoto(this.data.tratamiento.id, file).subscribe({
-        next: (t) => {
-          this.previewSrc.set(environment.apiUrl + t.foto_url);
+      this.servicioService.uploadFoto(this.data.servicio.id, file).subscribe({
+        next: (s) => {
+          this.previewSrc.set(environment.apiUrl + s.foto_url);
           this.uploading.set(false);
           this.snackBar.open('Foto actualizada', 'Cerrar', { duration: 3000 });
         },
@@ -153,7 +152,6 @@ export class TratamientoFormDialogComponent implements OnDestroy {
         }
       });
     } else {
-      // Creación — guarda localmente y muestra preview
       this.revokeObjectUrl();
       this.selectedFile = file;
       this.objectUrl = URL.createObjectURL(file);
@@ -172,13 +170,13 @@ export class TratamientoFormDialogComponent implements OnDestroy {
   guardar(): void {
     if (this.form.invalid) return;
     const v = this.form.value;
-    const payload: TratamientoPayload = {
+    const payload: ServicioPayload = {
       nombre: (v.nombre as string).trim(),
       descripcion: v.descripcion ? (v.descripcion as string).trim() : undefined,
       precio: v.precio as number,
       activo: v.activo as boolean
     };
-    const result: TratamientoFormDialogResult = {
+    const result: ServicioFormDialogResult = {
       payload,
       fotoFile: this.selectedFile,
     };

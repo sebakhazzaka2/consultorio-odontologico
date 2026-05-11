@@ -4,10 +4,10 @@ import com.consultorio.dto.PagoRequest;
 import com.consultorio.dto.PagoResponse;
 import com.consultorio.dto.SaldoPacienteResponse;
 import com.consultorio.exception.ResourceNotFoundException;
-import com.consultorio.model.HistorialClinico;
+import com.consultorio.model.HistorialProcedimientos;
 import com.consultorio.model.Paciente;
 import com.consultorio.model.Pago;
-import com.consultorio.repository.HistorialRepository;
+import com.consultorio.repository.HistorialProcedimientosRepository;
 import com.consultorio.repository.PacienteRepository;
 import com.consultorio.repository.PagoRepository;
 import java.math.BigDecimal;
@@ -23,12 +23,12 @@ public class PagoService {
 
   private final PagoRepository pagoRepository;
   private final PacienteRepository pacienteRepository;
-  private final HistorialRepository historialRepository;
+  private final HistorialProcedimientosRepository historialRepository;
 
   public PagoService(
       PagoRepository pagoRepository,
       PacienteRepository pacienteRepository,
-      HistorialRepository historialRepository) {
+      HistorialProcedimientosRepository historialRepository) {
     this.pagoRepository = pagoRepository;
     this.pacienteRepository = pacienteRepository;
     this.historialRepository = historialRepository;
@@ -91,11 +91,11 @@ public class PagoService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Paciente no encontrado con id: " + pacienteId));
 
-    List<HistorialClinico> historiales =
+    List<HistorialProcedimientos> historiales =
         historialRepository.findByPacienteIdOrderByFechaHoraDesc(pacienteId);
     BigDecimal totalDeuda =
         historiales.stream()
-            .map(HistorialClinico::getPrecioAplicado)
+            .map(HistorialProcedimientos::getPrecioAplicado)
             .filter(precio -> precio != null)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 

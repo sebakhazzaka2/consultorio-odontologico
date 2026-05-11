@@ -1,8 +1,8 @@
 package com.consultorio.controller;
 
-import com.consultorio.dto.HistorialRequest;
-import com.consultorio.dto.HistorialResponse;
-import com.consultorio.service.HistorialService;
+import com.consultorio.dto.HistorialProcedimientosRequest;
+import com.consultorio.dto.HistorialProcedimientosResponse;
+import com.consultorio.service.HistorialProcedimientosService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,45 +17,47 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/historial")
-public class HistorialController {
+@RequestMapping("/historial-procedimientos")
+public class HistorialProcedimientosController {
 
-  private final HistorialService historialService;
+  private final HistorialProcedimientosService historialService;
 
-  public HistorialController(HistorialService historialService) {
+  public HistorialProcedimientosController(HistorialProcedimientosService historialService) {
     this.historialService = historialService;
   }
 
   @GetMapping
-  public ResponseEntity<List<HistorialResponse>> findAll() {
+  public ResponseEntity<List<HistorialProcedimientosResponse>> findAll() {
     return new ResponseEntity<>(historialService.findAll(), HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<HistorialResponse> findById(@PathVariable("id") Long id) {
+  public ResponseEntity<HistorialProcedimientosResponse> findById(@PathVariable("id") Long id) {
     return new ResponseEntity<>(historialService.findById(id), HttpStatus.OK);
   }
 
   @GetMapping("/paciente/{pacienteId}")
-  public ResponseEntity<List<HistorialResponse>> findByPaciente(@PathVariable("pacienteId") Long pacienteId) {
+  public ResponseEntity<List<HistorialProcedimientosResponse>> findByPaciente(
+      @PathVariable("pacienteId") Long pacienteId) {
     return new ResponseEntity<>(historialService.findByPaciente(pacienteId), HttpStatus.OK);
   }
 
   @GetMapping("/cita/{citaId}")
-  public ResponseEntity<List<HistorialResponse>> findByCita(@PathVariable("citaId") Long citaId) {
+  public ResponseEntity<List<HistorialProcedimientosResponse>> findByCita(
+      @PathVariable("citaId") Long citaId) {
     return new ResponseEntity<>(historialService.findByCita(citaId), HttpStatus.OK);
   }
 
   @PostMapping
-  public ResponseEntity<HistorialResponse> create(
-      @Valid @RequestBody HistorialRequest historialRequest) {
-    return new ResponseEntity<>(historialService.create(historialRequest), HttpStatus.CREATED);
+  public ResponseEntity<HistorialProcedimientosResponse> create(
+      @Valid @RequestBody HistorialProcedimientosRequest request) {
+    return new ResponseEntity<>(historialService.create(request), HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<HistorialResponse> update(
-      @PathVariable("id") Long id, @Valid @RequestBody HistorialRequest historialRequest) {
-    return new ResponseEntity<>(historialService.update(id, historialRequest), HttpStatus.OK);
+  public ResponseEntity<HistorialProcedimientosResponse> update(
+      @PathVariable("id") Long id, @Valid @RequestBody HistorialProcedimientosRequest request) {
+    return new ResponseEntity<>(historialService.update(id, request), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

@@ -17,7 +17,7 @@ import { PacienteService } from './paciente.service';
 import { HistorialService } from './historial.service';
 import { PagoService } from './pago.service';
 import { Paciente } from '../../../core/models/paciente.model';
-import { HistorialClinico, HistorialPayload } from '../../../core/models/historial.model';
+import { HistorialProcedimientos, HistorialProcedimientosPayload } from '../../../core/models/historial.model';
 import { Pago, PagoPayload, SaldoPaciente } from '../../../core/models/pago.model';
 import { HistorialFormDialogComponent } from './historial-form-dialog.component';
 import { PagoFormDialogComponent } from './pago-form-dialog.component';
@@ -171,7 +171,7 @@ export class PagoPromptDialogComponent {
 })
 export class PacienteDetalleComponent implements OnInit {
   paciente: Paciente | null = null;
-  historial: HistorialClinico[] = [];
+  historial: HistorialProcedimientos[] = [];
   pagos: Pago[] = [];
   saldo: SaldoPaciente | null = null;
   cargando = true;
@@ -255,14 +255,14 @@ export class PacienteDetalleComponent implements OnInit {
       width: '480px',
       data: { historial: null, pacienteId: this.paciente.id }
     });
-    ref.afterClosed().subscribe((payload: HistorialPayload | null) => {
+    ref.afterClosed().subscribe((payload: HistorialProcedimientosPayload | null) => {
       if (!payload) return;
       this.historialService.crear(payload).subscribe({
         next: (creado) => {
           this.snackBar.open('Entrada creada correctamente', 'Cerrar', { duration: 3000 });
           this.recargarHistorialYSaldo();
           if (creado.precio_aplicado && creado.precio_aplicado > 0) {
-            this.abrirPagoPrompt(creado.precio_aplicado, creado.nombre_tratamiento ?? 'Tratamiento');
+            this.abrirPagoPrompt(creado.precio_aplicado, creado.nombre_servicio ?? 'Servicio');
           }
         },
         error: (res) => {
@@ -292,13 +292,13 @@ export class PacienteDetalleComponent implements OnInit {
     });
   }
 
-  abrirEditarHistorial(h: HistorialClinico): void {
+  abrirEditarHistorial(h: HistorialProcedimientos): void {
     if (!this.paciente) return;
     const ref = this.dialog.open(HistorialFormDialogComponent, {
       width: '480px',
       data: { historial: h, pacienteId: this.paciente.id }
     });
-    ref.afterClosed().subscribe((payload: HistorialPayload | null) => {
+    ref.afterClosed().subscribe((payload: HistorialProcedimientosPayload | null) => {
       if (!payload) return;
       this.historialService.actualizar(h.id, payload).subscribe({
         next: () => {
@@ -313,7 +313,7 @@ export class PacienteDetalleComponent implements OnInit {
     });
   }
 
-  eliminarHistorial(h: HistorialClinico): void {
+  eliminarHistorial(h: HistorialProcedimientos): void {
     const ref = this.dialog.open(ConfirmarEliminarHistorialDialogComponent, {
       data: { procedimiento: h.procedimiento }
     });

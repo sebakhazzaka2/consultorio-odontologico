@@ -39,17 +39,17 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Tratamiento (opcional)</mat-label>
-      <mat-select formControlName="tratamiento_id">
-        <mat-option [value]="null">— Sin tratamiento —</mat-option>
-        @for (t of tratamientos; track t.id) {
-          <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
+      <mat-label>Servicio (opcional)</mat-label>
+      <mat-select formControlName="servicio_id">
+        <mat-option [value]="null">— Sin servicio —</mat-option>
+        @for (s of servicios; track s.id) {
+          <mat-option [value]="s.id">{{ s.nombre }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
-    @if (tratamientoSeleccionado) {
-      <p class="precio-info">Precio a aplicar: UY$ {{ tratamientoSeleccionado.precio | number:'1.2-2' }}</p>
+    @if (servicioSeleccionado) {
+      <p class="precio-info">Precio a aplicar: UY$ {{ servicioSeleccionado.precio | number:'1.2-2' }}</p>
     }
 
     <mat-form-field appearance="outline" class="full-width">

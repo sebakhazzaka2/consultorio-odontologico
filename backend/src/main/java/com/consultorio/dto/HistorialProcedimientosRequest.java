@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class HistorialRequest {
+public class HistorialProcedimientosRequest {
 
   @NotNull
   private Long pacienteId;
@@ -22,11 +22,11 @@ public class HistorialRequest {
 
   private String notas;
 
-  private Long tratamientoId;
+  private Long servicioId;
 
   private String fotoUrl;
 
-  public HistorialRequest() {}
+  public HistorialProcedimientosRequest() {}
 
   public Long getPacienteId() {
     return pacienteId;
@@ -68,12 +68,12 @@ public class HistorialRequest {
     this.notas = notas;
   }
 
-  public Long getTratamientoId() {
-    return tratamientoId;
+  public Long getServicioId() {
+    return servicioId;
   }
 
-  public void setTratamientoId(Long tratamientoId) {
-    this.tratamientoId = tratamientoId;
+  public void setServicioId(Long servicioId) {
+    this.servicioId = servicioId;
   }
 
   public String getFotoUrl() {

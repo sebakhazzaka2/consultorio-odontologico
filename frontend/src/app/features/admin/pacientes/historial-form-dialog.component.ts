@@ -8,12 +8,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { TratamientoService } from '../tratamientos/tratamiento.service';
-import { Tratamiento } from '../../../core/models/tratamiento.model';
-import { HistorialClinico, HistorialPayload } from '../../../core/models/historial.model';
+import { ServicioService } from '../servicios/servicio.service';
+import { Servicio } from '../../../core/models/servicio.model';
+import { HistorialProcedimientos, HistorialProcedimientosPayload } from '../../../core/models/historial.model';
 
 export interface HistorialFormDialogData {
-  historial: HistorialClinico | null;
+  historial: HistorialProcedimientos | null;
   pacienteId: number;
 }
 
@@ -35,8 +35,8 @@ export interface HistorialFormDialogData {
 })
 export class HistorialFormDialogComponent implements OnInit {
   form: FormGroup;
-  tratamientos: Tratamiento[] = [];
-  tratamientoSeleccionado: Tratamiento | null = null;
+  servicios: Servicio[] = [];
+  servicioSeleccionado: Servicio | null = null;
 
   readonly horariosDisponibles: string[] = (() => {
     const slots: string[] = [];
@@ -51,7 +51,7 @@ export class HistorialFormDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private tratamientoService: TratamientoService,
+    private servicioService: ServicioService,
     public dialogRef: MatDialogRef<HistorialFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: HistorialFormDialogData
   ) {
@@ -59,15 +59,15 @@ export class HistorialFormDialogComponent implements OnInit {
       fecha: [null, Validators.required],
       hora: ['', Validators.required],
       procedimiento: ['', Validators.required],
-      tratamiento_id: [null],
+      servicio_id: [null],
       notas: ['']
     });
   }
 
   ngOnInit(): void {
-    this.tratamientoService.listarActivos().subscribe({
+    this.servicioService.listarActivos().subscribe({
       next: (lista) => {
-        this.tratamientos = lista;
+        this.servicios = lista;
         if (this.data.historial) {
           this.poblarFormulario(this.data.historial);
         }
@@ -79,23 +79,23 @@ export class HistorialFormDialogComponent implements OnInit {
       }
     });
 
-    this.form.get('tratamiento_id')!.valueChanges.subscribe((id: number | null) => {
-      this.tratamientoSeleccionado = id
-        ? (this.tratamientos.find(t => t.id === id) ?? null)
+    this.form.get('servicio_id')!.valueChanges.subscribe((id: number | null) => {
+      this.servicioSeleccionado = id
+        ? (this.servicios.find(s => s.id === id) ?? null)
         : null;
     });
   }
 
-  private poblarFormulario(h: HistorialClinico): void {
+  private poblarFormulario(h: HistorialProcedimientos): void {
     this.form.patchValue({
       fecha: new Date(h.fecha_hora),
       hora: h.fecha_hora.slice(11, 16),
       procedimiento: h.procedimiento,
-      tratamiento_id: h.tratamiento_id ?? null,
+      servicio_id: h.servicio_id ?? null,
       notas: h.notas ?? ''
     });
-    if (h.tratamiento_id) {
-      this.tratamientoSeleccionado = this.tratamientos.find(t => t.id === h.tratamiento_id) ?? null;
+    if (h.servicio_id) {
+      this.servicioSeleccionado = this.servicios.find(s => s.id === h.servicio_id) ?? null;
     }
   }
 
@@ -103,11 +103,11 @@ export class HistorialFormDialogComponent implements OnInit {
     if (this.form.invalid) return;
     const v = this.form.value;
     const fechaISO = (v.fecha as Date).toISOString().slice(0, 10);
-    const payload: HistorialPayload = {
+    const payload: HistorialProcedimientosPayload = {
       paciente_id: this.data.pacienteId,
       fecha_hora: `${fechaISO}T${v.hora}:00`,
       procedimiento: v.procedimiento,
-      tratamiento_id: v.tratamiento_id ?? null,
+      servicio_id: v.servicio_id ?? null,
       notas: v.notas || null
     };
     this.dialogRef.close(payload);

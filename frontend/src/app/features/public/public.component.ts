@@ -4,10 +4,10 @@ import { CurrencyPipe } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { PublicTratamientoService } from './services/public-tratamiento.service';
+import { PublicServicioService } from './services/public-servicio.service';
 import { ClinicConfigService } from './services/clinic-config.service';
 import { ReviewsService } from './services/reviews.service';
-import { PublicTratamiento } from './models/public-tratamiento.model';
+import { PublicServicio } from './models/public-servicio.model';
 import { ClinicConfig } from './models/clinic-config.model';
 import { Review } from './models/review.model';
 import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
@@ -37,6 +37,10 @@ const FALLBACK: ClinicConfig = {
   stats_pacientes: '', stats_anos_experiencia: '', stats_calificacion: '',
   hero_imagenes: [],
   features: [],
+  label_servicio: 'Servicio',
+  label_historial: 'Historial clínico',
+  features_title: 'Una experiencia pensada en vos',
+  features_subtitle: '',
 };
 
 @Component({
@@ -57,9 +61,9 @@ export class PublicComponent implements OnInit, OnDestroy {
     return imgs?.length ? imgs : [this.HERO_FALLBACK];
   });
 
-  tratamientos = signal<PublicTratamiento[]>([]);
-  tratamientosPage = signal(0);
-  readonly tratamientosPageSize = 6;
+  servicios = signal<PublicServicio[]>([]);
+  serviciosPage = signal(0);
+  readonly serviciosPageSize = 6;
   loading = signal(true);
   error = signal<string | null>(null);
   mobileMenuOpen = signal(false);
@@ -69,23 +73,23 @@ export class PublicComponent implements OnInit, OnDestroy {
   reviewsPage = signal(0);
   readonly reviewsPageSize = 3;
 
-  readonly visibleTratamientos = computed(() => {
-    const start = this.tratamientosPage() * this.tratamientosPageSize;
-    return this.tratamientos().slice(start, start + this.tratamientosPageSize);
+  readonly visibleServicios = computed(() => {
+    const start = this.serviciosPage() * this.serviciosPageSize;
+    return this.servicios().slice(start, start + this.serviciosPageSize);
   });
 
-  readonly canPrevTratamientos = computed(() => this.tratamientosPage() > 0);
+  readonly canPrevServicios = computed(() => this.serviciosPage() > 0);
 
-  readonly canNextTratamientos = computed(() =>
-    (this.tratamientosPage() + 1) * this.tratamientosPageSize < this.tratamientos().length,
+  readonly canNextServicios = computed(() =>
+    (this.serviciosPage() + 1) * this.serviciosPageSize < this.servicios().length,
   );
 
-  readonly tratamientosTotalPages = computed(() =>
-    Math.ceil(this.tratamientos().length / this.tratamientosPageSize),
+  readonly serviciosTotalPages = computed(() =>
+    Math.ceil(this.servicios().length / this.serviciosPageSize),
   );
 
-  readonly tratamientosDots = computed(() =>
-    Array.from({ length: this.tratamientosTotalPages() }, (_, i) => i),
+  readonly serviciosDots = computed(() =>
+    Array.from({ length: this.serviciosTotalPages() }, (_, i) => i),
   );
 
   readonly visibleReviews = computed(() => {
@@ -156,7 +160,7 @@ export class PublicComponent implements OnInit, OnDestroy {
   readonly apiUrl = environment.apiUrl;
 
   constructor(
-    private readonly tratamientoService: PublicTratamientoService,
+    private readonly servicioService: PublicServicioService,
     private readonly clinicConfigService: ClinicConfigService,
     private readonly reviewsService: ReviewsService,
     private readonly sanitizer: DomSanitizer,
@@ -182,13 +186,13 @@ export class PublicComponent implements OnInit, OnDestroy {
       error: () => {},
     });
 
-    this.tratamientoService.getActivos().subscribe({
-      next: (t) => {
-        this.tratamientos.set(t);
+    this.servicioService.getActivos().subscribe({
+      next: (s) => {
+        this.servicios.set(s);
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('No pudimos cargar los tratamientos.');
+        this.error.set('No pudimos cargar los servicios.');
         this.loading.set(false);
       },
     });
@@ -225,12 +229,12 @@ export class PublicComponent implements OnInit, OnDestroy {
     this.startHeroTimer();
   }
 
-  prevTratamientos(): void {
-    if (this.canPrevTratamientos()) this.tratamientosPage.update(p => p - 1);
+  prevServicios(): void {
+    if (this.canPrevServicios()) this.serviciosPage.update(p => p - 1);
   }
 
-  nextTratamientos(): void {
-    if (this.canNextTratamientos()) this.tratamientosPage.update(p => p + 1);
+  nextServicios(): void {
+    if (this.canNextServicios()) this.serviciosPage.update(p => p + 1);
   }
 
   starArray(rating: number): number[] {

@@ -11,8 +11,8 @@ import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "tratamientos")
-public class Tratamiento {
+@Table(name = "servicios")
+public class Servicio {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +37,7 @@ public class Tratamiento {
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
 
-  public Tratamiento() {}
+  public Servicio() {}
 
   public Long getId() {
     return id;
