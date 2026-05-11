@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { ClinicConfig } from './clinic-config.model';
 
 @Injectable({ providedIn: 'root' })
@@ -9,9 +9,10 @@ export class ClinicConfigService {
 
   constructor(private http: HttpClient) {}
 
-  load(): Observable<ClinicConfig> {
+  load(): Observable<ClinicConfig | null> {
     return this.http.get<ClinicConfig>('/assets/config/clinic.json').pipe(
-      tap(cfg => this.config.set(cfg))
+      tap(cfg => this.config.set(cfg)),
+      catchError(() => of(null))
     );
   }
 
