@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ChangePasswordDialogComponent } from './change-password-dialog.component';
-import { environment } from '../../../../environments/environment';
+import { ClinicConfigService } from '../../../core/config/clinic-config.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -34,17 +34,20 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
   isMobile = false;
-  readonly businessName: string = environment.businessName;
+  businessName = '';
   private subs = new Subscription();
 
   constructor(
     private authService: AuthService,
     private breakpointObserver: BreakpointObserver,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private clinicConfigService: ClinicConfigService
   ) {}
 
   ngOnInit(): void {
+    this.businessName = this.clinicConfigService.name;
+
     this.subs.add(
       this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).subscribe(result => {
         this.isMobile = result.matches;
