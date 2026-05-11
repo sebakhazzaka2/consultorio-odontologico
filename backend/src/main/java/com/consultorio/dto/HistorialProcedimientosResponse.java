@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record HistorialResponse(
+public record HistorialProcedimientosResponse(
     Long id,
     Long pacienteId,
     String nombrePaciente,
@@ -16,8 +16,8 @@ public record HistorialResponse(
     LocalDateTime fechaHora,
     String procedimiento,
     String notas,
-    Long tratamientoId,
-    String nombreTratamiento,
+    Long servicioId,
+    String nombreServicio,
     BigDecimal precioAplicado,
     String fotoUrl,
     Instant createdAt) {}

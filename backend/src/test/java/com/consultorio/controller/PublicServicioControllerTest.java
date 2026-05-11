@@ -1,8 +1,8 @@
 package com.consultorio.controller;
 
 import com.consultorio.BaseIntegrationTest;
-import com.consultorio.model.Tratamiento;
-import com.consultorio.repository.TratamientoRepository;
+import com.consultorio.model.Servicio;
+import com.consultorio.repository.ServicioRepository;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,45 +12,45 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class PublicTratamientoControllerTest extends BaseIntegrationTest {
+class PublicServicioControllerTest extends BaseIntegrationTest {
 
   @Autowired
-  private TratamientoRepository tratamientoRepository;
+  private ServicioRepository servicioRepository;
 
   @BeforeEach
   void setUp() {
-    Tratamiento activo = new Tratamiento();
+    Servicio activo = new Servicio();
     activo.setNombre("Limpieza dental");
     activo.setDescripcion("Profilaxis completa");
     activo.setPrecio(new BigDecimal("1500.00"));
     activo.setActivo(true);
-    tratamientoRepository.save(activo);
+    servicioRepository.save(activo);
 
-    Tratamiento inactivo = new Tratamiento();
+    Servicio inactivo = new Servicio();
     inactivo.setNombre("Blanqueamiento");
     inactivo.setDescripcion("Tratamiento estético");
     inactivo.setPrecio(new BigDecimal("3000.00"));
     inactivo.setActivo(false);
-    tratamientoRepository.save(inactivo);
+    servicioRepository.save(inactivo);
   }
 
   @Test
-  void getTratamientosPublicos_sinToken_retorna200() throws Exception {
-    mockMvc.perform(get("/public/tratamientos"))
+  void getServiciosPublicos_sinToken_retorna200() throws Exception {
+    mockMvc.perform(get("/public/servicios"))
         .andExpect(status().isOk());
   }
 
   @Test
-  void getTratamientosPublicos_retornaSoloActivos() throws Exception {
-    mockMvc.perform(get("/public/tratamientos"))
+  void getServiciosPublicos_retornaSoloActivos() throws Exception {
+    mockMvc.perform(get("/public/servicios"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(1))
         .andExpect(jsonPath("$[0].nombre").value("Limpieza dental"));
   }
 
   @Test
-  void getTratamientosPublicos_noRetornaActivo() throws Exception {
-    mockMvc.perform(get("/public/tratamientos"))
+  void getServiciosPublicos_noRetornaInactivo() throws Exception {
+    mockMvc.perform(get("/public/servicios"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[?(@.nombre == 'Blanqueamiento')]").isEmpty());
   }

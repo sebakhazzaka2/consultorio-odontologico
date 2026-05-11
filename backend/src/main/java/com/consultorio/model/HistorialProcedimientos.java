@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "historial_clinico")
-public class HistorialClinico {
+@Table(name = "historial_procedimientos")
+public class HistorialProcedimientos {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +39,8 @@ public class HistorialClinico {
   private String notas;
 
   @ManyToOne(optional = true)
-  @JoinColumn(name = "tratamiento_id", nullable = true)
-  private Tratamiento tratamiento;
+  @JoinColumn(name = "servicio_id", nullable = true)
+  private Servicio servicio;
 
   @Column(name = "precio_aplicado", nullable = true, precision = 10, scale = 2)
   private BigDecimal precioAplicado;
@@ -52,7 +52,7 @@ public class HistorialClinico {
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
 
-  public HistorialClinico() {}
+  public HistorialProcedimientos() {}
 
   public Long getId() {
     return id;
@@ -102,20 +102,12 @@ public class HistorialClinico {
     this.notas = notas;
   }
 
-  public Instant getCreatedAt() {
-    return createdAt;
+  public Servicio getServicio() {
+    return servicio;
   }
 
-  public void setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public Tratamiento getTratamiento() {
-    return tratamiento;
-  }
-
-  public void setTratamiento(Tratamiento tratamiento) {
-    this.tratamiento = tratamiento;
+  public void setServicio(Servicio servicio) {
+    this.servicio = servicio;
   }
 
   public BigDecimal getPrecioAplicado() {
@@ -132,5 +124,13 @@ public class HistorialClinico {
 
   public void setFotoUrl(String fotoUrl) {
     this.fotoUrl = fotoUrl;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
   }
 }
