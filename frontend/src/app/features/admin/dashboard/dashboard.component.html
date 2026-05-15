@@ -127,11 +127,17 @@
                 <li class="pending-item">
                   <div class="pending-info">
                     <span class="pending-patient">{{ c.nombre_paciente }} {{ c.apellido_paciente }}</span>
+                    <span class="pending-meta">{{ c.motivo }}</span>
                     <span class="pending-date">{{ c.fecha_hora_inicio | date:'d MMM HH:mm':'':'es-UY' }}</span>
                   </div>
-                  <a mat-icon-button color="primary" [routerLink]="['/admin/citas/editar', c.id]" matTooltip="Confirmar cita">
-                    <mat-icon>edit</mat-icon>
-                  </a>
+                  <div class="pending-actions">
+                    <button mat-icon-button color="warn" (click)="rechazar(c)" matTooltip="Rechazar reserva">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" (click)="abrirConfirmar(c)" matTooltip="Confirmar reserva">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                  </div>
                 </li>
               }
             </ul>

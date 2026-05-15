@@ -126,15 +126,18 @@ public class CitaService {
     return toResponse(cancelada);
   }
 
-  public CitaResponse confirmar(Long id) {
+  public CitaResponse confirmar(Long id, Integer duracionMinutosOverride) {
     Cita cita =
         citaRepository
             .findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con id: " + id));
 
+    if (duracionMinutosOverride != null) {
+      cita.setDuracionMinutos(duracionMinutosOverride);
+    }
     cita.setEstado(CitaEstado.CONFIRMADA);
     Cita confirmada = citaRepository.save(cita);
-    log.info("Cita confirmada — id: {}", confirmada.getId());
+    log.info("Cita confirmada — id: {}, duración: {} min", confirmada.getId(), confirmada.getDuracionMinutos());
     return toResponse(confirmada);
   }
 

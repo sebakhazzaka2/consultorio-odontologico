@@ -2,6 +2,7 @@ package com.consultorio.controller;
 
 import com.consultorio.dto.CitaRequest;
 import com.consultorio.dto.CitaResponse;
+import com.consultorio.dto.ConfirmarCitaRequest;
 import com.consultorio.service.CitaService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -62,8 +63,11 @@ public class CitaController {
   }
 
   @PatchMapping("/{id}/confirmar")
-  public ResponseEntity<CitaResponse> confirmar(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(citaService.confirmar(id), HttpStatus.OK);
+  public ResponseEntity<CitaResponse> confirmar(
+      @PathVariable("id") Long id,
+      @Valid @RequestBody(required = false) ConfirmarCitaRequest request) {
+    Integer duracion = request != null ? request.getDuracionMinutos() : null;
+    return new ResponseEntity<>(citaService.confirmar(id, duracion), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

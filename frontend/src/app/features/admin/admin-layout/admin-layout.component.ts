@@ -7,12 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatBadgeModule } from '@angular/material/badge';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ChangePasswordDialogComponent } from './change-password-dialog.component';
 import { ClinicConfigService } from '../../../core/config/clinic-config.service';
+import { CitaService } from '../citas/cita.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -25,7 +27,8 @@ import { ClinicConfigService } from '../../../core/config/clinic-config.service'
     MatListModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatBadgeModule
   ],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.scss'
@@ -35,6 +38,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   isMobile = false;
   businessName = '';
+  pendientesCount = 0;
   private subs = new Subscription();
 
   constructor(
@@ -42,7 +46,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver,
     private router: Router,
     private dialog: MatDialog,
-    private clinicConfigService: ClinicConfigService
+    private clinicConfigService: ClinicConfigService,
+    private citaService: CitaService
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +66,10 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
           this.sidenav.close();
         }
       })
+    );
+
+    this.subs.add(
+      this.citaService.pendientesCount$.subscribe(count => this.pendientesCount = count)
     );
   }
 
