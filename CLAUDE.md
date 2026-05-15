@@ -82,7 +82,7 @@ FEATURE_WHATSAPP=true
 
 ---
 
-## Estado actual (2026-05-11)
+## Estado actual (2026-05-15)
 
 Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21, live 2026-05-11).
 
@@ -90,23 +90,22 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 - `neodentalmaster.turnosuy.com` — segunda instancia live (odontología, Montevideo)
 - `dentalmontecaseros.turnosuy.com` — primera instancia (sin uso activo)
 
-**Driver de cambio:** la novia (estética, cejas/pestañas) es la usuaria piloto objetivo. Se onboarda cuando esté MVP2 (registro/login de pacientes).
+**Deuda técnica conocida:** `clinic.json` y `CLINIC_NAME` son una segunda fuente de config paralela a `CLINIC_NOMBRE`/Spring Boot. Eliminar al inicio de Sprint 2: `core/config/clinic-config.service.ts` debe leer de `/api/public/config` igual que la página pública.
 
-**Deuda técnica conocida:** `clinic.json` y `CLINIC_NAME` son una segunda fuente de config paralela a `CLINIC_NOMBRE`/Spring Boot. Eliminar al inicio de Sprint 2 — el admin debe leer de `/api/public/config`.
-
-Siguiente: Mails (S2) → MVP2 (S3-4) → Balance+Gastos (S5) → Demo instance + README pro (S6) → SEO (S7).
+Siguiente: Disponibilidad + Reserva sin login (S2) → Mails (S3) → WhatsApp (S4) → Portal paciente opcional (S5).
 
 Ver detalles completos y secuencia por sprint en `ROADMAP.md`.
 
-## Prioridades actuales (2026-05-11)
+## Prioridades actuales (2026-05-15)
 
-🔴 **Sprint 2 — Mails (Brevo)** (5-8 días). Bloqueante de MVP2 (password reset). Eventos: turno agendado/cancelado/reagendado, historial + detalle pago/deuda. Incluye eliminar clinic.json al inicio.
-🔴 **Sprint 3-4 — MVP2 rol paciente** (3-4 sem). Onboardear a la novia como usuaria piloto al terminar esto. Registro/login, JWT PACIENTE, pedir turno → PENDIENTE, refresh tokens, "Mi cuenta", JWT en cookie HttpOnly, consentimiento Ley 18.331, política de privacidad + términos. **La novia es el usuario piloto.**
-🔴 **Sprint 5 — Balance + Gastos** (1-2 sem). Vuelve al pipeline con la novia como usuaria activa generando feedback real.
-🔴 **Sprint 6 — Demo instance + README pro** (2-4 días). `docker-compose.demo.yml` con datos fake, `demo.turnosuy.com`, README nivel portfolio. Doble ROI: portfolio personal + demo comercial para clientes.
-🟡 Sprint 7 — SEO multi-subdominio. Con 2 subdominios reales el ROI es inmediato; JSON-LD genérico (`LocalBusiness`) no solo `Dentist`.
-🟡 Sprint 8 — Observability + rollback (logs JSON + correlationId, Micrometer, smoke test post-deploy, rollback.sh, alertas).
-🟡 Sprint 9 — WhatsApp automatizado (Twilio/UltraMsg).
+🔴 **Sprint 2 — Disponibilidad admin + Reserva sin login** (~2 semanas). Admin configura horarios disponibles y bloquea fechas. Cliente reserva desde página pública sin login; admin confirma. Incluye fix deuda técnica `clinic.json`. **Hace el producto vendible.**
+🔴 **Sprint 3 — Mails transaccionales** (5-8 días). Brevo SMTP + Thymeleaf. Confirmación, cancelación, recordatorio 24h, password reset (para S5), alerta backup.
+🔴 **Sprint 4 — WhatsApp automático** (1-2 sem). Twilio/UltraMsg. Recordatorio 24h, confirmación, cancelación. Diferencial del paquete premium. Sube desde Sprint 9.
+🔴 **Sprint 5 — Portal paciente opcional** (2-3 sem). Login no obligatorio. Ver citas, cancelar (72h), reagendar, historial. JWT PACIENTE, cookie HttpOnly, Ley 18.331.
+🟡 Sprint 6 — Balance + Gastos (1-2 sem).
+🟡 Sprint 7 — Demo instance + README pro. `demo.turnosuy.com`, README portfolio.
+🟡 Sprint 8 — SEO multi-subdominio. JSON-LD genérico, SSR, sitemap.
+🟡 Sprint 9 — Observability + rollback (logs JSON, Micrometer, rollback.sh, alertas).
 🟡 Sprint 10+ — Pre-cliente #2: script provisioning, Terraform Hetzner+Cloudflare, Prometheus+Grafana.
 
 **Postergados explícitamente:**
@@ -114,7 +113,7 @@ Ver detalles completos y secuencia por sprint en `ROADMAP.md`.
 - Multi-tenancy real — post 5 clientes activos.
 
 **Aprendizaje devops (proyecto + paralelo):**
-- En este proyecto: Prometheus/Grafana (Sprint 6+), Terraform (cliente #2).
+- En este proyecto: Prometheus/Grafana (Sprint 9+), Terraform (cliente #2).
 - Paralelo: Kubernetes (k3s + helm + CKA) — no aplicar a este proyecto.
 
 Todo el resto (prosa de snapshot, rutas de archivos clave, preguntas abiertas, tabla 4 futuro, secuencia narrativa) no se copia a CLAUDE.md. Vive o en el commit history o se regenera si hace falta.
