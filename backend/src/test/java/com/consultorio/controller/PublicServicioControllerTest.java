@@ -24,6 +24,7 @@ class PublicServicioControllerTest extends BaseIntegrationTest {
     activo.setDescripcion("Profilaxis completa");
     activo.setPrecio(new BigDecimal("1500.00"));
     activo.setActivo(true);
+    activo.setDuracionMinutos(30);
     servicioRepository.save(activo);
 
     Servicio inactivo = new Servicio();
@@ -31,6 +32,7 @@ class PublicServicioControllerTest extends BaseIntegrationTest {
     inactivo.setDescripcion("Tratamiento estético");
     inactivo.setPrecio(new BigDecimal("3000.00"));
     inactivo.setActivo(false);
+    inactivo.setDuracionMinutos(60);
     servicioRepository.save(inactivo);
   }
 

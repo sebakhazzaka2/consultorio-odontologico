@@ -2,13 +2,14 @@ package com.consultorio.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import java.math.BigDecimal;
+import java.time.LocalTime;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record PublicServicioResponse(
+public record DisponibilidadSemanalResponse(
     Long id,
-    String nombre,
-    String descripcion,
-    BigDecimal precio,
-    String fotoUrl,
-    Integer duracionMinutos) {}
+    Integer diaSemana,
+    Boolean activo,
+    LocalTime horaApertura,
+    LocalTime horaCierre,
+    LocalTime pausaInicio,
+    LocalTime pausaFin) {}

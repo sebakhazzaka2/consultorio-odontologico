@@ -13,4 +13,5 @@ public record ServicioResponse(
     BigDecimal precio,
     Boolean activo,
     String fotoUrl,
+    Integer duracionMinutos,
     Instant createdAt) {}

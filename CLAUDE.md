@@ -90,21 +90,22 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 - `neodentalmaster.turnosuy.com` — segunda instancia live (odontología, Montevideo)
 - `dentalmontecaseros.turnosuy.com` — primera instancia (sin uso activo)
 
-Siguiente: Disponibilidad + Reserva sin login (S2) → Mails (S3) → WhatsApp (S4) → Portal paciente opcional (S5).
+Siguiente: Disponibilidad + Reserva sin login (S2) → Diagnósticos + Presupuestos (S3) → Mails (S4) → WhatsApp (S5) → Portal paciente opcional (S6).
 
 Ver detalles completos y secuencia por sprint en `ROADMAP.md`.
 
 ## Prioridades actuales (2026-05-15)
 
 🔴 **Sprint 2 — Disponibilidad admin + Reserva sin login** (~2 semanas). Admin configura horarios disponibles y bloquea fechas. Cliente reserva desde página pública sin login; admin confirma. Incluye fix deuda técnica `clinic.json`. **Hace el producto vendible.**
-🔴 **Sprint 3 — Mails transaccionales** (5-8 días). Brevo SMTP + Thymeleaf. Confirmación, cancelación, recordatorio 24h, password reset (para S5), alerta backup.
-🔴 **Sprint 4 — WhatsApp automático** (1-2 sem). Twilio/UltraMsg. Recordatorio 24h, confirmación, cancelación. Diferencial del paquete premium. Sube desde Sprint 9.
-🔴 **Sprint 5 — Portal paciente opcional** (2-3 sem). Login no obligatorio. Ver citas, cancelar (72h), reagendar, historial. JWT PACIENTE, cookie HttpOnly, Ley 18.331.
-🟡 Sprint 6 — Balance + Gastos (1-2 sem).
-🟡 Sprint 7 — Demo instance + README pro. `demo.turnosuy.com`, README portfolio.
-🟡 Sprint 8 — SEO multi-subdominio. JSON-LD genérico, SSR, sitemap.
-🟡 Sprint 9 — Observability + rollback (logs JSON, Micrometer, rollback.sh, alertas).
-🟡 Sprint 10+ — Pre-cliente #2: script provisioning, Terraform Hetzner+Cloudflare, Prometheus+Grafana.
+🔴 **Sprint 3 — Diagnósticos + Presupuestos** (3-5 días). Entidad Presupuesto (descripción libre + monto + estado). CRUD desde ficha del paciente. Sin vinculación a aranceles — texto libre. El envío por mail va en S4.
+🔴 **Sprint 4 — Mails transaccionales** (5-8 días). Brevo SMTP + Thymeleaf. Confirmación, cancelación, recordatorio 24h, notificación de pago + saldo pendiente, envío de presupuesto (S3), password reset (para S6), alerta backup.
+🔴 **Sprint 5 — WhatsApp automático** (1-2 sem). Twilio/UltraMsg. Recordatorio 24h, confirmación, cancelación. Diferencial del paquete premium.
+🔴 **Sprint 6 — Portal paciente opcional** (2-3 sem). Login no obligatorio. Ver citas, cancelar (72h), reagendar, historial. JWT PACIENTE, cookie HttpOnly, Ley 18.331.
+🟡 Sprint 7 — Balance + Gastos (1-2 sem).
+🟡 Sprint 8 — Demo instance + README pro. `demo.turnosuy.com`, README portfolio.
+🟡 Sprint 9 — SEO multi-subdominio. JSON-LD genérico, SSR, sitemap.
+🟡 Sprint 10 — Observability + rollback (logs JSON, Micrometer, rollback.sh, alertas).
+🟡 Sprint 11+ — Pre-cliente #2: script provisioning, Terraform Hetzner+Cloudflare, Prometheus+Grafana.
 
 **Postergados explícitamente:**
 - Landing comercial `consultorio-landing` — post primer cliente pagando con caso de éxito.

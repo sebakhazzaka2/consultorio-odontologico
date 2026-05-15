@@ -60,6 +60,7 @@ public class ServicioService {
     servicio.setPrecio(request.getPrecio());
     servicio.setActivo(request.getActivo() != null ? request.getActivo() : true);
     servicio.setFotoUrl(request.getFotoUrl());
+    servicio.setDuracionMinutos(request.getDuracionMinutos());
 
     Servicio creado = servicioRepository.save(servicio);
     log.info("Servicio creado — id: {}, nombre: '{}', precio: {}", creado.getId(), creado.getNombre(), creado.getPrecio());
@@ -77,6 +78,7 @@ public class ServicioService {
     existente.setDescripcion(request.getDescripcion());
     existente.setPrecio(request.getPrecio());
     existente.setActivo(request.getActivo());
+    existente.setDuracionMinutos(request.getDuracionMinutos());
 
     Servicio actualizado = servicioRepository.save(existente);
     log.info("Servicio actualizado — id: {}, nombre: '{}'", actualizado.getId(), actualizado.getNombre());
@@ -120,7 +122,8 @@ public class ServicioService {
         servicio.getNombre(),
         servicio.getDescripcion(),
         servicio.getPrecio(),
-        servicio.getFotoUrl());
+        servicio.getFotoUrl(),
+        servicio.getDuracionMinutos());
   }
 
   private ServicioResponse toResponse(Servicio servicio) {
@@ -131,6 +134,7 @@ public class ServicioService {
         servicio.getPrecio(),
         servicio.getActivo(),
         servicio.getFotoUrl(),
+        servicio.getDuracionMinutos(),
         servicio.getCreatedAt());
   }
 }

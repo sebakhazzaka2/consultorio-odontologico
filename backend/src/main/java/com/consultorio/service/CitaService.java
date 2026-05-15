@@ -5,6 +5,7 @@ import com.consultorio.dto.CitaResponse;
 import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Cita;
 import com.consultorio.model.CitaEstado;
+import com.consultorio.model.DisponibilidadSemanal;
 import com.consultorio.model.Paciente;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.PacienteRepository;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,10 +27,13 @@ public class CitaService {
 
   private final CitaRepository citaRepository;
   private final PacienteRepository pacienteRepository;
+  private final DisponibilidadService disponibilidadService;
 
-  public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository) {
+  public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository,
+      DisponibilidadService disponibilidadService) {
     this.citaRepository = citaRepository;
     this.pacienteRepository = pacienteRepository;
+    this.disponibilidadService = disponibilidadService;
   }
 
   public List<CitaResponse> findAll() {
@@ -134,9 +139,28 @@ public class CitaService {
   }
 
   public List<String> getDisponibilidad(LocalDate fecha, int duracionMinutos) {
+    // Día bloqueado (feriado, vacación)
+    if (disponibilidadService.esFechaBloqueada(fecha)) {
+      log.info("Disponibilidad — fecha {} bloqueada, 0 slots", fecha);
+      return List.of();
+    }
+
+    // Día de semana: DayOfWeek usa 1=Lunes..7=Domingo; DB usa 0=Domingo..6=Sábado
+    int diaSemana = fecha.getDayOfWeek().getValue() % 7;
+    Optional<DisponibilidadSemanal> configOpt = disponibilidadService.findByDiaSemana(diaSemana);
+
+    if (configOpt.isEmpty() || !configOpt.get().getActivo()) {
+      log.info("Disponibilidad — día {} no laborable, 0 slots", diaSemana);
+      return List.of();
+    }
+
+    DisponibilidadSemanal config = configOpt.get();
+    LocalTime apertura = config.getHoraApertura();
+    // El último slot válido debe terminar antes o en hora de cierre
+    LocalTime limiteInicio = config.getHoraCierre().minusMinutes(duracionMinutos);
+
     LocalDateTime inicioDia = fecha.atStartOfDay();
     LocalDateTime finDia = fecha.atTime(23, 59);
-
     List<Cita> citasOcupadas = citaRepository.findByFechaHoraInicioBetween(inicioDia, finDia)
         .stream()
         .filter(c -> c.getEstado() == CitaEstado.CONFIRMADA || c.getEstado() == CitaEstado.PENDIENTE)
@@ -144,13 +168,15 @@ public class CitaService {
 
     List<String> disponibles = new ArrayList<>();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    LocalTime slotTime = apertura;
 
-    LocalTime slotTime = LocalTime.of(9, 0);
-    LocalTime limite = LocalTime.of(17, 45);
-
-    while (!slotTime.isAfter(limite)) {
+    while (!slotTime.isAfter(limiteInicio)) {
       LocalDateTime slot = fecha.atTime(slotTime);
       LocalDateTime slotFin = slot.plusMinutes(duracionMinutos);
+
+      boolean enPausa = config.getPausaInicio() != null && config.getPausaFin() != null
+          && slotTime.isBefore(config.getPausaFin())
+          && slotFin.toLocalTime().isAfter(config.getPausaInicio());
 
       boolean solapado = citasOcupadas.stream().anyMatch(cita -> {
         LocalDateTime citaInicio = cita.getFechaHoraInicio();
@@ -158,14 +184,14 @@ public class CitaService {
         return citaInicio.isBefore(slotFin) && citaFin.isAfter(slot);
       });
 
-      if (!solapado) {
+      if (!enPausa && !solapado) {
         disponibles.add(slotTime.format(formatter));
       }
 
       slotTime = slotTime.plusMinutes(15);
     }
 
-    log.info("Consulta de disponibilidad — fecha: {}, duración: {} min, slots disponibles: {}",
+    log.info("Disponibilidad — fecha: {}, duración: {} min, slots disponibles: {}",
         fecha, duracionMinutos, disponibles.size());
     return disponibles;
   }
