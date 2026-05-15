@@ -1,0 +1,149 @@
+.disponibilidad-container {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 860px;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-12);
+}
+
+.section-card {
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .section-icon {
+    color: var(--color-primary-light);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// ── Días ──────────────────────────────────────────────────────────────────
+
+.dias-list {
+  margin-top: var(--space-4);
+}
+
+.dia-row {
+  padding: var(--space-4) 0;
+
+  &.dia-inactivo {
+    .dia-header,
+    .dia-horarios {
+      opacity: 0.55;
+      transition: opacity var(--transition-fast);
+    }
+  }
+}
+
+.dia-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+
+  &:last-child {
+    display: none;
+  }
+}
+
+.dia-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dia-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dia-nombre {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  min-width: 100px;
+}
+
+.dia-horarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.time-field {
+  width: 140px;
+}
+
+.dia-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+}
+
+// ── Fechas bloqueadas ──────────────────────────────────────────────────────
+
+.fecha-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.fecha-field {
+  width: 180px;
+}
+
+.motivo-field {
+  flex: 1;
+  min-width: 180px;
+}
+
+.btn-bloquear {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 56px;
+}
+
+.btn-spinner {
+  display: inline-flex;
+}
+
+.empty-fechas {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin: var(--space-2) 0;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.fecha-chip {
+  background-color: var(--color-surface-alt);
+  font-size: var(--font-size-sm);
+}
+
+.chip-motivo {
+  color: var(--color-text-muted);
+}

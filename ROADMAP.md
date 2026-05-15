@@ -161,7 +161,7 @@ Multi-rubro ✅ → Deuda técnica + Disponibilidad admin + Reserva sin login (S
 - Vista resumen en dashboard admin
 - Export básico (CSV)
 
-### Sprint 8 — Demo instance + README pro (2-4 días)
+### Sprint 8 — Demo instance + README pro + Theming por cliente (2-5 días)
 
 **Por qué después de Balance+Gastos:** el producto está completo — tiene todo lo que mostrar. Hacerlo antes implica actualizar los datos demo con cada sprint.
 
@@ -169,6 +169,14 @@ Multi-rubro ✅ → Deuda técnica + Disponibilidad admin + Reserva sin login (S
 - Subdominio `demo.turnosuy.com` con usuario/contraseña públicos en README
 - README pro: badges, screenshot/GIF del admin, arquitectura de deploy, decisiones de diseño, link live + demo
 - Sirve doble: portfolio personal + demo comercial para clientes potenciales
+
+**Theming por cliente via env vars (~3-4 h):**
+- El backend expone los colores de branding en `GET /api/public/config` junto con los datos de clínica (ya usa `ClinicProperties`)
+- Agregar a `ClinicProperties`: `brandPrimary`, `brandPrimaryHover`, `brandAccent`, etc. (los 8 tokens navy del design system)
+- Al arrancar, el frontend inyecta esos valores como CSS custom properties en el `<html>` root sobreescribiendo los defaults de `_design-system.scss`
+- Angular Material: migrar de `indigo-pink.css` prebuilt a un tema generado con `@use '@angular/material' as mat` para que los componentes Material (date picker, botones mat) también respeten el color del cliente
+- Resultado: un mismo build Docker, colores distintos por instancia via env vars `BRAND_PRIMARY=#...` etc. Sin recompilar.
+- La demo en `demo.turnosuy.com` puede usar colores neutrales y servir como preview del sistema antes de que el cliente elija su paleta
 
 ### Sprint 9 — SEO multi-subdominio (3-5 días)
 

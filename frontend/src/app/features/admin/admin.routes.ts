@@ -30,6 +30,10 @@ export const adminRoutes: Routes = [
       {
         path: 'servicios',
         loadComponent: () => import('./servicios/servicios-listado.component').then(m => m.ServiciosListadoComponent)
+      },
+      {
+        path: 'disponibilidad',
+        loadComponent: () => import('./disponibilidad/disponibilidad.component').then(m => m.DisponibilidadComponent)
       }
     ]
   }
