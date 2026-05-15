@@ -44,14 +44,6 @@ services:
   frontend:
     image: ${GHCR_IMAGE_PREFIX}/consultorio-frontend:latest
     build: ./frontend
-    environment:
-      CLINIC_NAME: ${CLINIC_NAME}
-      CLINIC_TAGLINE: ${CLINIC_TAGLINE:-}
-      CLINIC_ADDRESS: ${CLINIC_ADDRESS:-}
-      CLINIC_PHONE: ${CLINIC_PHONE:-}
-      CLINIC_WHATSAPP: ${CLINIC_WHATSAPP:-}
-      CLINIC_EMAIL: ${CLINIC_EMAIL:-}
-      CLINIC_HOURS: ${CLINIC_HOURS:-}
     depends_on:
       - backend
     restart: unless-stopped

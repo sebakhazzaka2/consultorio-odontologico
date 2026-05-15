@@ -2,16 +2,35 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ClinicConfigService } from './clinic-config.service';
 import { ClinicConfig } from './clinic-config.model';
+import { environment } from '../../../environments/environment';
 
 const MOCK_CONFIG: ClinicConfig = {
-  name: 'Test Clinic',
+  nombre: 'Test Clinic',
   tagline: 'Testing tagline',
-  address: 'Test Address 123',
-  phone: '+000000000',
+  direccion: 'Test Address 123',
+  ciudad: 'Montevideo',
+  horario: 'Lun–Vie 09:00–18:00',
+  horario_apertura: '09:00',
+  horario_cierre: '18:00',
+  dias_laborales: '1,2,3,4,5',
+  telefono: '+000000000',
   whatsapp: '+000000001',
   email: 'test@test.com',
-  hours: 'Mon–Fri 09:00–18:00'
+  nosotros: '',
+  foto_ubicacion_url: '',
+  reviews_enabled: false,
+  stats_pacientes: '',
+  stats_anos_experiencia: '',
+  stats_calificacion: '',
+  hero_imagenes: [],
+  features: [],
+  label_servicio: 'Servicio',
+  label_historial: 'Historial clínico',
+  features_title: '',
+  features_subtitle: '',
 };
+
+const API_URL = `${environment.apiUrl}/api/public/config`;
 
 describe('ClinicConfigService', () => {
   let service: ClinicConfigService;
@@ -34,19 +53,19 @@ describe('ClinicConfigService', () => {
 
   it('populates signal after load()', () => {
     service.load().subscribe();
-    httpMock.expectOne('/assets/config/clinic.json').flush(MOCK_CONFIG);
+    httpMock.expectOne(API_URL).flush(MOCK_CONFIG);
     expect(service.config()).toEqual(MOCK_CONFIG);
   });
 
   it('exposes name getter', () => {
     service.load().subscribe();
-    httpMock.expectOne('/assets/config/clinic.json').flush(MOCK_CONFIG);
+    httpMock.expectOne(API_URL).flush(MOCK_CONFIG);
     expect(service.name).toBe('Test Clinic');
   });
 
   it('exposes tagline getter', () => {
     service.load().subscribe();
-    httpMock.expectOne('/assets/config/clinic.json').flush(MOCK_CONFIG);
+    httpMock.expectOne(API_URL).flush(MOCK_CONFIG);
     expect(service.tagline).toBe('Testing tagline');
   });
 

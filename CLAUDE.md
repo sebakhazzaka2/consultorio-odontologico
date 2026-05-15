@@ -90,8 +90,6 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 - `neodentalmaster.turnosuy.com` — segunda instancia live (odontología, Montevideo)
 - `dentalmontecaseros.turnosuy.com` — primera instancia (sin uso activo)
 
-**Deuda técnica conocida:** `clinic.json` y `CLINIC_NAME` son una segunda fuente de config paralela a `CLINIC_NOMBRE`/Spring Boot. Eliminar al inicio de Sprint 2: `core/config/clinic-config.service.ts` debe leer de `/api/public/config` igual que la página pública.
-
 Siguiente: Disponibilidad + Reserva sin login (S2) → Mails (S3) → WhatsApp (S4) → Portal paciente opcional (S5).
 
 Ver detalles completos y secuencia por sprint en `ROADMAP.md`.

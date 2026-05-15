@@ -70,8 +70,7 @@ Multi-rubro ✅ → Deuda técnica + Disponibilidad admin + Reserva sin login (S
 
 **Motivación:** cambio de enfoque — el admin siempre confirma, por lo tanto el cliente no necesita login para reservar. Esto simplifica todo el funnel de venta y hace el producto vendible antes.
 
-**Deuda técnica al inicio (1-2 horas):**
-- Unificar fuentes de config: `core/config/clinic-config.service.ts` hoy lee de `/assets/config/clinic.json` (generado por `docker-entrypoint.sh` con vars `CLINIC_NAME`, `CLINIC_TAGLINE`, etc.). Cambiarlo para que llame al backend (`GET /api/public/config`) igual que la página pública → eliminar `clinic.json`, `docker-entrypoint.sh`, y las vars `CLINIC_NAME`/`CLINIC_TAGLINE` duplicadas del `docker-compose.prod.yml`. Una sola var `CLINIC_NOMBRE` en Spring Boot.
+**Deuda técnica resuelta (2026-05-15):** ✅ `clinic.json` / `docker-entrypoint.sh` / vars `CLINIC_*` eliminados. El core `ClinicConfigService` ahora llama a `/api/public/config` igual que la página pública. Una sola fuente de verdad en Spring Boot.
 
 **Gestión de disponibilidad (admin):**
 - Admin configura franjas horarias disponibles por día de semana (ej: L-V 09:00–18:00, pausa 13:00–14:00)

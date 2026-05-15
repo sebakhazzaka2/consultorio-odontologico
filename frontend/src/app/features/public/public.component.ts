@@ -5,15 +5,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { PublicServicioService } from './services/public-servicio.service';
-import { ClinicConfigService } from './services/clinic-config.service';
+import { ClinicConfigService } from '../../core/config/clinic-config.service';
 import { ReviewsService } from './services/reviews.service';
 import { PublicServicio } from './models/public-servicio.model';
-import { ClinicConfig } from './models/clinic-config.model';
+import { ClinicConfig, ClinicFeature } from '../../core/config/clinic-config.model';
 import { Review } from './models/review.model';
 import { fadeInUp, staggerList } from '../../shared/animations/fade.animations';
 import { environment } from '../../../environments/environment';
 import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
-import { ClinicFeature } from './models/clinic-config.model';
 
 const heroFade = trigger('heroFade', [
   transition('* => *', [
@@ -175,16 +174,14 @@ export class PublicComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.clinicConfigService.getConfig().subscribe({
-      next: (config) => {
-        this.clinica.set(config);
-        this.startHeroTimer();
-        if (config.reviews_enabled) {
-          this.loadReviews();
-        }
-      },
-      error: () => {},
-    });
+    const config = this.clinicConfigService.config();
+    if (config) {
+      this.clinica.set(config);
+      this.startHeroTimer();
+      if (config.reviews_enabled) {
+        this.loadReviews();
+      }
+    }
 
     this.servicioService.getActivos().subscribe({
       next: (s) => {
