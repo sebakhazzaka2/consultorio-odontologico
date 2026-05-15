@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -58,7 +59,14 @@ public class DisponibilidadService {
   // ── Fechas bloqueadas ─────────────────────────────────────────────────────
 
   public List<FechaBloqueadaResponse> findAllBloqueadas() {
-    return bloqueadaRepo.findAll().stream().map(this::toBloqueadaResponse).toList();
+    return bloqueadaRepo.findByFechaGreaterThanEqualOrderByFechaAsc(LocalDate.now())
+        .stream().map(this::toBloqueadaResponse).toList();
+  }
+
+  @Scheduled(cron = "0 0 3 * * *")
+  public void limpiarFechasPasadas() {
+    bloqueadaRepo.eliminarPasadas(LocalDate.now());
+    log.info("Limpieza de fechas bloqueadas pasadas completada");
   }
 
   public FechaBloqueadaResponse bloquearFecha(FechaBloqueadaRequest request) {
