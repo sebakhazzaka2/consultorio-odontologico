@@ -1,0 +1,2 @@
+ALTER TABLE pacientes
+    ADD COLUMN creado_por ENUM('ADMIN', 'AGENDA') NOT NULL DEFAULT 'ADMIN';
