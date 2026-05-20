@@ -37,6 +37,7 @@ Multi-rubro ✅ → Deuda técnica + Disponibilidad admin + Reserva sin login (S
 | **Sprint 8 — Demo instance + README pro** | ⏳ Tras S7 (2-4 días) |
 | **Sprint 9 — SEO multi-subdominio** | ⏳ Tras S8 (3-5 días) |
 | **Sprint 10 — Observability + rollback** | ⏳ Tras S9 (1 semana) |
+| **Sprint 11 — Google Calendar sync** | ⏳ Diferido — infraestructura lista (V9) |
 | 🎯 Primer cliente Web | ⏳ Tras S2 + S4 (paquete básico vendible) |
 | 🎯 Primer cliente Web + WhatsApp | ⏳ Tras S5 (paquete premium vendible) |
 | 🎯 Cliente #2 | ⏳ Trigger para script provisioning + Terraform |
@@ -79,18 +80,18 @@ Multi-rubro ✅ → Deuda técnica + Disponibilidad admin + Reserva sin login (S
 - El **email es obligatorio** en la reserva pública — necesario para enviar confirmación (S3) y recordatorio 24h antes (S3).
 - Al confirmar una cita `PENDIENTE`, el admin ve la duración pre-cargada desde el servicio pero **puede editarla** antes de confirmar (flexibilidad clínica). La agenda bloquea la duración final confirmada.
 
-**Paso 1 — Backend: duración en Servicio + modelo de disponibilidad persistente**
+✅**Paso 1 — Backend: duración en Servicio + modelo de disponibilidad persistente**
 - Agregar `duracionMinutos` a la entidad `Servicio` (si no existe) + migración
 - Nueva entidad `DisponibilidadSemanal` (día de semana → hora apertura/cierre + pausa opcional)
 - Nueva entidad `FechaBloqueada` (fecha específica bloqueada por el admin)
 - Repository + DTO + Service + Controller (`/api/admin/disponibilidad`, `/api/admin/fechas-bloqueadas`)
 - Refactor `CitaService.getDisponibilidad()` para usar estas entidades en vez de valores hardcodeados
 
-**Paso 2 — Backend: endpoints públicos de slots y reserva**
+✅**Paso 2 — Backend: endpoints públicos de slots y reserva**
 - `GET /api/public/slots?fecha=...&servicioId=...` — slots disponibles para un servicio en una fecha (sin auth). La duración se deriva del servicio.
 - `POST /api/public/reservas` — crea `Cita` en estado `PENDIENTE` con: nombre, teléfono, email (obligatorio), servicioId, fechaHoraInicio. La duración se toma del servicio.
 
-**Paso 3 — Frontend admin: configuración de horarios**
+✅**Paso 3 — Frontend admin: configuración de horarios**
 - Nueva ruta `/admin/disponibilidad`
 - Tabla por día de semana: toggle activo/inactivo + hora apertura + hora cierre + pausa (opcional)
 - Sección de bloqueo de fechas específicas (feriados, vacaciones) con calendario
@@ -105,6 +106,11 @@ Multi-rubro ✅ → Deuda técnica + Disponibilidad admin + Reserva sin login (S
 - Flujo: (1) elige servicio → (2) elige fecha → (3) elige slot (backend calcula con duración del servicio) → (4) completa nombre + teléfono + email → (5) envía
 - Confirmación visual: "Tu solicitud fue enviada, te contactaremos para confirmar"
 - Email obligatorio, validado en frontend y backend
+
+**Preparación Google Calendar (incluida en S2):**
+- Columna `google_event_id VARCHAR(255) NULL` en tabla `citas` (migración V9)
+- Campo en entidad `Cita` — sin exponer en DTOs por ahora
+- Permite futura sincronización bidireccional sin migración en producción con datos reales
 
 ### Sprint 3 — Diagnósticos + Presupuestos (3-5 días)
 

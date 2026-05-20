@@ -42,6 +42,9 @@ public class Cita {
   @Column(nullable = true, length = 1000)
   private String notas;
 
+  @Column(name = "google_event_id", nullable = true, length = 255)
+  private String googleEventId;
+
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -102,6 +105,14 @@ public class Cita {
 
   public void setNotas(String notas) {
     this.notas = notas;
+  }
+
+  public String getGoogleEventId() {
+    return googleEventId;
+  }
+
+  public void setGoogleEventId(String googleEventId) {
+    this.googleEventId = googleEventId;
   }
 
   public Instant getCreatedAt() {
