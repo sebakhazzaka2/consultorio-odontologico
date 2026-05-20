@@ -2,6 +2,8 @@ package com.consultorio.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +45,10 @@ public class Paciente {
 
   @Column(name = "fecha_nacimiento")
   private LocalDate fechaNacimiento;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "creado_por", nullable = false, length = 10)
+  private PacienteOrigen creadoPor = PacienteOrigen.ADMIN;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = true)
@@ -108,6 +114,14 @@ public class Paciente {
 
   public void setFechaNacimiento(LocalDate fechaNacimiento) {
     this.fechaNacimiento = fechaNacimiento;
+  }
+
+  public PacienteOrigen getCreadoPor() {
+    return creadoPor;
+  }
+
+  public void setCreadoPor(PacienteOrigen creadoPor) {
+    this.creadoPor = creadoPor;
   }
 
   public Instant getCreatedAt() {

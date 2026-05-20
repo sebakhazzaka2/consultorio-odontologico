@@ -4,6 +4,7 @@ import com.consultorio.dto.PacienteRequest;
 import com.consultorio.dto.PacienteResponse;
 import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Paciente;
+import com.consultorio.model.PacienteOrigen;
 import com.consultorio.repository.PacienteRepository;
 import java.util.List;
 import org.slf4j.Logger;
@@ -85,7 +86,7 @@ public class PacienteService {
     log.info("Paciente eliminado — id: {}", id);
   }
 
-  private PacienteResponse toResponse(Paciente paciente) {
+  public PacienteResponse toResponse(Paciente paciente) {
     return new PacienteResponse(
         paciente.getId(),
         paciente.getNombre(),
@@ -93,6 +94,7 @@ public class PacienteService {
         paciente.getTelefono(),
         paciente.getEmail(),
         paciente.getFechaNacimiento(),
+        paciente.getCreadoPor(),
         paciente.getCreatedAt());
   }
 
@@ -103,6 +105,7 @@ public class PacienteService {
     paciente.setTelefono(request.getTelefono());
     paciente.setEmail(request.getEmail());
     paciente.setFechaNacimiento(request.getFechaNacimiento());
+    paciente.setCreadoPor(PacienteOrigen.ADMIN);
     return paciente;
   }
 }

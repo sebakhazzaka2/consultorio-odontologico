@@ -33,6 +33,9 @@ public class Servicio {
   @Column(name = "foto_url", nullable = true, length = 500)
   private String fotoUrl;
 
+  @Column(name = "duracion_minutos", nullable = false)
+  private Integer duracionMinutos;
+
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -85,6 +88,14 @@ public class Servicio {
 
   public void setFotoUrl(String fotoUrl) {
     this.fotoUrl = fotoUrl;
+  }
+
+  public Integer getDuracionMinutos() {
+    return duracionMinutos;
+  }
+
+  public void setDuracionMinutos(Integer duracionMinutos) {
+    this.duracionMinutos = duracionMinutos;
   }
 
   public Instant getCreatedAt() {

@@ -16,19 +16,22 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CitaService } from '../citas/cita.service';
 import { PacienteService } from '../pacientes/paciente.service';
 import { PagoService } from '../pacientes/pago.service';
 import { Cita } from '../../../core/models/cita.model';
 import { Pago } from '../../../core/models/pago.model';
 import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip.component';
+import { ConfirmarPendienteDialogComponent, ConfirmarPendienteDialogData } from './confirmar-pendiente-dialog.component';
 
 type ChartVista = 'semana' | 'mes';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatTooltipModule, StatusChipComponent, BaseChartDirective],
+  imports: [CommonModule, CurrencyPipe, RouterLink, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, StatusChipComponent, BaseChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   animations: [
@@ -112,7 +115,9 @@ export class DashboardComponent implements OnInit {
   constructor(
     private citaService: CitaService,
     private pacienteService: PacienteService,
-    private pagoService: PagoService
+    private pagoService: PagoService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     effect(() => {
       this.citas();
@@ -162,9 +167,9 @@ export class DashboardComponent implements OnInit {
 
         this.proximos5.set(futuras.slice(0, 5));
 
-        this.citasPendientes.set(
-          futuras.filter(c => c.estado === 'PENDIENTE').slice(0, 5)
-        );
+        const pendientes = futuras.filter(c => c.estado === 'PENDIENTE').slice(0, 5);
+        this.citasPendientes.set(pendientes);
+        this.citaService.pendientesCount$.next(pendientes.length);
 
         this.canceladasMes.set(
           citas.filter(c => {
@@ -199,6 +204,24 @@ export class DashboardComponent implements OnInit {
       error: () => {
         this.loading.set(false);
       }
+    });
+  }
+
+  abrirConfirmar(cita: Cita): void {
+    const data: ConfirmarPendienteDialogData = { cita };
+    const ref = this.dialog.open(ConfirmarPendienteDialogComponent, { width: '420px', data });
+    ref.afterClosed().subscribe((accion: 'confirmada' | 'rechazada' | null) => {
+      if (accion) this.ngOnInit();
+    });
+  }
+
+  rechazar(cita: Cita): void {
+    this.citaService.cancelarCita(cita.id).subscribe({
+      next: () => {
+        this.snackBar.open('Reserva rechazada', 'Cerrar', { duration: 3000 });
+        this.ngOnInit();
+      },
+      error: () => this.snackBar.open('Error al rechazar la reserva', 'Cerrar', { duration: 4000 })
     });
   }
 

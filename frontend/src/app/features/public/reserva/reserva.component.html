@@ -1,0 +1,189 @@
+<div class="reserva-page">
+
+  <header class="reserva-header">
+    <a routerLink="/" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      {{ clinicName }}
+    </a>
+    <h1 class="reserva-title">Reservar turno</h1>
+  </header>
+
+  @if (reservaExitosa) {
+
+    <!-- Pantalla de éxito -->
+    <div class="exito-container">
+      <div class="exito-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <h2>¡Solicitud enviada!</h2>
+      <p class="exito-mensaje">{{ reservaExitosa.mensaje }}</p>
+      <div class="exito-detalle">
+        <div class="detalle-row">
+          <span class="detalle-label">Servicio</span>
+          <span class="detalle-valor">{{ reservaExitosa.servicio }}</span>
+        </div>
+        <div class="detalle-row">
+          <span class="detalle-label">Fecha y hora</span>
+          <span class="detalle-valor">{{ reservaExitosa.fecha_hora_inicio | date:'EEEE d \'de\' MMMM, HH:mm':'':'es-UY' }}</span>
+        </div>
+        <div class="detalle-row">
+          <span class="detalle-label">Duración estimada</span>
+          <span class="detalle-valor">{{ reservaExitosa.duracion_minutos }} minutos</span>
+        </div>
+      </div>
+      <a mat-flat-button routerLink="/" class="btn-volver">Volver al inicio</a>
+    </div>
+
+  } @else {
+
+    <div class="stepper-container">
+
+      @if (error) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          {{ error }}
+        </div>
+      }
+
+      <mat-stepper #stepper orientation="vertical" [linear]="true">
+
+        <!-- Paso 1: Servicio -->
+        <mat-step [stepControl]="servicioForm" label="Elegí el servicio">
+          <div class="step-content">
+            @if (cargandoServicios) {
+              <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
+            } @else {
+              <div class="servicios-grid">
+                @for (s of servicios; track s.id) {
+                  <button
+                    type="button"
+                    class="servicio-card"
+                    [class.selected]="servicioSeleccionado?.id === s.id"
+                    (click)="seleccionarServicio(s)">
+                    <span class="servicio-nombre">{{ s.nombre }}</span>
+                    <span class="servicio-meta">{{ s.duracion_minutos }} min · ${{ s.precio | number:'1.0-0' }}</span>
+                  </button>
+                }
+              </div>
+            }
+            <div class="step-actions">
+              <button mat-flat-button color="primary" matStepperNext [disabled]="servicioForm.invalid">
+                Siguiente <mat-icon iconPositionEnd>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-step>
+
+        <!-- Paso 2: Fecha -->
+        <mat-step [stepControl]="fechaForm" label="Elegí la fecha">
+          <div class="step-content">
+            <form [formGroup]="fechaForm">
+              <mat-form-field appearance="outline" class="fecha-field">
+                <mat-label>Fecha del turno</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="fecha"
+                  [min]="minFecha" (dateChange)="onFechaChange()" readonly>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </form>
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>Atrás</button>
+              <button mat-flat-button color="primary" matStepperNext [disabled]="fechaForm.invalid">
+                Siguiente <mat-icon iconPositionEnd>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-step>
+
+        <!-- Paso 3: Horario -->
+        <mat-step [stepControl]="slotForm" label="Elegí el horario">
+          <div class="step-content">
+            @if (cargandoSlots) {
+              <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
+            } @else if (slots.length === 0) {
+              <p class="no-slots">No hay horarios disponibles para ese día. Probá con otra fecha.</p>
+            } @else {
+              <div class="slots-grid">
+                @for (slot of slots; track slot) {
+                  <button
+                    type="button"
+                    class="slot-btn"
+                    [class.selected]="slotSeleccionado === slot"
+                    (click)="seleccionarSlot(slot)">
+                    {{ slot }}
+                  </button>
+                }
+              </div>
+            }
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>Atrás</button>
+              <button mat-flat-button color="primary" matStepperNext [disabled]="slotForm.invalid">
+                Siguiente <mat-icon iconPositionEnd>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-step>
+
+        <!-- Paso 4: Datos personales -->
+        <mat-step [stepControl]="datosForm" label="Tus datos">
+          <div class="step-content">
+            <form [formGroup]="datosForm" class="datos-form">
+              <div class="datos-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nombre</mat-label>
+                  <input matInput formControlName="nombre">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Apellido</mat-label>
+                  <input matInput formControlName="apellido">
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="full-field">
+                <mat-label>Teléfono (solo números)</mat-label>
+                <input matInput formControlName="telefono" type="tel" inputmode="numeric">
+                @if (datosForm.controls['telefono'].hasError('pattern')) {
+                  <mat-error>Solo números, entre 7 y 15 dígitos</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-field">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email">
+                <mat-hint>Te enviaremos la confirmación a este email</mat-hint>
+                @if (datosForm.controls['email'].hasError('email')) {
+                  <mat-error>Email inválido</mat-error>
+                }
+              </mat-form-field>
+            </form>
+
+            <!-- Resumen antes de confirmar -->
+            <div class="resumen">
+              <h3 class="resumen-titulo">Resumen de tu reserva</h3>
+              <div class="resumen-row">
+                <span>Servicio</span><span>{{ servicioSeleccionado?.nombre }}</span>
+              </div>
+              <div class="resumen-row">
+                <span>Fecha y hora</span>
+                <span>{{ fechaForm.value.fecha | date:'d/MM/yyyy' }} {{ slotSeleccionado }}</span>
+              </div>
+              <div class="resumen-row">
+                <span>Duración</span><span>{{ servicioSeleccionado?.duracion_minutos }} min</span>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>Atrás</button>
+              <button mat-flat-button color="primary" (click)="enviar()"
+                [disabled]="datosForm.invalid || enviando">
+                @if (enviando) { <mat-spinner diameter="18"></mat-spinner> }
+                @else { <mat-icon>send</mat-icon> }
+                Confirmar reserva
+              </button>
+            </div>
+          </div>
+        </mat-step>
+
+      </mat-stepper>
+    </div>
+  }
+
+</div>

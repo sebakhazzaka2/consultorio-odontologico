@@ -1,0 +1,145 @@
+<app-page-header
+  icon="schedule"
+  title="Disponibilidad"
+  subtitle="Configurá los horarios de atención y bloqueá fechas específicas">
+</app-page-header>
+
+<div class="disponibilidad-container">
+
+  @if (cargando) {
+    <div class="loading-center">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+
+    <!-- Horarios semanales -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">calendar_today</mat-icon>
+          Horarios por día
+        </mat-card-title>
+        <mat-card-subtitle>
+          Este horario se repite todas las semanas automáticamente.
+          Para bloquear un día puntual (feriado, vacación), usá la sección de abajo.
+          Guardá cada día por separado.
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="dias-list">
+          @for (row of dias; track row.diaSemana) {
+            <div class="dia-row" [class.dia-inactivo]="!row.form.value.activo">
+              <form [formGroup]="row.form" class="dia-form">
+
+                <div class="dia-header">
+                  <span class="dia-nombre">{{ row.nombre }}</span>
+                  <mat-slide-toggle formControlName="activo" color="primary">
+                    {{ row.form.value.activo ? 'Activo' : 'Inactivo' }}
+                  </mat-slide-toggle>
+                </div>
+
+                @if (row.form.value.activo) {
+                  <div class="dia-horarios">
+                    <mat-form-field appearance="outline" class="time-field">
+                      <mat-label>Apertura</mat-label>
+                      <input matInput type="time" formControlName="hora_apertura">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="time-field">
+                      <mat-label>Cierre</mat-label>
+                      <input matInput type="time" formControlName="hora_cierre">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="time-field">
+                      <mat-label>Pausa inicio</mat-label>
+                      <input matInput type="time" formControlName="pausa_inicio" placeholder="Sin pausa">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="time-field">
+                      <mat-label>Pausa fin</mat-label>
+                      <input matInput type="time" formControlName="pausa_fin" placeholder="Sin pausa">
+                    </mat-form-field>
+                  </div>
+                }
+
+                <div class="dia-actions">
+                  <button mat-stroked-button color="primary" (click)="guardarDia(row)" [disabled]="row.guardando">
+                    @if (row.guardando) {
+                      <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                    } @else {
+                      <mat-icon>save</mat-icon>
+                    }
+                    Guardar
+                  </button>
+                </div>
+
+              </form>
+            </div>
+            <hr class="dia-divider">
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Fechas bloqueadas -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">event_busy</mat-icon>
+          Fechas bloqueadas
+        </mat-card-title>
+        <mat-card-subtitle>
+          Días específicos donde no hay atención, independientemente del horario semanal.
+          Las fechas pasadas se eliminan automáticamente.
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <form [formGroup]="fechaForm" class="fecha-form">
+          <mat-form-field appearance="outline" class="fecha-field">
+            <mat-label>Fecha a bloquear</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fecha">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="motivo-field">
+            <mat-label>Motivo (opcional)</mat-label>
+            <input matInput formControlName="motivo" placeholder="Ej: Feriado nacional">
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" (click)="bloquearFecha()"
+            [disabled]="fechaForm.invalid || bloqueando" class="btn-bloquear">
+            @if (bloqueando) {
+              <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+            } @else {
+              <mat-icon>block</mat-icon>
+            }
+            Bloquear fecha
+          </button>
+        </form>
+
+        @if (fechasBloqueadas.length === 0) {
+          <p class="empty-fechas">No hay fechas bloqueadas.</p>
+        } @else {
+          <div class="chips-container">
+            @for (f of fechasBloqueadas; track f.id) {
+              <mat-chip class="fecha-chip" [matTooltip]="f.motivo || ''">
+                <mat-icon matChipAvatar>event_busy</mat-icon>
+                {{ formatearFecha(f.fecha) }}
+                @if (f.motivo) {
+                  <span class="chip-motivo"> — {{ f.motivo }}</span>
+                }
+                <button matChipRemove (click)="desbloquear(f)" aria-label="Desbloquear fecha">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+          </div>
+        }
+
+      </mat-card-content>
+    </mat-card>
+
+  }
+</div>

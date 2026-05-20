@@ -32,10 +32,9 @@
       <h1 class="hero-title">{{ clinica().nombre }}</h1>
       <p class="hero-subtitle">{{ clinica().tagline }}</p>
       <div class="hero-actions">
-        <button class="btn-primary" disabled>
+        <a class="btn-primary" routerLink="/reservar">
           Reservar turno
-          <span class="btn-badge">Próximamente</span>
-        </button>
+        </a>
         <a class="btn-ghost" href="#servicios">
           Ver {{ clinica().label_servicio }}s
           <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -210,7 +209,7 @@
               <p class="card-description">{{ t.descripcion }}</p>
               <div class="card-footer">
                 <span class="card-price">{{ t.precio | currency:'UYU':'symbol-narrow':'1.0-0':'es' }}</span>
-                <button class="card-cta" disabled title="Disponible próximamente">Agendar →</button>
+                <a class="card-cta" routerLink="/reservar">Agendar →</a>
               </div>
             </article>
           }

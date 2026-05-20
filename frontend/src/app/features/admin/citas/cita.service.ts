@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Cita, CitaPayload } from '../../../core/models/cita.model';
@@ -22,6 +22,8 @@ export interface ResultadoCita {
 })
 export class CitaService {
   private readonly apiUrl = `${environment.apiUrl}/api/citas`;
+
+  readonly pendientesCount$ = new BehaviorSubject<number>(0);
 
   constructor(private http: HttpClient) {}
 
@@ -71,8 +73,9 @@ export class CitaService {
     );
   }
 
-  confirmarCita(id: number): Observable<Cita> {
-    return this.http.patch<Cita>(`${this.apiUrl}/${id}/confirmar`, {}).pipe(
+  confirmarCita(id: number, duracionMinutos?: number): Observable<Cita> {
+    const body = duracionMinutos != null ? { duracion_minutos: duracionMinutos } : {};
+    return this.http.patch<Cita>(`${this.apiUrl}/${id}/confirmar`, body).pipe(
       catchError((err: HttpErrorResponse) => throwError(() => this.extraerMensajeError(err)))
     );
   }

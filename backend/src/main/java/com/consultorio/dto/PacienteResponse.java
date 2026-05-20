@@ -1,5 +1,6 @@
 package com.consultorio.dto;
 
+import com.consultorio.model.PacienteOrigen;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.Instant;
@@ -13,4 +14,5 @@ public record PacienteResponse(
     String telefono,
     String email,
     LocalDate fechaNacimiento,
+    PacienteOrigen creadoPor,
     Instant createdAt) {}

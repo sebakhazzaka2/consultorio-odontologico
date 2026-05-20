@@ -9,6 +9,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/public/public.component').then(m => m.PublicComponent)
   },
   { path: 'servicios', component: ServiciosComponent },
+  {
+    path: 'reservar',
+    loadComponent: () => import('./features/public/reserva/reserva.component').then(m => m.ReservaComponent)
+  },
   { path: 'login', component: LoginComponent },
   {
     path: 'admin',
