@@ -12,6 +12,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { httpErrorInterceptor } from './core/http-error.interceptor';
 import { ClinicConfigService } from './core/config/clinic-config.service';
+import { ChunkErrorHandler } from './core/chunk-error.handler';
 
 registerLocaleData(localeEs);
 
@@ -23,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideNativeDateAdapter(),
     { provide: LOCALE_ID, useValue: 'es' },
     provideCharts(withDefaultRegisterables()),
-    { provide: ErrorHandler, useValue: Sentry.createErrorHandler() },
+    { provide: ErrorHandler, useClass: ChunkErrorHandler },
     { provide: Sentry.TraceService, deps: [Router] },
     {
       provide: APP_INITIALIZER,
