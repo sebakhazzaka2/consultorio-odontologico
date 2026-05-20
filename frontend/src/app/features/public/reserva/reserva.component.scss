@@ -1,0 +1,291 @@
+.reserva-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  font-family: var(--font-family);
+}
+
+// ── Header ──────────────────────────────────────────────────────────────────
+
+.reserva-header {
+  background: var(--color-primary);
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: color var(--transition-fast);
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { color: #fff; }
+}
+
+.reserva-title {
+  color: #fff;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+// ── Stepper container ────────────────────────────────────────────────────────
+
+.stepper-container {
+  max-width: 640px;
+  margin: var(--space-8) auto;
+  padding: 0 var(--space-4);
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: #fef2f2;
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+.step-content {
+  padding: var(--space-4) 0 var(--space-2);
+}
+
+.step-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-5);
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+// ── Servicios grid ───────────────────────────────────────────────────────────
+
+.servicios-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.servicio-card {
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &:hover {
+    border-color: var(--color-primary-light);
+    background: #f0f4ff;
+  }
+
+  &.selected {
+    border-color: var(--color-primary);
+    background: #eef2ff;
+  }
+}
+
+.servicio-nombre {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.servicio-meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+// ── Slots ────────────────────────────────────────────────────────────────────
+
+.no-slots {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+
+.slots-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.slot-btn {
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+
+  &:hover {
+    border-color: var(--color-primary-light);
+    background: #f0f4ff;
+  }
+
+  &.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: #fff;
+  }
+}
+
+// ── Fecha field ──────────────────────────────────────────────────────────────
+
+.fecha-field {
+  width: 100%;
+  max-width: 280px;
+}
+
+// ── Datos form ───────────────────────────────────────────────────────────────
+
+.datos-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.datos-row {
+  display: flex;
+  gap: var(--space-3);
+
+  mat-form-field { flex: 1; }
+}
+
+.full-field {
+  width: 100%;
+}
+
+// ── Resumen ──────────────────────────────────────────────────────────────────
+
+.resumen {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.resumen-titulo {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-3);
+}
+
+.resumen-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child { border-bottom: none; }
+
+  span:first-child { color: var(--color-text-muted); }
+  span:last-child { font-weight: var(--font-weight-medium); color: var(--color-text); }
+}
+
+// ── Éxito ────────────────────────────────────────────────────────────────────
+
+.exito-container {
+  max-width: 480px;
+  margin: var(--space-12) auto;
+  padding: 0 var(--space-4);
+  text-align: center;
+}
+
+.exito-icon {
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--color-success);
+  }
+  margin-bottom: var(--space-4);
+}
+
+.exito-container h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--space-2);
+}
+
+.exito-mensaje {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-6);
+}
+
+.exito-detalle {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-6);
+  text-align: left;
+}
+
+.detalle-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child { border-bottom: none; }
+}
+
+.detalle-label { color: var(--color-text-muted); }
+.detalle-valor { font-weight: var(--font-weight-medium); color: var(--color-text); }
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: 480px) {
+  .datos-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .reserva-header {
+    padding: var(--space-3) var(--space-4);
+  }
+}
