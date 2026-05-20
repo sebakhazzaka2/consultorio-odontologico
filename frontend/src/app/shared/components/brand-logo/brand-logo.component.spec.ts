@@ -57,7 +57,7 @@ describe('BrandLogoComponent', () => {
     fixture.detectChanges();
     const wordmark = fixture.nativeElement.querySelector('.wordmark');
     expect(wordmark).toBeTruthy();
-    expect(wordmark.textContent).toContain('Nexa');
-    expect(wordmark.textContent).toContain('Clinic');
+    expect(wordmark.textContent).toContain('Turnos');
+    expect(wordmark.textContent).toContain('Uy');
   });
 });

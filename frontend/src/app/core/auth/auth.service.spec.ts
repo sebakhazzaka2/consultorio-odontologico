@@ -8,7 +8,7 @@ describe('AuthService', () => {
   let httpMock: HttpTestingController;
   let mockRouter: jasmine.SpyObj<Router>;
 
-  const API_LOGIN = 'https://api.tu-consultorio.com/api/auth/login';
+  const API_LOGIN = '/api/auth/login';
 
   beforeEach(() => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);

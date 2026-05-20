@@ -7,7 +7,7 @@ describe('PacienteService', () => {
   let service: PacienteService;
   let httpMock: HttpTestingController;
 
-  const API_URL = 'https://api.tu-consultorio.com/api/pacientes';
+  const API_URL = '/api/pacientes';
 
   const mockPaciente: Paciente = {
     id: 1,
