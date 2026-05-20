@@ -1,4 +1,4 @@
-# DEPLOY.MD — Runbook de producción
+# DEPLOY — Runbook de producción
 
 ## Infraestructura
 
