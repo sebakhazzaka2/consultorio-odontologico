@@ -93,11 +93,29 @@ backend/src/main/java/com/consultorio/
 - **Solapamiento de citas:** valida solo contra CONFIRMADA y PENDIENTE — CANCELADA libera el slot.
 - **Disponibilidad de slots:** backend genera slots 09:00–17:45 cada 15 min y excluye los ocupados dada una fecha y duración.
 
+### Storage de archivos clínicos (implementado en S3)
+
+**Nombres en disco:** siempre `{uuid}.{ext}`, nunca el nombre original. El nombre original se guarda solo en BD (`nombre_original`). Razones: evita colisiones, caracteres especiales que rompen el filesystem, y path traversal.
+
+**Paths construidos server-side:** el path en disco se arma en `LocalFileStorageServiceImpl` como `pacientes/{pacienteId}/{uuid}.{ext}`. Nunca se acepta un path del cliente.
+
+**Archivos servidos siempre por endpoint autenticado:** `GET /api/admin/archivos/{id}` verifica auth antes de leer el disco y devuelve el contenido como `Resource`. Los archivos nunca son URLs públicas directas — son datos clínicos de pacientes.
+
+**Validación server-side:** verificar MIME type real del contenido (no solo extensión). Whitelist: `image/jpeg`, `image/png`, `image/webp`, `application/pdf`. Límite configurable via `spring.servlet.multipart.max-file-size` (default propuesto: 15 MB).
+
+**Soft delete:** borrar un `ArchivoClinico` marca `deleted_at = now()` en BD. Un cron job borra físicamente los archivos con `deleted_at` de más de 30 días. Previene pérdida por borrado accidental sin complejidad de papelera.
+
+**Backup:** el cron de backup en el servidor debe incluir un `rsync` o `tar` de `/opt/consultorio/uploads` además del dump MySQL. Los archivos **no están en BD** — si no se backupean se pierden independientemente del backup de base de datos.
+
+**Monitorear espacio en disco:** radiografías clínicas pesan 5-20 MB c/u. Con crecimiento real, monitorear uso del volumen de Hetzner.
+
+**Migración a Backblaze B2:** cuando el volumen justifique el costo, escribir `BackblazeStorageServiceImpl` implementando la misma interfaz `FileStorageService`. Script de migración: leer paths de BD, subir archivos a B2, actualizar paths en BD. El resto del código no cambia.
+
 ## Decisiones de infraestructura
 
 - **Hetzner sobre DigitalOcean:** CAX11 ARM €3.79/mes vs DO Basic $6/mes. 12-factor compatible → migración a AWS straightforward cuando corresponda.
 - **Rate limiting en Nginx, no en Spring:** pertenece a la capa de infraestructura (SRP arquitectónico). `limit_req_zone` en `nginx.conf` es cero cambios en la lógica de negocio.
 - **JWT expiration corta (≤ 2h) como mitigante de revocación:** sin blacklist ni refresh tokens (MVP1, un solo admin). Refresh tokens con rotación va en MVP2.
 - **MySQL nunca expuesto en `ports` en docker-compose.prod.yml:** solo accesible desde la Docker network interna.
-- **FileStorageService interface para V3 (Strategy Pattern):** implementar con `BackblazeStorageServiceImpl` primero, intercambiable por `S3StorageServiceImpl`. Backblaze B2 es la opción más barata con API S3-compatible.
+- **FileStorageService interface (Strategy Pattern):** `LocalFileStorageServiceImpl` ahora (sin costo). Migrar a `BackblazeStorageServiceImpl` (Backblaze B2, API S3-compatible) cuando el volumen de archivos justifique el gasto. El código que usa la interfaz no cambia. Ver decisiones de diseño de storage más abajo.
 - **DB por tenant para multi-tenant (V5):** un schema MySQL diferente por cliente — más simple, seguro y fácil de migrar que Row-Level Security compartida.
