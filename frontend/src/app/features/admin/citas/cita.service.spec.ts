@@ -7,7 +7,7 @@ describe('CitaService', () => {
   let service: CitaService;
   let httpMock: HttpTestingController;
 
-  const API_URL = 'https://api.tu-consultorio.com/api/citas';
+  const API_URL = '/api/citas';
 
   const mockCita: Cita = {
     id: 1,
