@@ -177,6 +177,7 @@ export class PublicComponent implements OnInit, OnDestroy {
     const config = this.clinicConfigService.config();
     if (config) {
       this.clinica.set(config);
+      this.preloadHeroImages();
       this.startHeroTimer();
       if (config.reviews_enabled) {
         this.loadReviews();
@@ -205,6 +206,15 @@ export class PublicComponent implements OnInit, OnDestroy {
     const len = this.heroImagenes().length;
     this.heroPage.update(i => (i + 1) % len);
     this.resetHeroTimer();
+  }
+
+  // Precarga las imágenes del hero apenas tenemos la config, así el cambio
+  // (manual o automático) es instantáneo en lugar de descargar al vuelo.
+  private preloadHeroImages(): void {
+    for (const url of this.heroImagenes()) {
+      const img = new Image();
+      img.src = url;
+    }
   }
 
   private startHeroTimer(): void {

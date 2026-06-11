@@ -1,4 +1,14 @@
 {$DOMAIN} {
+    # Imágenes subidas (hero, servicios, tratamientos) son inmutables por URL.
+    # Spring Security las sirve con `no-store`, lo que obliga a re-descargar cada vez.
+    # Cacheamos en la capa de proxy (mismo criterio que el rate limiting en nginx):
+    # el navegador descarga cada imagen una sola vez. Cache-busting = cambiar el nombre de archivo.
+    @uploads path /api/uploads/*
+    header @uploads {
+        Cache-Control "public, max-age=2592000"
+        -Pragma
+        -Expires
+    }
     reverse_proxy frontend:80
 }
 
