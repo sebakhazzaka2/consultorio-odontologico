@@ -1,23 +1,27 @@
 # Roadmap — Consultorio Odontológico
 
-> **Última actualización:** 2026-05-20 — S2 completo. Secuencia reordenada: features primero (S5→S6→S7→S8), luego hardening consolidado (S9), luego WhatsApp (S10).
+> **Última actualización:** 2026-06-10 — Repriorización: S6 Mails sube, S4 Theming postergado on-demand, se insertan S-Audit (seguridad+calidad) y S-Tests antes de seguir agregando features.
 
 ## Secuencia recomendada
 ```
-S3 Hardening urgente (P0, ~1.5 días)  ← PRÓXIMO
-→ S4 Theming foundations (~2 días)
-→ S5 Presupuestos + Archivos (~1 semana, solo producto)
+S3 Hardening urgente (P0, ~1.5 días)        ← PRÓXIMO
 → S6 Mails transaccionales (~1 semana)
+→ S-Audit seguridad + calidad (~3-5 días)
+→ S-Tests JUnit + E2E + linters (~1 semana)
+→ Agenda polish (~1 día, del polish backlog)
+→ S5 Presupuestos + Archivos (~1 semana)
 → S7 Portal paciente (~2-3 semanas)
 → S8 Balance + Gastos (~1-2 semanas)
-→ S9 Hardening consolidado (seguridad P1 + pre-cliente #3 P2, ~2-3 semanas)
+→ S9 Hardening consolidado (scope reducido, ~1-2 semanas)
 → S10 WhatsApp (~1-2 semanas)
-→ S11 Demo instance → S12 SEO → S13 Observability → cliente #3+
+→ S11 Demo → S12 SEO → S13 Observability → cliente #3+
+
+S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 ```
 
-> **Lógica de la secuencia:** construir todas las pantallas y features primero, luego un solo sprint de hardening y refinamiento donde hay superficie conocida, luego integración externa (WhatsApp). Evita interrumpir el flujo de desarrollo con cambios de contexto a seguridad/infra.
+> **Lógica de la nueva secuencia (2026-06-10):** asegurar fundamentos (seguridad, calidad, tests) con 1 sola instancia live antes de que el blast radius crezca. S6 Mails sube porque desbloquea valor comercial inmediato (recordatorios + password reset). S4 Theming baja porque ningún cliente activo lo está pidiendo.
 >
-> **Excepción S3:** los 6 items P0 son riesgos existenciales con 2 instancias en prod — van primero siempre.
+> **Excepción S3:** los 6 items P0 son riesgos existenciales en prod — van primero siempre.
 >
 > **Polish visual incremental:** los quick wins de UI (skeletons, density, hero pública, agenda, etc.) NO tienen sprint dedicado. Se aplican dentro del PR de cada sprint que toca esa zona. Ver inventario en `frontend/CLAUDE.md` § Polish backlog.
 
@@ -161,6 +165,70 @@ S3 Hardening urgente (P0, ~1.5 días)  ← PRÓXIMO
 1. **Cita:** confirmación, cancelación/reagendamiento, recordatorio 24h antes (cron)
 2. **Presupuesto:** envío desde admin → estado cambia `BORRADOR` → `ENVIADO`
 3. **Pago:** mail al paciente con monto abonado y saldo pendiente
+
+---
+
+### S-Audit — Auditoría seguridad + calidad (~3-5 días)
+
+> Insertado 2026-06-10. Validar fundamentos antes de seguir agregando features. Detalle completo en memoria `project_audit_checklist.md`.
+
+**Seguridad infra (P0):**
+- Puerto 22 SSH: chequear UFW (debería ser IP fija o VPN, no 0.0.0.0)
+- `ss -tlnp` server + `nmap` externo — solo 80/443/22
+- MySQL 3306 NO público (solo loopback / red Docker)
+- Backend 8080 solo vía Caddy
+- Caddy headers: HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
+- Fail2ban en SSH
+
+**Seguridad app (P0):**
+- Endpoints `/api/public/*` no exponen `password`/`passwordHash` (grep DTOs)
+- Cada controller no-`/public/*` con `@PreAuthorize` o SecurityConfig
+- SQL injection: grep `nativeQuery=true` + concatenaciones JPA
+- JWT en cookie httpOnly vs localStorage (XSS)
+- Rate limit `/api/auth/login` y `/api/reservas`
+- BCrypt cost ≥10
+- CORS solo dominios propios
+
+**Calidad código (P1):**
+- Paginación en `/api/pacientes`, `/api/citas`, `/api/tratamientos`, `/api/historial`
+- N+1 queries: `hibernate.show_sql=true` en dev
+- HTML semántico (`<main>`, `<nav>`, `<h1>` único, alt en `<img>`)
+- Cards-dentro-de-cards: grep `.card` anidados
+- CSS duplicado vs design system
+- Bundle size (1.2MB > budget 1MB)
+- Dead code: imports/componentes/rutas no usadas
+- Lighthouse audit
+
+**Performance (P1):**
+- RAM JVM (`docker stats` + setear `-Xmx`)
+- RAM MySQL (`innodb_buffer_pool_size`)
+- RAM VM total + swap
+- Load test BD (k6/JMeter) en `/api/reservas` y `/api/citas`
+
+---
+
+### S-Tests — JUnit + E2E + linters (~1 semana)
+
+> Insertado 2026-06-10. Cobertura actual: 6 specs Angular + 5 tests Java — insuficiente.
+
+- **JUnit + Mockito** sobre services con lógica de negocio: `CitaService`, `DisponibilidadService`, `PagoService`, `ReservaService`
+- **`@DataJpaTest`** para repositorios con queries custom
+- **E2E Playwright** del flujo crítico: reserva pública end-to-end
+- **ESLint + Prettier** en frontend (faltan)
+- **Spotless + Checkstyle** en backend (faltan)
+- **GitHub Actions:** agregar job de tests frontend al CI
+
+Specs Angular de componentes solo para los que tengan lógica no-trivial (services, validators custom). No para componentes que solo renderizan.
+
+---
+
+### Agenda polish (~1 día)
+
+> Del polish backlog de `frontend/CLAUDE.md`. Se hace en un PR dedicado, no esperar al siguiente sprint de agenda.
+
+- Línea "ahora" roja horizontal cruzando el día actual (estilo Google Calendar)
+- Color del bloque por estado: confirmada `--color-primary`, pendiente outline `--color-warning`, cancelada ink-300 tachada
+- Tipografía bloque: hora 11px bold / paciente 13px regular / tratamiento 11px muted
 
 ---
 
