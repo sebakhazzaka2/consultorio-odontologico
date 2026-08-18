@@ -1,0 +1,59 @@
+# Blueprint para la instancia demo de portfolio en Render.
+# No reemplaza el deploy real (Hetzner + docker-compose.prod.yml) — es una instancia
+# aparte, con datos ficticios, pensada para mostrarse en el portfolio.
+#
+# Requiere un MySQL externo gratuito (ej. Aiven) — Render no ofrece MySQL gestionado.
+# Los envVars con "sync: false" se completan a mano en el dashboard de Render la
+# primera vez que se crea el Blueprint.
+
+services:
+  - type: web
+    name: consultorio-odontologico-demo-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/public/config
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # JDBC completo del MySQL externo (Aiven), con SSL requerido, ej:
+      # jdbc:mysql://<host>:<port>/<db>?sslMode=REQUIRED&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      # URL pública del servicio frontend (completar tras el primer deploy de ambos)
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CLINIC_NOMBRE
+        value: Consultorio Demo
+      - key: CLINIC_TAGLINE
+        value: Sistema de gestion odontologica -- instancia demo de portfolio
+      - key: CLINIC_DIRECCION
+        value: Av. Demo 1234
+      - key: CLINIC_CIUDAD
+        value: Montevideo, Uruguay
+      - key: CLINIC_HORARIO
+        value: Lunes a Viernes 09:00 - 18:00
+      - key: CLINIC_TELEFONO
+        value: "+59890000000"
+      - key: CLINIC_WHATSAPP
+        value: "59890000000"
+      - key: CLINIC_EMAIL
+        value: demo@example.com
+
+  - type: web
+    name: consultorio-odontologico-demo-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile.render
+    dockerContext: ./frontend
+    plan: free
