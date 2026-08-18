@@ -6,7 +6,7 @@
  */
 export const environment = {
   production: true,
-  apiUrl: 'https://consultorio-demo-backend.onrender.com',
+  apiUrl: 'https://consultorio-odontologico-demo-backend.onrender.com',
   businessName: 'Consultorio Demo',
   sentryDsn: ''
 };
