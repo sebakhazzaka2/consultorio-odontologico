@@ -25,6 +25,11 @@ services:
         sync: false
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
+      # No se usa para conectar (SPRING_DATASOURCE_URL ya trae todo) pero
+      # ConsultorioApplication.validateProdEnvVars() exige que exista y no esté vacía.
+      # Poner el mismo valor que SPRING_DATASOURCE_PASSWORD.
+      - key: DB_PASSWORD
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       # URL pública del servicio frontend (completar tras el primer deploy de ambos)

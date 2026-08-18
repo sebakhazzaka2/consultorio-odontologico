@@ -20,7 +20,9 @@ WORKDIR /app
 
 COPY --from=build /app/target/consultorio-backend-0.0.1-SNAPSHOT.jar app.jar
 
-RUN chown appuser:appuser app.jar
+# uploads/ pre-creado y chowneado: si se monta un volumen vacío encima (Hetzner)
+# o corre sin volumen (Render), appuser necesita poder crear/escribir ahí.
+RUN mkdir -p uploads && chown -R appuser:appuser app.jar uploads
 
 USER appuser
 
