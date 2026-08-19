@@ -69,9 +69,12 @@ public class DemoDataSeeder implements ApplicationRunner {
         "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=70");
     Servicio extraccion = servicio("Extracción simple", "Extracción de pieza dental sin complicaciones.", "65000", 30,
         "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=70");
-    Servicio endodoncia = servicio("Endodoncia", "Tratamiento de conducto para salvar piezas dañadas.", "150000", 90, null);
-    Servicio implantes = servicio("Implantes dentales", "Reemplazo de piezas perdidas con implante de titanio.", "350000", 90, null);
-    Servicio estetica = servicio("Odontología estética", "Carillas y diseño de sonrisa personalizado.", "95000", 60, null);
+    Servicio endodoncia = servicio("Endodoncia", "Tratamiento de conducto para salvar piezas dañadas.", "150000", 90,
+        "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=800&q=70");
+    Servicio implantes = servicio("Implantes dentales", "Reemplazo de piezas perdidas con implante de titanio.", "350000", 90,
+        "https://images.unsplash.com/photo-1609207825181-52d3214556dd?auto=format&fit=crop&w=800&q=70");
+    Servicio estetica = servicio("Odontología estética", "Carillas y diseño de sonrisa personalizado.", "95000", 60,
+        "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=800&q=70");
     servicioRepository.saveAll(
         java.util.List.of(limpieza, blanqueamiento, ortodoncia, extraccion, endodoncia, implantes, estetica));
 
