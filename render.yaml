@@ -20,6 +20,11 @@ services:
       # Carga servicios/pacientes/citas ficticios en el primer arranque (una sola vez).
       - key: SEED_DEMO_DATA
         value: "true"
+      # Free tier de Render = 512MB RAM total. Sin esto el JVM sobreestima el heap
+      # disponible y el proceso muere con OOM kill (exit 137). Override puntual —
+      # no toca el Dockerfile real (Hetzner tiene otro perfil de memoria).
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Dfile.encoding=UTF-8 -Xmx300m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC"
       # JDBC completo del MySQL externo (Aiven), con SSL requerido, ej:
       # jdbc:mysql://<host>:<port>/<db>?sslMode=REQUIRED&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - key: SPRING_DATASOURCE_URL
@@ -45,7 +50,7 @@ services:
       - key: CLINIC_NOMBRE
         value: Consultorio Demo
       - key: CLINIC_TAGLINE
-        value: Sistema de gestion odontologica -- instancia demo de portfolio
+        value: Cuidado dental profesional para toda la familia
       - key: CLINIC_DIRECCION
         value: Av. Demo 1234
       - key: CLINIC_CIUDAD

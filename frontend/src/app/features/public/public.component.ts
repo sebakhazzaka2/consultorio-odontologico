@@ -158,6 +158,10 @@ export class PublicComponent implements OnInit, OnDestroy {
   readonly currentYear = new Date().getFullYear();
   readonly apiUrl = environment.apiUrl;
 
+  resolveFotoUrl(fotoUrl: string): string {
+    return fotoUrl.startsWith('http') ? fotoUrl : this.apiUrl + fotoUrl;
+  }
+
   constructor(
     private readonly servicioService: PublicServicioService,
     private readonly clinicConfigService: ClinicConfigService,

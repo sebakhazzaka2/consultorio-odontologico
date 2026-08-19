@@ -200,7 +200,7 @@
             <article class="servicio-card">
               @if (t.foto_url) {
                 <div class="card-foto">
-                  <img [src]="apiUrl + t.foto_url" [alt]="t.nombre" loading="lazy">
+                  <img [src]="resolveFotoUrl(t.foto_url!)" [alt]="t.nombre" loading="lazy">
                 </div>
               }
               <div class="card-header">

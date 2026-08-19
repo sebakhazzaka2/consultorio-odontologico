@@ -61,11 +61,19 @@ public class DemoDataSeeder implements ApplicationRunner {
       return;
     }
 
-    Servicio limpieza = servicio("Limpieza dental", "Limpieza y control de rutina.", "45000", 30);
-    Servicio blanqueamiento = servicio("Blanqueamiento", "Blanqueamiento dental profesional en consultorio.", "120000", 60);
-    Servicio ortodoncia = servicio("Consulta de ortodoncia", "Evaluación inicial para tratamiento de ortodoncia.", "80000", 45);
-    Servicio extraccion = servicio("Extracción simple", "Extracción de pieza dental sin complicaciones.", "65000", 30);
-    servicioRepository.saveAll(java.util.List.of(limpieza, blanqueamiento, ortodoncia, extraccion));
+    Servicio limpieza = servicio("Limpieza dental", "Limpieza y control de rutina.", "45000", 30,
+        "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=70");
+    Servicio blanqueamiento = servicio("Blanqueamiento", "Blanqueamiento dental profesional en consultorio.", "120000", 60,
+        "https://images.unsplash.com/photo-1571772996211-2f02c9727629?auto=format&fit=crop&w=800&q=70");
+    Servicio ortodoncia = servicio("Consulta de ortodoncia", "Evaluación inicial para tratamiento de ortodoncia.", "80000", 45,
+        "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=70");
+    Servicio extraccion = servicio("Extracción simple", "Extracción de pieza dental sin complicaciones.", "65000", 30,
+        "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=70");
+    Servicio endodoncia = servicio("Endodoncia", "Tratamiento de conducto para salvar piezas dañadas.", "150000", 90, null);
+    Servicio implantes = servicio("Implantes dentales", "Reemplazo de piezas perdidas con implante de titanio.", "350000", 90, null);
+    Servicio estetica = servicio("Odontología estética", "Carillas y diseño de sonrisa personalizado.", "95000", 60, null);
+    servicioRepository.saveAll(
+        java.util.List.of(limpieza, blanqueamiento, ortodoncia, extraccion, endodoncia, implantes, estetica));
 
     Paciente ana = pacienteRepository.save(
         new Paciente("Ana", "Rodríguez", "099111222", "ana.rodriguez@example.com", LocalDate.of(1990, 4, 12)));
@@ -105,16 +113,17 @@ public class DemoDataSeeder implements ApplicationRunner {
     pago.setConcepto("Pago parcial limpieza dental");
     pagoRepository.save(pago);
 
-    log.info("Demo data seeded: {} servicios, {} pacientes, {} citas", 4, 3, 6);
+    log.info("Demo data seeded: {} servicios, {} pacientes, {} citas", 7, 3, 6);
   }
 
-  private Servicio servicio(String nombre, String descripcion, String precio, int duracionMinutos) {
+  private Servicio servicio(String nombre, String descripcion, String precio, int duracionMinutos, String fotoUrl) {
     Servicio s = new Servicio();
     s.setNombre(nombre);
     s.setDescripcion(descripcion);
     s.setPrecio(new BigDecimal(precio));
     s.setActivo(true);
     s.setDuracionMinutos(duracionMinutos);
+    s.setFotoUrl(fotoUrl);
     return s;
   }
 

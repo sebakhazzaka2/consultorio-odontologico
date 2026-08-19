@@ -123,7 +123,7 @@ export class ServicioFormDialogComponent implements OnDestroy {
   ) {
     const s = data.servicio;
     if (s?.foto_url) {
-      this.previewSrc.set(environment.apiUrl + s.foto_url);
+      this.previewSrc.set(this.resolveFotoUrl(s.foto_url));
     }
     this.form = this.fb.group({
       nombre: [s?.nombre ?? '', [Validators.required]],
@@ -131,6 +131,10 @@ export class ServicioFormDialogComponent implements OnDestroy {
       precio: [s?.precio ?? null, [Validators.required, Validators.min(0.01)]],
       activo: [s?.activo ?? true]
     });
+  }
+
+  private resolveFotoUrl(fotoUrl: string): string {
+    return fotoUrl.startsWith('http') ? fotoUrl : environment.apiUrl + fotoUrl;
   }
 
   onFotoChange(event: Event): void {
@@ -142,7 +146,7 @@ export class ServicioFormDialogComponent implements OnDestroy {
       this.uploading.set(true);
       this.servicioService.uploadFoto(this.data.servicio.id, file).subscribe({
         next: (s) => {
-          this.previewSrc.set(environment.apiUrl + s.foto_url);
+          this.previewSrc.set(this.resolveFotoUrl(s.foto_url!));
           this.uploading.set(false);
           this.snackBar.open('Foto actualizada', 'Cerrar', { duration: 3000 });
         },
