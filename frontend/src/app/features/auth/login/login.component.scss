@@ -62,6 +62,24 @@
   font-size: 0.9rem;
 }
 
+.demo-banner {
+  background: var(--color-info);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-snug);
+
+    &:not(:last-child) {
+      margin-bottom: 4px;
+    }
+  }
+}
+
 .login-form {
   display: flex;
   flex-direction: column;

@@ -8,6 +8,13 @@
       <p class="login-subtitle">Ingresá con tu cuenta de administrador</p>
     </div>
 
+    @if (demoMode) {
+    <div class="demo-banner">
+      <p><strong>Demo</strong> — las credenciales ya están cargadas, solo hacé click en "Iniciar sesión".</p>
+      <p><strong>Demo</strong> — credentials are already filled in, just click "Iniciar sesión" (Sign in).</p>
+    </div>
+    }
+
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
       <div class="form-fields">
         <mat-form-field appearance="outline">

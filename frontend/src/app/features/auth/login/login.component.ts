@@ -9,6 +9,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/auth/auth.service';
 import { fadeInUp } from '../../../shared/animations/fade.animations';
 import { BrandLogoComponent } from '../../../shared/components/brand-logo/brand-logo.component';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -29,6 +30,7 @@ import { BrandLogoComponent } from '../../../shared/components/brand-logo/brand-
 export class LoginComponent {
   loginForm;
   cargando = false;
+  demoMode = environment.demoMode;
 
   constructor(
     private fb: FormBuilder,
@@ -37,8 +39,14 @@ export class LoginComponent {
     private snackBar: MatSnackBar
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      email: [
+        environment.demoMode ? environment.demoAdminEmail : '',
+        [Validators.required, Validators.email]
+      ],
+      password: [
+        environment.demoMode ? environment.demoAdminPassword : '',
+        Validators.required
+      ]
     });
   }
 

@@ -8,5 +8,8 @@ export const environment = {
   production: true,
   apiUrl: 'https://consultorio-odontologico-demo-backend.onrender.com',
   businessName: 'Consultorio Demo',
-  sentryDsn: ''
+  sentryDsn: '',
+  demoMode: true,
+  demoAdminEmail: 'demo@consultorio-demo.com',
+  demoAdminPassword: 'DemoPortfolio2026!'
 };

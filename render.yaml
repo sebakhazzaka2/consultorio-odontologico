@@ -17,6 +17,9 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
+      # Carga servicios/pacientes/citas ficticios en el primer arranque (una sola vez).
+      - key: SEED_DEMO_DATA
+        value: "true"
       # JDBC completo del MySQL externo (Aiven), con SSL requerido, ej:
       # jdbc:mysql://<host>:<port>/<db>?sslMode=REQUIRED&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - key: SPRING_DATASOURCE_URL
