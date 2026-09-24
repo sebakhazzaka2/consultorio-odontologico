@@ -60,7 +60,7 @@ public class SecurityConfig {
                 ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                auth.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/public/reservas").permitAll()
                     .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
