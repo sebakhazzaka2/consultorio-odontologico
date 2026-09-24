@@ -1,4 +1,18 @@
+# Headers de seguridad compartidos (P0-4). CSP queda para S9 (P1-4, Report-Only primero).
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+}
+
 {$DOMAIN} {
+	import security_headers
+
 	# Imágenes subidas (hero, servicios, tratamientos) son inmutables por URL.
 	# Spring Security las sirve con `no-store`, lo que obliga a re-descargar cada vez.
 	# Cacheamos en la capa de proxy (mismo criterio que el rate limiting en nginx):
@@ -20,9 +34,14 @@
 	}
 	header @static Cache-Control "public, max-age=31536000, immutable"
 
-	reverse_proxy frontend:80
+	# Sobrescribe X-Real-IP con la IP real del socket: nginx confía en este header
+	# (real_ip_header) para el rate limiting, y un cliente podría falsificarlo.
+	reverse_proxy frontend:80 {
+		header_up X-Real-IP {remote_host}
+	}
 }
 
 status.{$DOMAIN} {
+	import security_headers
 	reverse_proxy uptime-kuma:3001
 }

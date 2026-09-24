@@ -17,6 +17,7 @@ export interface ReservaPayload {
   apellido: string;
   telefono: string;
   email: string;
+  website?: string;
   servicio_id: number;
   fecha_hora_inicio: string;
 }

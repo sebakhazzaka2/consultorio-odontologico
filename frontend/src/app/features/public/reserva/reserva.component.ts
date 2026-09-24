@@ -74,7 +74,8 @@ export class ReservaComponent implements OnInit {
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]{7,15}$')]],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
+      website: [''] // honeypot: un humano no lo ve; los bots lo completan
     });
   }
 
@@ -126,6 +127,7 @@ export class ReservaComponent implements OnInit {
       apellido: this.datosForm.value.apellido,
       telefono: this.datosForm.value.telefono,
       email: this.datosForm.value.email,
+      website: this.datosForm.value.website,
       servicio_id: this.servicioSeleccionado.id,
       fecha_hora_inicio: fechaHoraInicio
     }).subscribe({
