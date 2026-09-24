@@ -80,14 +80,17 @@ FEATURE_WHATSAPP=true
 
 ---
 
-## Estado actual (2026-06-10)
+## Estado actual (2026-09-24)
 
-Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21, live 2026-05-11), Sprint 2 Disponibilidad + Reserva sin login (2026-05-20), fix stale chunk reload (36930f1, 2026-05-20).
+Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21), Sprint 2 Disponibilidad + Reserva sin login (2026-05-20), fix stale chunk reload, fix uploads caching (PR #25, 2026-06-11), **demo en Render** con seed y login precargado ES/EN (2026-08-19, adelanto parcial de S11).
 
 **Instancias en producción:**
 - `neodentalmaster.turnosuy.com` — única instancia live (odontología, Montevideo). `dentalmontecaseros` dada de baja.
+- Demo pública en Render (datos fake).
 
-Siguiente (repriorizado 2026-06-10): S3 → S6 → S-Audit → S-Tests → Agenda polish → S5 → S7 → S8 → S9 (scope reducido) → S10. **S4 Theming postergado on-demand.**
+**S3 parcial:** Sentry (backend+frontend) ✅, Uptime Kuma en `status.{DOMAIN}` ✅, scripts backup/restore existen. Pendiente: headers de seguridad en Caddy, verificar rate limit, auditoría SQL injection, restore probado en VM limpia, confirmar alertas de Kuma.
+
+Siguiente (repriorizado 2026-09-24, mails y WhatsApp primero): Cerrar S3 → S6 Mails → mini-seguridad/tests → S10 WhatsApp → Agenda polish → S5 → S7 → S8 → S9 → resto. **S4 Theming postergado on-demand.**
 
 Ver detalles completos y secuencia por sprint en `ROADMAP.md`. Decisiones estratégicas pendientes (P3 auditoría) en sección dedicada de ROADMAP.md.
 
@@ -96,28 +99,23 @@ Ver detalles completos y secuencia por sprint en `ROADMAP.md`. Decisiones estrat
 Checklist operacional antes de seguir agregando features sobre instancias live:
 
 - ⬜ Restore de backup probado en VM limpia (P0-1)
-- ⬜ Uptime monitor externo con alertas (P0-2)
-- ⬜ Sentry capturando errores backend + frontend (P0-3)
+- ⚠️ Uptime monitor con alertas (P0-2) — Kuma desplegado, falta confirmar alertas
+- ✅ Sentry capturando errores backend + frontend (P0-3)
 - ⬜ Headers de seguridad HTTPS estrictos en Caddy (P0-4)
 - ⬜ Audit log de acciones admin (P1-6, modelado en S5)
 - ⬜ Logs JSON estructurados + correlationId (P1-8, en S9)
 - ⬜ Backup off-site verificado (P3-10)
 
-## Prioridades actuales (2026-06-10)
+## Prioridades actuales (2026-09-24)
 
-Secuencia: fundamentos (seguridad+calidad+tests) → features → WhatsApp. Ver `ROADMAP.md` para detalle completo.
+Secuencia: notificaciones (mails → WhatsApp) sobre fundamentos mínimos → producto. Ver `ROADMAP.md` para detalle.
 
-🔴 **S3 — Hardening urgente** (~1.5 días, P0). Restore backup, uptime monitor, Sentry, headers Caddy. **← PRÓXIMO**
-🔴 **S6 — Mails transaccionales** (~1 sem). Brevo SMTP + Thymeleaf + password reset admin + notificaciones reserva.
-🔴 **S-Audit** (~3-5 días). Seguridad infra (puertos, UFW, fail2ban) + seguridad app (exposición de password en GET, paginación, SQL injection, JWT, rate limit) + calidad HTML/CSS + RAM + load test BD. Detalle en `ROADMAP.md` § S-Audit.
-🔴 **S-Tests** (~1 sem). JUnit Services + E2E Playwright reserva pública + ESLint/Prettier/Spotless/Checkstyle.
-🔴 **Agenda polish** (~1 día). Línea "ahora", colores por estado, tipografía bloque.
-🔴 **S5 — Presupuestos + Archivos** (~1 sem).
-🔴 **S7 — Portal paciente** (~2-3 sem). Login opcional, JWT unificado con `roles` claim.
-🔴 **S8 — Balance + Gastos** (~1-2 sem).
-🔴 **S9 — Hardening consolidado** (~1-2 sem, scope reducido por S-Audit/S-Tests).
-🔴 **S10 — WhatsApp** (~1-2 sem). Post-hardening.
-🟡 S11 Demo instance → S12 SEO → S13 Observability → cliente #3+
+🔴 **S3 — Cerrar hardening** (~1 día). Headers Caddy, rate limit, SQL injection, restore, alertas Kuma. **← PRÓXIMO**
+🔴 **S6 — Mails transaccionales** (~1 sem). `NotificationService` con interfaz por canal, Brevo SMTP + Thymeleaf, SPF/DKIM/DMARC, confirmación/cancelación/recordatorio 24h, password reset admin. Mails de presupuesto/pago se difieren a post-S5.
+🔴 **Mini S-Audit + S-Tests** (~1 sem). Solo lo que protege notificaciones: rate limit, lockout login, JUnit de Cita/Disponibilidad/Reserva, E2E reserva pública.
+🔴 **S10 — WhatsApp** (~1-2 sem). Twilio (API oficial, plantillas aprobadas por Meta, opt-in). Antes: P3-4 costo por mensaje. Enviar plantillas a Meta temprano.
+🟡 Agenda polish → S5 Presupuestos+Archivos → S7 Portal paciente → S8 Balance → S9 hardening consolidado.
+🟡 Resto de S-Audit/S-Tests (linters, Lighthouse, bundle, load test), S11 demo (subdominio+README), S12 SEO, S13 Observability → cliente #3+
 ⏸️ **S4 — Theming foundations** — postergado on-demand. Solo si un cliente lo pide activamente.
 
 **Postergados explícitamente:**

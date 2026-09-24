@@ -1,23 +1,24 @@
 # Roadmap — Consultorio Odontológico
 
-> **Última actualización:** 2026-06-10 — Repriorización: S6 Mails sube, S4 Theming postergado on-demand, se insertan S-Audit (seguridad+calidad) y S-Tests antes de seguir agregando features.
+> **Última actualización:** 2026-09-24 — Repriorización: mails (S6) y WhatsApp (S10) suben como prioridad. S-Audit/S-Tests se reducen a lo que protege las notificaciones. S3 ya está ~60% (Sentry + Uptime Kuma). Demo en Render adelantada (S11 parcial).
 
 ## Secuencia recomendada
 ```
-S3 Hardening urgente (P0, ~1.5 días)        ← PRÓXIMO
+Cerrar S3 (~1 día)                           ← PRÓXIMO
 → S6 Mails transaccionales (~1 semana)
-→ S-Audit seguridad + calidad (~3-5 días)
-→ S-Tests JUnit + E2E + linters (~1 semana)
-→ Agenda polish (~1 día, del polish backlog)
+→ Mini S-Audit + S-Tests (~1 semana, solo lo que protege notificaciones)
+→ S10 WhatsApp con Twilio (~1-2 semanas)
+→ Agenda polish (~1 día)
 → S5 Presupuestos + Archivos (~1 semana)
 → S7 Portal paciente (~2-3 semanas)
 → S8 Balance + Gastos (~1-2 semanas)
-→ S9 Hardening consolidado (scope reducido, ~1-2 semanas)
-→ S10 WhatsApp (~1-2 semanas)
-→ S11 Demo → S12 SEO → S13 Observability → cliente #3+
+→ S9 Hardening consolidado (~1-2 semanas)
+→ resto S-Audit/S-Tests → S11 (subdominio+README) → S12 SEO → S13 Observability → cliente #3+
 
 S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 ```
+
+> **Decisiones 2026-09-24:** (1) Mails de presupuesto y pago se difieren a post-S5; S6 cubre solo cita + password reset. (2) WhatsApp vía Twilio (API oficial, sin riesgo de ban; requiere plantillas Meta + opt-in). (3) S5 no tiene cliente esperándolo, va después de WhatsApp. (4) `NotificationService` con interfaz por canal en S6 para que S10 solo agregue `WhatsAppChannel`.
 
 > **Lógica de la nueva secuencia (2026-06-10):** asegurar fundamentos (seguridad, calidad, tests) con 1 sola instancia live antes de que el blast radius crezca. S6 Mails sube porque desbloquea valor comercial inmediato (recordatorios + password reset). S4 Theming baja porque ningún cliente activo lo está pidiendo.
 >
@@ -39,22 +40,25 @@ S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 | P3 Fase B — código deploy | ✅ Completo |
 | Página pública clínica | ✅ Completo |
 | Admin polish | ✅ Completo |
-| Deploy real | ✅ Live en dentalmontecaseros.turnosuy.com (2026-04-21) |
+| Deploy real | ✅ Live (2026-04-21). Hoy solo `neodentalmaster.turnosuy.com`; dentalmontecaseros dada de baja |
+| Fix uploads caching (PR #25) | ✅ (2026-06-11) |
+| Demo en Render (seed + login precargado ES/EN) | ✅ (2026-08-19) — falta subdominio y README (resto de S11) |
 | Post-deploy hardening | ✅ Completo (PR #19, 2026-04-22) |
 | Public page polish | ✅ Completo (PR #20, 2026-04-28) |
 | fix/safari-white-screen | ✅ Completo (2026-05-11) |
 | Sprint 1 — Multi-rubro genérico | ✅ Completo (2026-05-11) — live en neodentalmaster.turnosuy.com |
 | fix/admin-branding | ✅ Completo (2026-05-11) |
 | Sprint 2 — Disponibilidad + Reserva sin login | ✅ Completo (2026-05-20) |
-| **Sprint 3 — Hardening urgente (P0)** | ⏳ Próximo (~1.5 días) |
-| **Sprint 4 — Theming foundations** | ⏳ Tras S3 (~2 días) |
-| **Sprint 5 — Presupuestos + Archivos** | ⏳ Tras S4 (~1 semana) |
-| **Sprint 6 — Mails transaccionales** | ⏳ Tras S5 (~1 semana) |
-| **Sprint 7 — Portal paciente opcional** | ⏳ Tras S6 (~2-3 semanas) |
+| **Sprint 3 — Hardening urgente (P0)** | 🔄 ~60%: Sentry ✅, Kuma ✅. Falta headers Caddy, rate limit, SQL injection, restore probado (~1 día) |
+| **Sprint 4 — Theming foundations** | ⏸️ Postergado on-demand |
+| **Sprint 6 — Mails transaccionales** | ⏳ Tras S3 (~1 semana) |
+| **Mini S-Audit + S-Tests** | ⏳ Tras S6 (~1 semana) |
+| **Sprint 10 — WhatsApp (Twilio)** | ⏳ Tras mini S-Audit/Tests (~1-2 semanas) |
+| **Sprint 5 — Presupuestos + Archivos** | ⏳ Tras S10 (~1 semana) |
+| **Sprint 7 — Portal paciente opcional** | ⏳ Tras S5 (~2-3 semanas) |
 | **Sprint 8 — Balance + Gastos** | ⏳ Tras S7 (~1-2 semanas) |
-| **Sprint 9 — Hardening consolidado (seguridad P1 + pre-cliente #3)** | ⏳ Tras S8 (~2-3 semanas) |
-| **Sprint 10 — WhatsApp automático** | ⏳ Tras S9 (~1-2 semanas) |
-| **Sprint 11 — Demo instance + README pro** | ⏳ Tras S10 (2-4 días) |
+| **Sprint 9 — Hardening consolidado (seguridad P1 + pre-cliente #3)** | ⏳ Tras S8 (~1-2 semanas) |
+| **Sprint 11 — Demo instance + README pro** | 🔄 Demo en Render lista; falta subdominio + README + compose (1-2 días) |
 | **Sprint 12 — SEO multi-subdominio** | ⏳ Tras S11 (3-5 días) |
 | **Sprint 13 — Observability + rollback** | ⏳ Tras S12 (1 semana) |
 | **Sprint 14 — Google Calendar sync** | ⏳ Diferido — infraestructura lista (S13) |
@@ -102,9 +106,9 @@ S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 
 ## Detalle por sprint
 
-### Sprint 3 — Hardening urgente (~1.5 días)
+### Sprint 3 — Hardening urgente (~1 día restante)
 
-> **Origen:** auditoría técnica 2026-05-19, prioridad P0. Riesgos existenciales con 2 instancias en producción.
+> **Origen:** auditoría técnica 2026-05-19, prioridad P0. **Estado 2026-09-24:** P0-3 Sentry ✅ hecho. P0-2 Uptime Kuma desplegado en `status.{DOMAIN}` (falta confirmar alertas). Scripts `backup.sh`/`restore.sh`/`install-cron.sh` existen (falta probar restore en VM limpia). P0-4 pendiente: el `Caddyfile` solo tiene cache headers. P0-6: el comentario del Caddyfile menciona rate limiting "en nginx" pero no hay código en backend — verificar.
 
 - **[P0-1] Probar restore de backup en VM limpia (2-3 h).** Restaurar dump en VM Hetzner descartable, validar arranque + integridad. Sin esto un disco corrupto termina el negocio. Documentar en `scripts/`.
 - **[P0-2] Uptime monitor externo (30 min).** Better Stack / UptimeRobot free tier, alertas a mail + Telegram.
@@ -160,11 +164,13 @@ S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 - `spring-boot-starter-mail` + Brevo SMTP (free tier: 300 mails/día)
 - Templates Thymeleaf base con header/footer compartido (nombre + logo desde `ClinicProperties`)
 - **Password reset admin** incluido acá (P1-7) — SMTP ya disponible, evita SSH a producción
+- **`NotificationService` con interfaz por canal** (`NotificationChannel` → `EmailChannel`). S10 solo agrega `WhatsAppChannel` sobre los mismos triggers.
+- **SPF/DKIM/DMARC** en el subdominio (P3-7) — sin esto los mails van a spam. Parte del checklist de onboarding.
 
-**Notificaciones al paciente:**
+**Notificaciones al paciente (alcance S6):**
 1. **Cita:** confirmación, cancelación/reagendamiento, recordatorio 24h antes (cron)
-2. **Presupuesto:** envío desde admin → estado cambia `BORRADOR` → `ENVIADO`
-3. **Pago:** mail al paciente con monto abonado y saldo pendiente
+
+**Diferido a post-S5:** mail de presupuesto (`BORRADOR` → `ENVIADO`) y mail de pago (monto abonado y saldo).
 
 ---
 
@@ -290,9 +296,12 @@ Specs Angular de componentes solo para los que tengan lógica no-trivial (servic
 
 > Después de hardening — no tiene sentido endurecer seguridad e integrar una API externa al mismo tiempo.
 
-- Twilio Business API o UltraMsg (evaluar costo/mensaje antes — P3-4)
+- **Proveedor decidido (2026-09-24): Twilio WhatsApp Business API** — API oficial, sin riesgo de ban. UltraMsg descartado (número personal = riesgo de ban).
+- `WhatsAppChannel` implementa `NotificationChannel` (S6) — mismos triggers, canal distinto
 - Recordatorio 24h antes, confirmación, cancelación/cambio de horario
-- Mismo trigger que S6 mails, canal distinto
+- **Plantillas Meta:** los mensajes fuera de la ventana de 24h requieren plantillas pre-aprobadas (horas a días). Enviarlas a aprobar temprano, al empezar el sprint.
+- **Opt-in:** checkbox de consentimiento en la reserva pública, guardado en el paciente. Sin opt-in no se envía.
+- Flag `FEATURE_WHATSAPP` ya existe en `ClinicProperties`
 
 > **Antes de implementar:** modelar costo por mensaje y definir "X mensajes/mes incluidos" en precio del paquete (P3-4). Twilio ~$0.005/msg UY. UltraMsg con número personal = riesgo de ban. **Antes de S10.**
 
