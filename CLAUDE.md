@@ -88,7 +88,7 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 - `neodentalmaster.turnosuy.com` — única instancia live (odontología, Montevideo). `dentalmontecaseros` dada de baja.
 - Demo pública en Render (datos fake).
 
-**S3 parcial:** Sentry (backend+frontend) ✅, Uptime Kuma en `status.{DOMAIN}` ✅, scripts backup/restore existen. Pendiente: headers de seguridad en Caddy, verificar rate limit, auditoría SQL injection, restore probado en VM limpia, confirmar alertas de Kuma.
+**S3 (rama `feat/s3-hardening-urgente`, sin mergear):** cerrado `/auth/register` público (creaba ADMIN a anónimos), headers Caddy, `X-Real-IP` no falsificable, rate limit nginx en reservas y lecturas públicas, honeypot + `@Size` en reserva. Pendiente: restore probado en VM limpia, alertas de Kuma. **Prod caído (sin VPS) al 2026-09-24.**
 
 Siguiente (repriorizado 2026-09-24, mails y WhatsApp primero): Cerrar S3 → S6 Mails → mini-seguridad/tests → S10 WhatsApp → Agenda polish → S5 → S7 → S8 → S9 → resto. **S4 Theming postergado on-demand.**
 

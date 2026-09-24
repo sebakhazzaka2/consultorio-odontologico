@@ -153,6 +153,9 @@
                   <mat-error>Email inválido</mat-error>
                 }
               </mat-form-field>
+              <!-- Honeypot anti-spam: fuera de pantalla, no navegable ni anunciado -->
+              <input type="text" formControlName="website" tabindex="-1" autocomplete="off"
+                     aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             </form>
 
             <!-- Resumen antes de confirmar -->

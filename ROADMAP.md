@@ -49,7 +49,7 @@ S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 | Sprint 1 — Multi-rubro genérico | ✅ Completo (2026-05-11) — live en neodentalmaster.turnosuy.com |
 | fix/admin-branding | ✅ Completo (2026-05-11) |
 | Sprint 2 — Disponibilidad + Reserva sin login | ✅ Completo (2026-05-20) |
-| **Sprint 3 — Hardening urgente (P0)** | 🔄 ~60%: Sentry ✅, Kuma ✅. Falta headers Caddy, rate limit, SQL injection, restore probado (~1 día) |
+| **Sprint 3 — Hardening urgente (P0)** | 🔄 Código listo en `feat/s3-hardening-urgente` (register cerrado, headers Caddy, rate limit reservas, honeypot). Pendiente tuyo: restore en VM, alertas Kuma. **Prod caído (sin VPS) — hay que reprovisionar y restaurar backup** |
 | **Sprint 4 — Theming foundations** | ⏸️ Postergado on-demand |
 | **Sprint 6 — Mails transaccionales** | ⏳ Tras S3 (~1 semana) |
 | **Mini S-Audit + S-Tests** | ⏳ Tras S6 (~1 semana) |
