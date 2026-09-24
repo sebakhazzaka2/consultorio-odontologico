@@ -133,6 +133,33 @@ crontab -e
 
 Los backups se guardan en `/backups/` con retención de 7 días.
 
+## Reprovisionar el VPS desde cero (disaster recovery)
+
+Usar si el VPS se perdió. Dado que `scripts/backup.sh` guarda los dumps en `backups/` **del mismo servidor**, un VPS perdido puede llevarse los backups con él: antes de empezar, confirmar dónde hay una copia (descarga manual, snapshot de Hetzner, etc.). Backup off-site automático = P3-10 del roadmap.
+
+1. **Crear el VPS** (Hetzner, Ubuntu 22.04, ver plan arriba). Usuario no-root con sudo y grupo docker, login root SSH deshabilitado, solo SSH key.
+2. **Firewall:** aplicar la tabla de arriba (22 solo desde la IP del admin, 80, 443). Opcional pero recomendado: `ufw` + `fail2ban` en el host.
+3. **Instalar Docker** + docker-compose-plugin y clonar el repo en `/home/sebastian/consultorio-odontologico`.
+4. **Crear `.env.prod`** a partir de `.env.example`. Variables que consume `docker-compose.prod.yml`:
+   `DB_PASSWORD`, `JWT_SECRET` (generar uno **nuevo** con `openssl rand -hex 32`; esto desloguea sesiones viejas), `CORS_ALLOWED_ORIGINS`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `DOMAIN`, `GHCR_IMAGE_PREFIX`, `SENTRY_DSN`, `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, más las de branding (`CLINIC_*`, `BRAND_*`, `FEATURE_*`). Credenciales en Bitwarden.
+5. **Levantar solo la DB y restaurar el backup:**
+   ```bash
+   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d db
+   ./scripts/restore.sh backups/backup_YYYYMMDD_HHMMSS.sql.gz
+   ```
+6. **Auditar usuarios restaurados** (a raíz del fix de `/auth/register`, PR #26): borrar cualquier cuenta que no se reconozca.
+   ```bash
+   docker exec -it consultorio-odontologico-db-1 mysql -uroot -p consultorio_db \
+     -e "SELECT id, email, role, created_at FROM users;"
+   ```
+7. **Levantar el resto** (`up -d --build`, o `pull` de las imágenes GHCR si se usa CI/CD) y **apuntar el DNS** (Cloudflare, registro A `@` y `status`) a la IP nueva. Actualizar la IP en esta página y los secrets del workflow de deploy (host/SSH key).
+8. **Verificar:**
+   - `curl -I https://<dominio>` muestra `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`.
+   - Una reserva de prueba funciona; repetir >10 veces seguidas devuelve `429`.
+   - Login admin OK, agenda con datos restaurados.
+9. **Restaurar operación:** `scripts/install-cron.sh` (backup diario), reconfigurar monitores y **alertas** en Uptime Kuma (`status.<dominio>`), confirmar que Sentry recibe eventos (`SENTRY_DSN`).
+10. **Archivos subidos (`uploads_data`):** las fotos de branding y futuros archivos clínicos viven en el volumen del backend, **no** en el dump SQL. Si no hay copia, hay que volver a subirlas (ver "Cambiar una foto").
+
 ## Pendientes antes de ir a producción
 
 - [x] Caddy como reverse proxy con TLS automático
