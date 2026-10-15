@@ -1,11 +1,11 @@
 # Runbook S3 — Cierre de hardening
 
-**Estado: 🔄 PARCIAL** — la VPS está en pie en DigitalOcean (verificado 2026-10-15). El restore ya se verificó; quedan las alertas de Kuma.
+**Estado: ✅ COMPLETADO (2026-10-15)** — la VPS está en pie en DigitalOcean, el restore se verificó y las alertas de Kuma llegan a Discord.
 
 | Item | Estado |
 |------|--------|
 | P0-1 Restore probado fuera de producción | ✅ Contenedor descartable, DB + uploads (PR #37–#38, 2026-10-15). Cronometrarlo en VM limpia es opcional |
-| P0-2 Alertas de Uptime Kuma confirmadas | ⬜ Pendiente |
+| P0-2 Alertas de Uptime Kuma confirmadas | ✅ Llegan avisos a un canal de Discord (confirmado por el dueño, 2026-10-15) |
 
 ---
 
@@ -53,8 +53,11 @@
 
 Kuma corre en `status.{DOMAIN}`, con datos persistidos en el volumen `kuma_data`.
 
+**Estado actual (2026-10-15):** la instancia `neodentalmaster` ya tiene la notificación configurada y los avisos llegan a un **canal de Discord**. Los pasos de abajo sirven para replicarlo en una instancia nueva (p. ej. la de Guille en F1). Kuma permite elegir *Discord* como tipo de notificación (basta la URL del webhook del canal) y es la opción más simple de las tres. La URL del webhook es un secreto: guardarla en el gestor de contraseñas, no en el repo. Los datos de Kuma viven en `kuma_data`, que **no entra en `backup.sh`**: si se pierde el volumen hay que reconfigurar monitores y notificación (ver `docs/DEPLOY.md`, paso 9).
+
 1. **Entrar a `https://status.<dominio>`.** Si es la primera vez, crear el usuario admin.
 2. **Configurar canal de notificación** en *Settings → Notifications → Setup Notification*:
+   - **Discord (el que usa `neodentalmaster`):** en el canal, *Editar canal → Integraciones → Webhooks → Nuevo webhook*; copiar la URL a Kuma.
    - **Telegram:** bot con @BotFather, copiar token y chat ID.
    - **Email (SMTP):** sirve Brevo, que se usará igual en S6.
    - Marcar **"Default enabled"** para que aplique a todos los monitores.

@@ -39,7 +39,7 @@ F0 Higiene (12–18 h)                                   ← PRÓXIMO
 | Deploy real | ✅ Live desde 2026-04-21. Hoy en DigitalOcean (migrado desde Hetzner 2026-10-15) |
 | Sprint 1 — Multi-rubro (labels `labelServicio` / `labelHistorial`) | ✅ (PR #21, 2026-05-11) |
 | Sprint 2 — Disponibilidad + reserva sin login | ✅ (2026-05-20) |
-| Sprint 3 — Hardening urgente (register cerrado, headers Caddy, rate limit nginx, honeypot) | ✅ Mergeado (PR #26). Restore probado (PR #37–#38); alertas de Kuma pendientes en F0 |
+| Sprint 3 — Hardening urgente (register cerrado, headers Caddy, rate limit nginx, honeypot) | ✅ Mergeado (PR #26). Restore probado (PR #37–#38); alertas de Uptime Kuma activas hacia Discord (2026-10-15) |
 | Backup off-site a Backblaze B2 + uploads (P3-10) | ✅ (PR #37–#38, 2026-10-15) |
 | Race condition en reserva pública + PII en logs de reserva | ✅ (PR #32–#35, 2026-10-15). Falta test de concurrencia contra MySQL real dentro del repo |
 | Demo en Render (seed + login precargado) | ✅ (2026-08-19) |
@@ -94,12 +94,13 @@ Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 ### F0 — Higiene (12–18 h, semana 1)
 
 **Tareas**
-- [ ] Login fallido responde 401 con test (1–2 h).
-- [ ] Quitar los defaults de Montecaseros de `ClinicProperties`, `application.properties` y `.env.example`; borrar `clinic.config.ts`; `StartupEnvValidator` falla si falta un `CLINIC_*` de marca (3–4 h).
+- [x] Login fallido responde 401 con test (PR #40).
+- [x] Quitar los defaults de Montecaseros de `ClinicProperties`, `application.properties` y `.env.example`; borrar `clinic.config.ts`; `StartupEnvValidator` falla si falta un `CLINIC_*` de marca (PR #41).
 - [ ] `index.html` con `<title>` y `og:*` por instancia, con envsubst en el arranque del contenedor de nginx (3–5 h).
 - [x] ~~Commitear `backup.sh` / `restore.sh` (uploads + B2) y probar el restore~~ — hecho (PR #37 y #38, 2026-10-15): backup real subido a B2 y restore verificado en un contenedor descartable (DB + uploads). Falta, si se quiere, cronometrarlo en una VM limpia.
-- [ ] Confirmar las alertas de Uptime Kuma.
-- [ ] Contrastar el SHA de prod con `main` y apagar `show-sql` (1 h).
+- [x] Alertas de Uptime Kuma: llegan avisos a un canal de Discord (confirmado por el dueño, 2026-10-15). Ver `docs/RUNBOOK_S3.md` § 2.
+- [x] Apagar `show-sql` en prod (override en `application-prod.properties`).
+- [ ] Contrastar el SHA de prod con `main`: CI desplegó `4ac1a1f` con éxito y `/api/public/config` responde; falta confirmar que el login devuelve 401 en prod (prueba con credenciales falsas).
 
 **Entregables:** PR de higiene; restore documentado (ver `docs/DEPLOY.md` y `tasks/lessons.md`).
 
@@ -256,7 +257,7 @@ El jefe de la clínica no piensa dejar Vedius, y lo que más les molesta es el t
 - [ ] ¿Hay emails duplicados al normalizar mayúsculas y espacios? (prerrequisito de `V10`)
 - [ ] ¿Cuánta RAM y disco usa el droplet?
 - [ ] ¿Están activos los backups del droplet y el cron, y `rclone` contra B2?
-- [ ] ¿Llegan las alertas de Kuma?
+- [x] ¿Llegan las alertas de Kuma? Sí, a Discord (2026-10-15).
 - [ ] ¿La cuenta de Meta Business está verificada para Twilio?
 
 ---
