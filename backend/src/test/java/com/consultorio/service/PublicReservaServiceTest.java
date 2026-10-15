@@ -119,8 +119,11 @@ class PublicReservaServiceTest {
 
   @Test
   void reservar_slotNoDisponible_lanzaExcepcionYNoGuardaNada() {
-    when(citaService.getDisponibilidad(any(), anyInt())).thenReturn(List.of()); // sin slots
     PublicReservaRequest req = request("Ana", "Pérez", "ana@test.com");
+    // request() ya stubeó getDisponibilidad con "10:00" disponible — lo pisamos acá,
+    // DESPUÉS (Mockito usa el último stub que matchee la invocación), para simular
+    // que no hay ningún slot libre.
+    when(citaService.getDisponibilidad(any(), anyInt())).thenReturn(List.of());
 
     assertThatThrownBy(() -> service.reservar(req)).isInstanceOf(IllegalArgumentException.class);
 
