@@ -20,6 +20,14 @@ services:
       # Carga servicios/pacientes/citas ficticios en el primer arranque (una sola vez).
       - key: SEED_DEMO_DATA
         value: "true"
+      # V5__add_foto_url_to_tratamientos.sql se reescribió como no-op el 2026-10-15
+      # (duplicaba una columna ya presente en el baseline V1). Eso cambia su checksum
+      # y rompe `flyway validate` en cualquier DB que ya tuviera V5 aplicada con el
+      # checksum viejo — como esta instancia demo. No tenemos acceso a las credenciales
+      # de Aiven desde el repo para correr `flyway repair`, así que desactivamos la
+      # validación de checksum acá (solo en el demo; neodentalmaster no usa render.yaml).
+      - key: SPRING_FLYWAY_VALIDATE_ON_MIGRATE
+        value: "false"
       # Free tier de Render = 512MB RAM total. Sin esto el JVM sobreestima el heap
       # disponible y el proceso muere con OOM kill (exit 137). Override puntual —
       # no toca el Dockerfile real (Hetzner tiene otro perfil de memoria).
