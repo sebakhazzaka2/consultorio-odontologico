@@ -126,32 +126,62 @@ Caddy cachea en el navegador (ver `Caddyfile`), porque Spring Security sirve tod
 
 **Cache-busting = cambiar el nombre del archivo.** Si reemplazás una imagen con el mismo nombre, los navegadores que ya la cachearon verán la vieja hasta 30 días. Para forzar el cambio, usá un nombre nuevo (ej. `hero1-v2.jpg`) y actualizá la URL en `.env.prod`.
 
-## Backup de base de datos
+## Backup de base de datos y uploads
 
-Script: `scripts/backup.sh`  
-Requiere `DB_PASSWORD` en el entorno.
+Script: `scripts/backup.sh` (instalado como cron diario vía `scripts/install-cron.sh`).  
+Requiere `DB_PASSWORD` en el entorno (se lee de `.env.prod` si no está seteada).
 
+Cada corrida genera dos archivos en `backups/`:
+- `backup_<timestamp>.sql.gz` — dump de `consultorio_db`.
+- `uploads_<timestamp>.tar.gz` — contenido del volumen `uploads_data` (fotos de branding, archivos clínicos). **No** está en el dump SQL — antes de P3-10 no se backupeaba en absoluto.
+
+Retención local: 7 días (`find ... -mtime +7 -delete`).
+
+### Backup off-site (Backblaze B2) — P3-10
+
+Motivo (ver `tasks/lessons.md` § 2026-10-15, incidente Hetzner): un backup que vive en el mismo proveedor que el server se pierde junto con el server. B2 es un proveedor **distinto** a DigitalOcean, con su propia cuenta/billing.
+
+**Setup (una sola vez):**
+1. Cuenta en Backblaze B2 (email/tarjeta distintos a los de DigitalOcean).
+2. Bucket privado, ej. `consultorio-backups-neodental`.
+3. Application Key scopeada solo a ese bucket (read+write) — no la master key.
+4. En el droplet:
+   ```bash
+   curl -fsSL https://rclone.org/install.sh | sudo -E bash
+   rclone config
+   # n) New remote → name: b2 → type: b2 → account: <keyID> → key: <applicationKey>
+   ```
+   El `keyID`/`applicationKey` se pegan directo en el prompt de `rclone config` — nunca se guardan en el repo ni se comparten fuera del servidor.
+5. Verificar: `rclone ls b2:consultorio-backups-neodental` (vacío la primera vez, sin error).
+
+Con el remote `b2` configurado, `backup.sh` sube automáticamente ambos archivos después del backup local. Si `rclone` no está instalado o el remote no existe, el script sigue haciendo el backup local pero imprime un warning y **no** sube nada — no falla el cron por esto.
+
+**Retención off-site:** por ahora sin lifecycle rule automática en B2 — se sube todo, sin borrar. Revisar manualmente el tamaño del bucket cada tanto o configurar una lifecycle rule desde la consola de B2 si crece demasiado (pendiente, no bloqueante).
+
+**Restore desde B2** (servidor nuevo o backups locales perdidos):
 ```bash
-# Configurar cronjob (pendiente)
-crontab -e
-# Agregar: 0 2 * * * DB_PASSWORD=xxx /home/sebastian/consultorio-odontologico/scripts/backup.sh
+rclone copy b2:consultorio-backups-neodental/backup_YYYYMMDD_HHMMSS.sql.gz backups/
+rclone copy b2:consultorio-backups-neodental/uploads_YYYYMMDD_HHMMSS.tar.gz backups/
+./scripts/restore.sh backups/backup_YYYYMMDD_HHMMSS.sql.gz backups/uploads_YYYYMMDD_HHMMSS.tar.gz
 ```
-
-Los backups se guardan en `/backups/` con retención de 7 días.
 
 ## Reprovisionar el VPS desde cero (disaster recovery)
 
-Usar si el VPS se perdió. Dado que `scripts/backup.sh` guarda los dumps en `backups/` **del mismo servidor**, un VPS perdido puede llevarse los backups con él: antes de empezar, confirmar dónde hay una copia (descarga manual, snapshot de Hetzner, etc.). Backup off-site automático = P3-10 del roadmap.
+Usar si el VPS se perdió. `scripts/backup.sh` sube copia off-site a Backblaze B2 (ver sección anterior) — si el VPS se perdió, los backups están en el bucket B2, no en el server. Primero descargarlos de ahí (`rclone copy b2:consultorio-backups-neodental/... backups/`), nunca asumir que están en el disco local del VPS nuevo.
 
 1. **Crear el VPS** (Hetzner, Ubuntu 22.04, ver plan arriba). Usuario no-root con sudo y grupo docker, login root SSH deshabilitado, solo SSH key.
 2. **Firewall:** aplicar la tabla de arriba (22 solo desde la IP del admin, 80, 443). Opcional pero recomendado: `ufw` + `fail2ban` en el host.
 3. **Instalar Docker** + docker-compose-plugin y clonar el repo en `/home/sebastian/consultorio-odontologico`.
 4. **Crear `.env.prod`** a partir de `.env.example`. Variables que consume `docker-compose.prod.yml`:
    `DB_PASSWORD`, `JWT_SECRET` (generar uno **nuevo** con `openssl rand -hex 32`; esto desloguea sesiones viejas), `CORS_ALLOWED_ORIGINS`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `DOMAIN`, `GHCR_IMAGE_PREFIX`, `SENTRY_DSN`, `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID`, más las de branding (`CLINIC_*`, `BRAND_*`, `FEATURE_*`). Credenciales en Bitwarden.
-5. **Levantar solo la DB y restaurar el backup:**
+5. **Descargar el último backup de B2 y restaurar (DB + uploads):**
    ```bash
+   curl -fsSL https://rclone.org/install.sh | sudo -E bash
+   rclone config  # remote "b2", mismo keyID/applicationKey de siempre
+   rclone copy b2:consultorio-backups-neodental/backup_YYYYMMDD_HHMMSS.sql.gz backups/
+   rclone copy b2:consultorio-backups-neodental/uploads_YYYYMMDD_HHMMSS.tar.gz backups/
    docker compose -f docker-compose.prod.yml --env-file .env.prod up -d db
-   ./scripts/restore.sh backups/backup_YYYYMMDD_HHMMSS.sql.gz
+   ./scripts/restore.sh backups/backup_YYYYMMDD_HHMMSS.sql.gz backups/uploads_YYYYMMDD_HHMMSS.tar.gz
    ```
 6. **Auditar usuarios restaurados** (a raíz del fix de `/auth/register`, PR #26): borrar cualquier cuenta que no se reconozca.
    ```bash
@@ -164,7 +194,7 @@ Usar si el VPS se perdió. Dado que `scripts/backup.sh` guarda los dumps en `bac
    - Una reserva de prueba funciona; repetir >10 veces seguidas devuelve `429`.
    - Login admin OK, agenda con datos restaurados.
 9. **Restaurar operación:** `scripts/install-cron.sh` (backup diario), reconfigurar monitores y **alertas** en Uptime Kuma (`status.<dominio>`), confirmar que Sentry recibe eventos (`SENTRY_DSN`).
-10. **Archivos subidos (`uploads_data`):** las fotos de branding y futuros archivos clínicos viven en el volumen del backend, **no** en el dump SQL. Si no hay copia, hay que volver a subirlas (ver "Cambiar una foto").
+10. **Archivos subidos (`uploads_data`):** si se restauró con el segundo argumento de `restore.sh` en el paso 5, ya están. Si por algún motivo no hay backup de uploads disponible, hay que volver a subirlas manualmente (ver "Cambiar una foto").
 
 ## Pendientes antes de ir a producción
 
