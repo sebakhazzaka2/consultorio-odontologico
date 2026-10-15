@@ -195,7 +195,7 @@ Usar si el VPS se perdió. `scripts/backup.sh` sube copia off-site a Backblaze B
    - `curl -I https://<dominio>` muestra `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`.
    - Una reserva de prueba funciona; repetir >10 veces seguidas devuelve `429`.
    - Login admin OK, agenda con datos restaurados.
-9. **Restaurar operación:** `scripts/install-cron.sh` (backup diario), reconfigurar monitores y **alertas** en Uptime Kuma (`status.<dominio>`), confirmar que Sentry recibe eventos (`SENTRY_DSN`).
+9. **Restaurar operación:** `scripts/install-cron.sh` (backup diario), reconfigurar monitores y **alertas** en Uptime Kuma (`status.<dominio>`; la notificación actual es un webhook de Discord, ver `docs/RUNBOOK_S3.md` § 2), confirmar que Sentry recibe eventos (`SENTRY_DSN`).
 10. **Archivos subidos (`uploads_data`):** si se restauró con el segundo argumento de `restore.sh` en el paso 5, ya están. Si por algún motivo no hay backup de uploads disponible, hay que volver a subirlas manualmente (ver "Cambiar una foto").
 
 ## Pendientes antes de ir a producción
