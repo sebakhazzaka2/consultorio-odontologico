@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -49,7 +50,7 @@ public class CitaService {
     return toResponse(cita);
   }
 
-  @Transactional
+  @Transactional(isolation = Isolation.REPEATABLE_READ)
   public CitaResponse create(CitaRequest request) {
     lockDiaParaReserva(request.getFechaHoraInicio().toLocalDate());
 
@@ -84,7 +85,7 @@ public class CitaService {
     return toResponse(creada);
   }
 
-  @Transactional
+  @Transactional(isolation = Isolation.REPEATABLE_READ)
   public CitaResponse update(Long id, CitaRequest request) {
     lockDiaParaReserva(request.getFechaHoraInicio().toLocalDate());
 
@@ -133,11 +134,15 @@ public class CitaService {
     return toResponse(cancelada);
   }
 
-  @Transactional
+  @Transactional(isolation = Isolation.REPEATABLE_READ)
   public CitaResponse confirmar(Long id, Integer duracionMinutosOverride) {
+    // findByIdForUpdate, no findById: hace falta leer la cita para saber qué día
+    // lockear, pero una lectura NORMAL acá fijaría el snapshot REPEATABLE READ de la
+    // transacción ANTES del lock del día (misma clase de bug que en reservar(), ver
+    // el comentario ahí). findByIdForUpdate usa FOR UPDATE, que no fija ese snapshot.
     Cita cita =
         citaRepository
-            .findById(id)
+            .findByIdForUpdate(id)
             .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con id: " + id));
 
     lockDiaParaReserva(cita.getFechaHoraInicio().toLocalDate());
