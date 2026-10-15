@@ -92,7 +92,7 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 - Demo pública en Render (datos fake).
 - **Próxima:** Guille Blanchet Beauty (belleza, Uruguay) en un VPS nuevo con subdominio de turnosuy.com. Se levanta en F1 pero ella sigue en Ágora hasta tener recordatorios por email (F2a).
 
-**Pendientes operativos:** restore probado en VM limpia, alertas de Kuma confirmadas, commitear los cambios locales de `backup.sh` / `restore.sh` (uploads + B2). Todo en F0.
+**Pendientes operativos:** alertas de Kuma confirmadas. Restore en VM limpia y backup off-site (B2) ya cerrados (2026-10-15, PR #37). Todo en F0.
 
 Ver la secuencia completa, los hechos verificados en el código y las preguntas abiertas en `ROADMAP.md`.
 
@@ -100,13 +100,13 @@ Ver la secuencia completa, los hechos verificados en el código y las preguntas 
 
 Checklist operacional antes de seguir agregando features sobre instancias live:
 
-- ⬜ Restore de backup probado en VM limpia (P0-1) — F0
+- ✅ Restore de backup probado en VM limpia (P0-1) — contenedor descartable, 2026-10-15
 - ⚠️ Uptime monitor con alertas (P0-2) — Kuma desplegado, falta confirmar alertas (F0)
 - ✅ Sentry capturando errores backend + frontend (P0-3)
 - ✅ Headers de seguridad HTTPS en Caddy (P0-4, PR #26). CSP pendiente (S9)
 - ⬜ Audit log de acciones admin (P1-6, S9)
 - ⬜ Logs JSON estructurados + correlationId (P1-8, S9)
-- ⚠️ Backup off-site a Backblaze B2 (P3-10) — implementado en cambios locales sin commitear; falta commitear y verificar con un restore real desde B2 (F0)
+- ✅ Backup off-site a Backblaze B2 (P3-10) — mergeado y verificado end-to-end (PR #37, 2026-10-15): backup real subido a B2 y restore probado en contenedor descartable (DB + uploads)
 
 ## Prioridades actuales (2026-10-15)
 

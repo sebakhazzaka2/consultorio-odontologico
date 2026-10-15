@@ -165,6 +165,8 @@ rclone copy b2:consultorio-backups-neodental/uploads_YYYYMMDD_HHMMSS.tar.gz back
 ./scripts/restore.sh backups/backup_YYYYMMDD_HHMMSS.sql.gz backups/uploads_YYYYMMDD_HHMMSS.tar.gz
 ```
 
+**Verificado (2026-10-15):** ciclo completo probado contra un contenedor MySQL y volúmenes descartables (nunca contra prod) — backup real subido a B2, descargado de vuelta y restaurado con los mismos comandos que usan `backup.sh`/`restore.sh`, DB y uploads íntegros. Detalle en `tasks/lessons.md`, entrada "VPS de Hetzner dado de baja..." § Verificación end-to-end.
+
 ## Reprovisionar el VPS desde cero (disaster recovery)
 
 Usar si el VPS se perdió. `scripts/backup.sh` sube copia off-site a Backblaze B2 (ver sección anterior) — si el VPS se perdió, los backups están en el bucket B2, no en el server. Primero descargarlos de ahí (`rclone copy b2:consultorio-backups-neodental/... backups/`), nunca asumir que están en el disco local del VPS nuevo.
