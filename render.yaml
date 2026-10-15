@@ -78,6 +78,13 @@ services:
         value: "59890000000"
       - key: CLINIC_EMAIL
         value: demo@example.com
+      # Sin defaults en application.properties: si no se definen, la franja de stats desaparece
+      - key: CLINIC_STATS_PACIENTES
+        value: "500+"
+      - key: CLINIC_STATS_ANOS_EXPERIENCIA
+        value: "10"
+      - key: CLINIC_STATS_CALIFICACION
+        value: "4.7"
 
   - type: web
     name: consultorio-odontologico-demo-frontend

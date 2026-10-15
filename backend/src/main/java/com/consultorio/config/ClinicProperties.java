@@ -24,17 +24,17 @@ public class ClinicProperties {
     public void setIcono(String icono) { this.icono = icono; }
   }
 
-  private String nombre = "Dental Montecaseros";
-  private String tagline = "Odontologia integral con atencion cercana";
-  private String direccion = "Monte Caseros 2687a";
-  private String ciudad = "Montevideo, Uruguay";
+  private String nombre = "";
+  private String tagline = "";
+  private String direccion = "";
+  private String ciudad = "";
   private String horario = "Lunes a Viernes 09:00 - 18:00";
   private String horarioApertura = "09:00";
   private String horarioCierre = "18:00";
   private String diasLaborales = "1,2,3,4,5";
-  private String telefono = "+59899572537";
-  private String whatsapp = "59899572537";
-  private String email = "dentalmontecaseros@gmail.com";
+  private String telefono = "";
+  private String whatsapp = "";
+  private String email = "";
   private String nosotros = "";
   private String fotoUbicacionUrl = "";
   private String googlePlaceId = "";
