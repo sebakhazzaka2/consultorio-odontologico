@@ -67,15 +67,13 @@ class AuthControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void login_passwordIncorrecta_retorna500() throws Exception {
-    // AuthService relanza RuntimeException sin handler específico → GlobalExceptionHandler → 500.
-    // TODO: mejorar en P2 — login fallido debería devolver 401.
+  void login_passwordIncorrecta_retorna401() throws Exception {
     createAdmin("admin@test.com", "clave123");
 
     mockMvc.perform(post("/auth/login")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(
                 Map.of("email", "admin@test.com", "password", "incorrecta"))))
-        .andExpect(status().isInternalServerError());
+        .andExpect(status().isUnauthorized());
   }
 }
