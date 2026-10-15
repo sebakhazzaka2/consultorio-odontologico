@@ -13,8 +13,8 @@
 ## Secuencia
 
 ```
-F0 Higiene (12–18 h)                                   ← PRÓXIMO
-→ F1 Instancia Guille en paralelo + importación CSV (42–63 h) — Guille sigue en Ágora
+F0 Higiene ✅ cerrada (2026-10-15)
+→ F1 Instancia Guille en paralelo + importación CSV (42–63 h) — Guille sigue en Ágora   ← PRÓXIMO
 → F2a Recordatorios por email (20–28 h)
 → Corte Guille: importar sus clientas y salir en vivo (3–5 h)
 → F2b WhatsApp (23–33 h)
@@ -43,8 +43,8 @@ F0 Higiene (12–18 h)                                   ← PRÓXIMO
 | Backup off-site a Backblaze B2 + uploads (P3-10) | ✅ (PR #37–#38, 2026-10-15) |
 | Race condition en reserva pública + PII en logs de reserva | ✅ (PR #32–#35, 2026-10-15). Falta test de concurrencia contra MySQL real dentro del repo |
 | Demo en Render (seed + login precargado) | ✅ (2026-08-19) |
-| **F0 — Higiene** | ⏳ Próximo |
-| **F1 — Instancia Guille + importación CSV** | ⏳ |
+| **F0 — Higiene** | ✅ Cerrada (PR #37–#43, 2026-10-15) |
+| **F1 — Instancia Guille + importación CSV** | ⏳ Próximo |
 | **F2a — Recordatorios por email** | ⏳ |
 | **Corte Guille** | ⏳ Tras F2a |
 | **F2b — WhatsApp** | ⏳ |
@@ -58,6 +58,8 @@ F0 Higiene (12–18 h)                                   ← PRÓXIMO
 ## Hechos verificados en el código (2026-10-15)
 
 Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
+
+> **Resueltos en F0 (PR #40–#43):** login erróneo ahora devuelve 401; defaults de Montecaseros eliminados y `StartupEnvValidator` exige `CLINIC_*` en prod; `<title>` y `og:*` por instancia; `show-sql` apagado en prod. Las filas correspondientes de la tabla describen el estado *previo* y se mantienen como referencia de las horas estimadas.
 
 | Tema | Estado real | Evidencia |
 |------|-------------|-----------|
@@ -96,15 +98,21 @@ Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 **Tareas**
 - [x] Login fallido responde 401 con test (PR #40).
 - [x] Quitar los defaults de Montecaseros de `ClinicProperties`, `application.properties` y `.env.example`; borrar `clinic.config.ts`; `StartupEnvValidator` falla si falta un `CLINIC_*` de marca (PR #41).
-- [ ] `index.html` con `<title>` y `og:*` por instancia, con envsubst en el arranque del contenedor de nginx (3–5 h).
+- [x] `index.html` con `<title>` y `og:*` por instancia: `frontend/docker/40-clinic-meta.sh` sustituye `CLINIC_NOMBRE` / `CLINIC_TAGLINE` al arrancar nginx, siempre desde el template (PR #43). Sin nombre cae en "Turnos online", nunca en datos de otro cliente.
 - [x] ~~Commitear `backup.sh` / `restore.sh` (uploads + B2) y probar el restore~~ — hecho (PR #37 y #38, 2026-10-15): backup real subido a B2 y restore verificado en un contenedor descartable (DB + uploads). Falta, si se quiere, cronometrarlo en una VM limpia.
 - [x] Alertas de Uptime Kuma: llegan avisos a un canal de Discord (confirmado por el dueño, 2026-10-15). Ver `docs/RUNBOOK_S3.md` § 2.
 - [x] Apagar `show-sql` en prod (override en `application-prod.properties`).
-- [ ] Contrastar el SHA de prod con `main`: CI desplegó `4ac1a1f` con éxito y `/api/public/config` responde; falta confirmar que el login devuelve 401 en prod (prueba con credenciales falsas).
+- [x] Prod contrastado con `main` (2026-10-15): el deploy de `b7c24d8` terminó en verde, `POST /api/auth/login` con credenciales falsas devuelve 401 y el HTML servido trae el título y `og:*` de NeoDental Máster.
 
-**Entregables:** PR de higiene; restore documentado (ver `docs/DEPLOY.md` y `tasks/lessons.md`).
+**Entregables:** PRs #37–#43; restore documentado (ver `docs/DEPLOY.md` y `tasks/lessons.md`).
 
-**Criterio de salida:** restore probado fuera del server de producción ✅; login devuelve 401; `grep Montecaseros` sin resultados en el código; prod en el mismo SHA que `main`.
+**Criterio de salida:** ✅ restore probado fuera del server de producción; ✅ login devuelve 401; ✅ `grep Montecaseros` sin resultados en el código (solo quedan menciones históricas en la documentación); ✅ prod corre el último `main`.
+
+**Pendientes que quedan fuera de F0:**
+- `mvn test` local falla 8 tests de Mockito en JDK 25 (`CitaServiceTest`, `PublicReservaServiceTest`); el CI corre en JDK 17 y pasa. Fijar el JDK local en 17 o actualizar Mockito.
+- Falta el test de concurrencia contra MySQL real dentro del repo (S9, o F1 si se toca la reserva).
+- `kuma_data` no está en `backup.sh`: si se pierde el volumen hay que reconfigurar Kuma a mano.
+- Verificar con el cliente si `CLINIC_TELEFONO` y `CLINIC_WHATSAPP` de `neodentalmaster` son los reales (coinciden con los defaults viejos de Montecaseros).
 
 **Riesgo:** que prod difiera del repositorio.
 

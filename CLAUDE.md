@@ -92,7 +92,7 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 - Demo pública en Render (datos fake).
 - **Próxima:** Guille Blanchet Beauty (belleza, Uruguay) en un VPS nuevo con subdominio de turnosuy.com. Se levanta en F1 pero ella sigue en Ágora hasta tener recordatorios por email (F2a).
 
-**Pendientes operativos:** confirmar que prod corre el último `main` (login responde 401). Restore, backup off-site (B2) y alertas de Kuma (Discord) ya cerrados (2026-10-15). Todo en F0.
+**F0 cerrada (2026-10-15):** restore y backup B2 (#37–#38), login 401 (#40), sin defaults de cliente + validación de `CLINIC_*` (#41), `show-sql` apagado y alertas Kuma→Discord (#42), `<title>`/`og:*` por instancia (#43). Prod verificado: corre el último `main`. Pendientes menores en `ROADMAP.md` § F0.
 
 Ver la secuencia completa, los hechos verificados en el código y las preguntas abiertas en `ROADMAP.md`.
 
@@ -112,8 +112,8 @@ Checklist operacional antes de seguir agregando features sobre instancias live:
 
 Secuencia por fases (detalle, horas y criterios de salida en `ROADMAP.md`). Capacidad: 15 a 20 h por semana.
 
-🔴 **F0 — Higiene** (12–18 h). Hecho: login 401, sin defaults de cliente + validación de `CLINIC_*`, restore y B2, alertas Kuma, `show-sql` apagado. Falta: `og:` por instancia y confirmar el SHA de prod. **← PRÓXIMO**
-🔴 **F1 — Instancia de Guille en paralelo + importación CSV** (42–63 h). VPS nuevo, deploy multi-host, texto del rubro y colores por configuración, `V10` (email nullable + único), importador con simulación. Guille sigue en Ágora.
+✅ **F0 — Higiene** cerrada (2026-10-15).
+🔴 **F1 — Instancia de Guille en paralelo + importación CSV** (42–63 h). **← PRÓXIMO** VPS nuevo, deploy multi-host, texto del rubro y colores por configuración, `V10` (email nullable + único), importador con simulación. Guille sigue en Ágora.
 🔴 **F2a — Recordatorios por email** (20–28 h). `NotificationService` por canal, Brevo + Thymeleaf, cron idempotente con zona horaria por instancia, SPF/DKIM/DMARC.
 🔴 **Corte de Guille** (3–5 h). Importar sus clientas y salir en vivo.
 🟡 **F2b — WhatsApp** (23–33 h). Twilio, plantillas Meta, opt-in, E.164. Antes: P3-4 costo por mensaje.
