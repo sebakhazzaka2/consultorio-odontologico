@@ -97,9 +97,11 @@ Para **botones en Material** usar `mat-flat-button` (primary fill) o `mat-stroke
 
 ---
 
-## Theming dinámico por cliente (Sprint 2.0 — foundations)
+## Theming dinámico por cliente
 
-> **Status:** planificado para Sprint 2.0, antes de S2. Hasta que esté mergeado, los componentes ya deben consumir `--color-primary` (no `--color-navy-950` directo) para que la migración sea drop-in.
+> **Status (2026-10-15): no implementado.** No existen `--brand-*` inyectados en runtime ni `BRAND_*` en el backend; los colores viven fijos en `_design-system.scss`. El mínimo (colores y logo por instancia) entra en F1 para la instancia de Guille; el resto (migración a `@use mat`, QA en 2 marcas) queda en backlog. Ver `ROADMAP.md`. Mientras tanto, los componentes ya deben consumir `--color-primary` (no `--color-navy-950` directo) para que la migración sea drop-in.
+>
+> **Tampoco hay i18n:** `LOCALE_ID: 'es'` fijo, textos en español en los templates y ~20 apariciones de `UY$` / `UYU` / `es-UY` / `es-ES`. Moneda y locale por configuración en F3; pt-BR en F3b.
 
 ### Arquitectura de dos capas
 

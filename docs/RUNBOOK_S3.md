@@ -1,6 +1,6 @@
 # Runbook S3 — Cierre de hardening
 
-**Estado: ⏳ PENDIENTE** — bloqueado porque la VPS está caída (2026-09-24). Ejecutar cuando vuelva.
+**Estado: ⏳ PENDIENTE** — ya no está bloqueado: la VPS está en pie en DigitalOcean (verificado 2026-10-15). Ejecutar el restore.
 
 | Item | Estado |
 |------|--------|
