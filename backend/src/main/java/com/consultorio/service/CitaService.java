@@ -135,6 +135,14 @@ public class CitaService {
     if (duracionMinutosOverride != null) {
       cita.setDuracionMinutos(duracionMinutosOverride);
     }
+
+    LocalDateTime fechaHoraFin = calcularFin(cita.getFechaHoraInicio(), cita.getDuracionMinutos());
+    if (haySolapamiento(cita.getFechaHoraInicio(), fechaHoraFin, cita.getId())) {
+      log.warn("Solapamiento de cita detectado al confirmar id {} — inicio: {}, fin: {}",
+          id, cita.getFechaHoraInicio(), fechaHoraFin);
+      throw new IllegalArgumentException("El horario se solapa con una cita existente");
+    }
+
     cita.setEstado(CitaEstado.CONFIRMADA);
     Cita confirmada = citaRepository.save(cita);
     log.info("Cita confirmada — id: {}, duración: {} min", confirmada.getId(), confirmada.getDuracionMinutos());
@@ -234,8 +242,11 @@ public class CitaService {
 
   private boolean haySolapamiento(LocalDateTime inicio, LocalDateTime fin, Long excluirCitaId) {
     LocalDateTime ventanaInicio = inicio.minusHours(3);
-    List<Cita> candidatas = citaRepository.findByFechaHoraInicioBetweenAndEstado(
-    ventanaInicio, fin, CitaEstado.CONFIRMADA);
+    // CONFIRMADA y PENDIENTE: debe ser la misma regla que getDisponibilidad() usa para
+    // calcular los slots públicos (línea ~169), si no, el admin puede pisar sin darse
+    // cuenta un horario ya pedido por una reserva pública todavía sin confirmar.
+    List<Cita> candidatas = citaRepository.findByFechaHoraInicioBetweenAndEstadoIn(
+    ventanaInicio, fin, List.of(CitaEstado.CONFIRMADA, CitaEstado.PENDIENTE));
 
     return candidatas.stream()
         .filter(cita -> excluirCitaId == null || !cita.getId().equals(excluirCitaId))

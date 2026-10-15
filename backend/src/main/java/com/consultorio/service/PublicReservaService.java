@@ -71,10 +71,14 @@ public class PublicReservaService {
         creada.getId(), paciente.getNombre(), paciente.getApellido(),
         servicio.getNombre(), creada.getFechaHoraInicio());
 
+    // Devolvemos el nombre/apellido tal como los mandó quien reservó, nunca los que
+    // ya estaban guardados en el paciente existente (dedupe por email): si alguien
+    // reserva con un email ajeno, esto evitaba que la respuesta filtrara el nombre
+    // real de ese paciente a un desconocido no autenticado.
     return new PublicReservaResponse(
         creada.getId(),
-        paciente.getNombre(),
-        paciente.getApellido(),
+        request.getNombre(),
+        request.getApellido(),
         servicio.getNombre(),
         creada.getFechaHoraInicio(),
         creada.getDuracionMinutos(),
