@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,12 +40,12 @@ public class AuthService {
           new UsernamePasswordAuthenticationToken(email, password));
     } catch (Exception e) {
       log.warn("Credenciales inválidas para el usuario: {}", email);
-      throw new RuntimeException("Credenciales inválidas");
+      throw new BadCredentialsException("Credenciales inválidas");
     }
     User user =
         userRepository
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+            .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
     String token = jwtService.generateToken(user);
     log.info("Login exitoso — usuario: {}", email);
     return Map.of("token", token);
