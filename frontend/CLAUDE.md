@@ -342,10 +342,10 @@ Faltantes hoy en `_design-system.scss`, necesarios para próximos componentes:
 
 {MARCA_SISTEMA} = "TurnosUy"
 {MARCA_TAGLINE} = "Simple, integrated clinical system"
-{CLINICA_NOMBRE} = "Dental Montecaseros"
-{CLINICA_TAGLINE} = "Odontología integral con atención cercana"
-{CLINICA_DIRECCION} = "Monte Caseros 2687 a"
-{CLINICA_HORARIO} = "Lunes a Viernes 09:00 – 18:00"
-{CLINICA_TELEFONO} = "+59899572537"
-{CLINICA_WHATSAPP} = "+59899572537"
+{CLINICA_NOMBRE} = valor de CLINIC_NOMBRE (viene de GET /api/public/config)
+{CLINICA_TAGLINE} = valor de CLINIC_TAGLINE
+{CLINICA_DIRECCION} = valor de CLINIC_DIRECCION
+{CLINICA_HORARIO} = valor de CLINIC_HORARIO
+{CLINICA_TELEFONO} = valor de CLINIC_TELEFONO
+{CLINICA_WHATSAPP} = valor de CLINIC_WHATSAPP
 {CLINICA_EMAIL} = "[EMAIL_ADDRESS]"
