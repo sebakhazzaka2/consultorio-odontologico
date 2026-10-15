@@ -23,6 +23,9 @@ F0 Higiene ✅ cerrada (2026-10-15)
 → F4 Fisio como complemento de Vedius     — condicionada a la reunión con la clínica
 → F5 Agente (95–135 h)
 → Backlog posterior (S5, S7, S8, S9, S11–S14)
+
+F6 Adquisición y embudo en turnosuy.com (6a–6d: 35–55 h)
+   — se intercala tras el corte de Guille, en paralelo a F2b/F3; el gate de anuncios (6f) es lo último
 ```
 
 **Hasta Guille en vivo con recordatorios por email** (F0 + F1 + F2a + corte): **77–114 h, unas 5 a 7 semanas.**
@@ -52,6 +55,7 @@ F0 Higiene ✅ cerrada (2026-10-15)
 | **F3b — pt-BR** | ⏸️ Condicionada a un cliente de Brasil |
 | **F4 — Fisio (complemento de Vedius)** | ⏸️ Condicionada a la reunión con la clínica |
 | **F5 — Agente** | ⏳ Tras F2 |
+| **F6 — Adquisición y embudo (turnosuy.com)** | ⏳ Tras el corte de Guille. Ver detalle |
 
 ---
 
@@ -112,7 +116,7 @@ Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 - `mvn test` local falla 8 tests de Mockito en JDK 25 (`CitaServiceTest`, `PublicReservaServiceTest`); el CI corre en JDK 17 y pasa. Fijar el JDK local en 17 o actualizar Mockito.
 - Falta el test de concurrencia contra MySQL real dentro del repo (S9, o F1 si se toca la reserva).
 - `kuma_data` no está en `backup.sh`: si se pierde el volumen hay que reconfigurar Kuma a mano.
-- Verificar con el cliente si `CLINIC_TELEFONO` y `CLINIC_WHATSAPP` de `neodentalmaster` son los reales (coinciden con los defaults viejos de Montecaseros).
+- ~~Verificar `CLINIC_TELEFONO` y `CLINIC_WHATSAPP`~~: confirmado, son los reales (es el mismo cliente que Montecaseros).
 
 **Riesgo:** que prod difiera del repositorio.
 
@@ -232,6 +236,64 @@ El jefe de la clínica no piensa dejar Vedius, y lo que más les molesta es el t
 
 **Riesgo:** competir con Sofia de AgendaPro sin un diferencial claro.
 
+### F6 — Adquisición y embudo en turnosuy.com (35–55 h para 6a–6d)
+
+**Objetivo:** validar de forma orgánica dónde se caen los interesados y por qué, antes de pagar tráfico. Solo se compran anuncios cuando el embudo ya está medido y convierte (gate 6f).
+
+**Alcance y decisiones**
+- **El embudo vive en el sitio de ventas (`turnosuy.com`), no en los subdominios.** Los subdominios (`neodentalmaster.…`, el de Guille) son instancias de clientes y manejan datos de salud.
+- **Sin scripts de analytics de terceros ni chat en el admin ni en la reserva pública de las clínicas** (datos de pacientes; Ley 18.331 / LGPD). Ahí solo hay un botón de ayuda que abre WhatsApp.
+- **Analytics del sitio de ventas:** herramienta respetuosa con la privacidad (Plausible, Umami o PostHog); decidir en 6a. La activación se cuenta **desde el backend** como conteos agregados por instancia, sin datos personales.
+- **Hoy el onboarding no es autoservicio** (una instancia Docker por cliente, provisioning manual) y **no hay cobro automático**. El embudo v1 es asistido: landing → contacto → demo → instancia → pago. El autoservicio y el pago dentro del producto dependen de P2-6 (script de provisioning) y de facturación, que están fuera de alcance.
+
+**6a. Medición y sitio de ventas mínimo (14–22 h)**
+- [ ] Sitio estático mínimo en `turnosuy.com` (el repo `consultorio-landing` pasa a ser **esta** versión mínima, no la premium): problema, cómo funciona, precio, demo, contacto. Hosting estático (Cloudflare Pages).
+- [ ] Taxonomía de eventos y su tablero (tabla abajo), con una sola definición de "conversión" por paso.
+- [ ] Demo pública (Render) enlazada con parámetros de origen para atribuir la visita.
+
+**6b. Puntos de contacto (10–16 h)**
+- [ ] Botón de WhatsApp con mensaje prellenado, en el sitio y en el admin (1–2 h).
+- [ ] Email de bienvenida al administrador de cada instancia nueva, sobre el `NotificationService` de F2a (4–6 h). Es un destinatario distinto al paciente.
+- [ ] Chat en vivo **solo en el sitio de ventas**, con un servicio gratuito de terceros (2–3 h).
+- [ ] Pregunta única de feedback dentro del admin (3–5 h): "¿qué te falta?", enviada al canal de Discord ya usado para Kuma.
+
+**6c. Onboarding asistido y activación (6–10 h)**
+- [ ] Checklist de `docs/ONBOARDING_CLIENTE.md` (F3) con tiempos por paso.
+- [ ] Definir "activado": p. ej. primer turno cargado y primera reserva pública recibida; contarlo en backend.
+
+**6d. Cobro (4–8 h)**
+- [ ] Link de pago (Mercado Pago) o transferencia, con el evento "pagó" cargado a mano o por webhook. Facturación y suscripciones automáticas siguen fuera de alcance.
+
+**6e. Experimentos (por ciclo, 4–8 h)**
+- Una sola variable por vez: posición del CTA, titular, precio visible o no, landing por rubro.
+- **Con tráfico orgánico bajo no hay A/B con significancia.** Para detectar una mejora de 3 % a 4,5 % con 80 % de potencia hacen falta del orden de 2.500 visitas por variante. Hasta tener ese volumen, comparar períodos (antes y después) y leer los motivos en las conversaciones.
+- **Paywall duro contra blando:** solo tiene sentido con una prueba autoservicio. Mientras el alta sea asistida, probarlo a mano con los próximos 5 a 10 interesados (cobrar antes de crear la instancia, contra 14–30 días de prueba sin tarjeta) y registrar la reacción.
+
+**6f. Gate para pagar anuncios (hipótesis, a validar)**
+- [ ] Embudo medido durante 4 semanas sin huecos de datos.
+- [ ] Al menos 2 clientes pagos que llegaron por canal orgánico.
+- [ ] Costo de adquisición tolerable calculado contra la cuota y el costo de WhatsApp (P3-4).
+- [ ] Capacidad de alta: poder instalar sin que cada cliente nuevo consuma más de ~5 h (provisioning).
+
+**Embudo y eventos (definición v1)**
+
+| Paso | Evento | Se mide en | Pregunta que responde |
+|---|---|---|---|
+| Visita | `landing_view` (con origen y variante) | sitio de ventas | ¿De dónde llegan? |
+| Interés | `cta_click` (con posición) | sitio de ventas | ¿Qué botón o texto empuja? |
+| Demo | `demo_open` | sitio de ventas / demo | ¿Cuántos prueban antes de hablar? |
+| Contacto | `contact_start`, `contact_sent` (WhatsApp o formulario) | sitio de ventas | ¿Dónde se cae el formulario? |
+| Reunión | `meeting_booked` | manual / planilla | ¿Cuántos contactos avanzan? |
+| Onboarding | `instance_created`, `onboarding_step_N` | manual / backend | ¿En qué paso se traban? |
+| Activación | `activated` (primer turno y primera reserva) | backend, por instancia | ¿Quién llega a usarlo? |
+| Pago | `payment_started`, `payment_done` | manual o webhook | ¿Cuánto cuesta y cuánto convierte? |
+
+**Riesgos**
+- **Tiempo:** es trabajo no técnico en su mayoría (textos, entrevistas, seguimiento) y compite por las mismas 15–20 h con F1–F3.
+- **Medir sin volumen:** con pocos visitantes, los porcentajes engañan; reportar siempre el conteo absoluto al lado.
+- **Privacidad:** un script de chat o analytics en la página equivocada expone datos de pacientes. Regla fija: nada de terceros fuera de `turnosuy.com`.
+- **Prometer de más:** antes de F2a, el sitio promete menos que Ágora (sin recordatorios). Por eso F6 arranca después del corte de Guille.
+
 ---
 
 ## Preguntas abiertas (solo se responden con clientes o producción)
@@ -255,7 +317,7 @@ El jefe de la clínica no piensa dejar Vedius, y lo que más les molesta es el t
 - [ ] ¿Tienen dominio propio?
 
 **Cliente dental**
-- [ ] ¿Quién paga hoy? La instancia viva es `neodentalmaster`; `dentalmontecaseros` figura dada de baja.
+- [x] ¿Quién paga hoy? Resuelto (2026-10-15): Dental Montecaseros y NeoDental Máster son el **mismo cliente** con otro nombre; paga. `dentalmontecaseros` no era una baja sino un cambio de nombre.
 - [ ] ¿Qué tasa de ausencias tienen hoy?
 - [ ] ¿Atiende más de un profesional?
 
@@ -420,4 +482,8 @@ Columna `google_event_id` ya existe (V9).
 
 ## Landing SaaS proveedor ⏳ (repo `consultorio-landing`)
 
-Post primer cliente con caso de éxito. Stack: Astro + Tailwind v4, deploy Cloudflare Pages.
+Dos etapas (cambio del 2026-10-15):
+- **Mínima (F6a):** sitio de ventas simple con medición del embudo, tras el corte de Guille. No espera a Premium UX: sirve para validar de forma orgánica antes de gastar en anuncios.
+- **Premium:** rediseño con el nivel de la Fase Premium UX, post 1+ cliente WhatsApp pagando 2+ meses y con caso de éxito real.
+
+Stack previsto: Astro + Tailwind v4, deploy Cloudflare Pages.
