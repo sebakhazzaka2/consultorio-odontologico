@@ -46,7 +46,7 @@ class CitaServiceTest {
   void confirmar_sinSolapamiento_pasaACONFIRMADA() {
     LocalDateTime inicio = LocalDateTime.of(2030, 1, 7, 10, 0);
     Cita cita = citaPendiente(1L, inicio, 30);
-    when(citaRepository.findById(1L)).thenReturn(Optional.of(cita));
+    when(citaRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(cita));
     when(citaRepository.findByFechaHoraInicioBetweenAndEstadoIn(any(), any(), any()))
         .thenReturn(List.of()); // no hay otras citas
 
@@ -59,7 +59,7 @@ class CitaServiceTest {
   void confirmar_solapaConOtraCitaConfirmada_lanzaExcepcionYNoConfirma() {
     LocalDateTime inicio = LocalDateTime.of(2030, 1, 7, 10, 0);
     Cita pendiente = citaPendiente(1L, inicio, 30);
-    when(citaRepository.findById(1L)).thenReturn(Optional.of(pendiente));
+    when(citaRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(pendiente));
 
     Cita otraConfirmada = citaPendiente(2L, inicio.plusMinutes(15), 30); // se superpone 10:15-10:30
     otraConfirmada.setEstado(CitaEstado.CONFIRMADA);
@@ -78,7 +78,7 @@ class CitaServiceTest {
     LocalDateTime inicio = LocalDateTime.of(2030, 1, 7, 10, 0);
     // Pendiente de 15 min (10:00-10:15) no se solapa con una cita a las 10:20...
     Cita pendiente = citaPendiente(1L, inicio, 15);
-    when(citaRepository.findById(1L)).thenReturn(Optional.of(pendiente));
+    when(citaRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(pendiente));
 
     Cita otra = citaPendiente(2L, inicio.plusMinutes(20), 30); // 10:20-10:50
     otra.setEstado(CitaEstado.CONFIRMADA);

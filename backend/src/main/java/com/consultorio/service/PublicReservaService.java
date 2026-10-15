@@ -16,6 +16,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -44,19 +45,26 @@ public class PublicReservaService {
     return citaService.getDisponibilidad(fecha, servicio.getDuracionMinutos());
   }
 
-  @Transactional
+  @Transactional(isolation = Isolation.REPEATABLE_READ)
   public PublicReservaResponse reservar(PublicReservaRequest request) {
-    Servicio servicio = servicioRepository.findById(request.getServicioId())
-        .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado con id: " + request.getServicioId()));
-
     LocalDate fecha = request.getFechaHoraInicio().toLocalDate();
 
-    // Lock pesimista de fila (FOR UPDATE), atado a esta transacción — serializa
-    // todo lo que quiera reservar/confirmar/editar el mismo día de semana. Debe
-    // pedirse ANTES de leer disponibilidad: si se pide después, otra transacción ya
-    // pudo haber leído el estado viejo y decidido (erróneamente) que el slot estaba
-    // libre. Se libera solo al hacer commit/rollback (lo maneja MySQL, no nosotros).
+    // Lock pesimista de fila (FOR UPDATE) — DEBE ser la primerísima sentencia SQL de
+    // la transacción, antes de CUALQUIER lectura normal (ni siquiera el servicio).
+    // Motivo: bajo REPEATABLE READ (default de MySQL), el snapshot de la transacción
+    // se fija en su primera lectura NORMAL (no FOR UPDATE) — una vez fijado, lecturas
+    // normales posteriores en la misma transacción siguen viendo ese snapshot viejo,
+    // aunque ya hayan pasado por un FOR UPDATE en el medio. Si acá se leyera el
+    // servicio (lectura normal) antes de este lock, el snapshot quedaría fijado
+    // ANTES de esperar al lock, y la lectura de disponibilidad de más abajo (también
+    // normal) no vería una cita recién comiteada por la transacción que estábamos
+    // esperando — doble reserva real, verificado con un test de 2 threads vía JDBC
+    // contra MySQL: con la lectura de servicio antes del lock, 5/5 corridas insertan
+    // 2 citas para el mismo slot; con el lock primero, 5/5 insertan 1 sola.
     citaService.lockDiaParaReserva(fecha);
+
+    Servicio servicio = servicioRepository.findById(request.getServicioId())
+        .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado con id: " + request.getServicioId()));
 
     // Verificar que el slot solicitado esté disponible
     List<String> slotsDisponibles = citaService.getDisponibilidad(fecha, servicio.getDuracionMinutos());
