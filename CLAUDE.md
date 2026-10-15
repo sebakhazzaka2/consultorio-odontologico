@@ -41,6 +41,7 @@ consultorio-odontologico/
 ### Ramas mergeadas (referencia)
 - `v2-angular-frontend`, `p1-hardening-backend`, `feat/agenda-calendar`, `feat/ux-essentials`, `feat/production-deploy`
 - `feat/multi-rubro` (PR #21, 2026-05-11), `fix/safari-white-screen` (2026-05-11), `fix/admin-branding` (2026-05-11)
+- `feat/s3-hardening-urgente` (PR #26), fixes de reserva concurrente y PII (PR #32–#35, 2026-10-15)
 
 ## Modelo de negocio
 
@@ -53,11 +54,13 @@ consultorio-odontologico/
 **Arquitectura de deploy:** una instancia Docker por cliente (no multitenancy todavía).
 Trigger para migrar a multitenancy real: ~5 clientes activos pagando.
 
-**Onboarding por rubro/cliente:** checklist único en `docs/ONBOARDING_CLIENTE.md` (entregable de S9 junto al script de provisioning). Consolida datos de clínica, env vars de branding (`BRAND_*`), feature flags (`FEATURE_*`), servicios seed, DNS, backup y smoke test. Hasta que exista, la info vive fragmentada entre este archivo, `ClinicProperties` y el detalle de Sprint 4.
+**Onboarding por rubro/cliente:** checklist único en `docs/ONBOARDING_CLIENTE.md` (entregable de F3 junto a los presets por rubro). Consolida datos de clínica, colores y logo, feature flags (`FEATURE_*`), servicios seed, DNS, backup y smoke test. Hasta que exista, la info vive fragmentada entre este archivo, `ClinicProperties` y `docs/DEPLOY.md`.
 
 ### Feature flags por paquete
 
-Un solo codebase, una sola imagen Docker. Cada paquete es una combinación de env vars. El backend expone los flags en `GET /api/public/config` vía `ClinicProperties`; el frontend los consume al arrancar y oculta rutas/botones según corresponda.
+> **Estado (2026-10-15): los `FEATURE_*` todavía no existen en el código.** `ClinicProperties.Feature` son tarjetas de marketing de la página pública, no flags. Se implementan en F3 (ver `ROADMAP.md`). Lo de abajo es el diseño objetivo.
+
+Un solo codebase, una sola imagen Docker. Cada paquete es una combinación de env vars. El backend expondrá los flags en `GET /api/public/config` vía `ClinicProperties`; el frontend los consumirá al arrancar y ocultará rutas/botones según corresponda.
 
 ```
 # Paquete Local
@@ -80,43 +83,45 @@ FEATURE_WHATSAPP=true
 
 ---
 
-## Estado actual (2026-09-24)
+## Estado actual (2026-10-15)
 
-Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21), Sprint 2 Disponibilidad + Reserva sin login (2026-05-20), fix stale chunk reload, fix uploads caching (PR #25, 2026-06-11), **demo en Render** con seed y login precargado ES/EN (2026-08-19, adelanto parcial de S11).
+Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21), Sprint 2 Disponibilidad + Reserva sin login (2026-05-20), fix uploads caching (PR #25), S3 hardening (PR #26: register cerrado, headers Caddy, `X-Real-IP` no falsificable, rate limit nginx, honeypot), migración Hetzner → DigitalOcean (PR #28–#29), demo en Render (2026-08-19), reserva concurrente con `FOR UPDATE` como primera sentencia + PII fuera de los logs de reserva (PR #32–#35).
 
 **Instancias en producción:**
-- `neodentalmaster.turnosuy.com` — única instancia live (odontología, Montevideo). `dentalmontecaseros` dada de baja.
+- `neodentalmaster.turnosuy.com` — única instancia live (odontología, Montevideo), en DigitalOcean (verificado 2026-10-15: sitio responde, Uptime Kuma activo). `dentalmontecaseros` dada de baja.
 - Demo pública en Render (datos fake).
+- **Próxima:** Guille Blanchet Beauty (belleza, Uruguay) en un VPS nuevo con subdominio de turnosuy.com. Se levanta en F1 pero ella sigue en Ágora hasta tener recordatorios por email (F2a).
 
-**S3 (rama `feat/s3-hardening-urgente`, sin mergear):** cerrado `/auth/register` público (creaba ADMIN a anónimos), headers Caddy, `X-Real-IP` no falsificable, rate limit nginx en reservas y lecturas públicas, honeypot + `@Size` en reserva. Pendiente: restore probado en VM limpia, alertas de Kuma. **Prod caído (sin VPS) al 2026-09-24.**
+**Pendientes operativos:** restore probado en VM limpia, alertas de Kuma confirmadas, commitear los cambios locales de `backup.sh` / `restore.sh` (uploads + B2). Todo en F0.
 
-Siguiente (repriorizado 2026-09-24, mails y WhatsApp primero): Cerrar S3 → S6 Mails → mini-seguridad/tests → S10 WhatsApp → Agenda polish → S5 → S7 → S8 → S9 → resto. **S4 Theming postergado on-demand.**
+Ver la secuencia completa, los hechos verificados en el código y las preguntas abiertas en `ROADMAP.md`.
 
-Ver detalles completos y secuencia por sprint en `ROADMAP.md`. Decisiones estratégicas pendientes (P3 auditoría) en sección dedicada de ROADMAP.md.
-
-## Operaciones mínimas (target post Sprint 3)
+## Operaciones mínimas
 
 Checklist operacional antes de seguir agregando features sobre instancias live:
 
-- ⬜ Restore de backup probado en VM limpia (P0-1)
-- ⚠️ Uptime monitor con alertas (P0-2) — Kuma desplegado, falta confirmar alertas
+- ⬜ Restore de backup probado en VM limpia (P0-1) — F0
+- ⚠️ Uptime monitor con alertas (P0-2) — Kuma desplegado, falta confirmar alertas (F0)
 - ✅ Sentry capturando errores backend + frontend (P0-3)
-- ⬜ Headers de seguridad HTTPS estrictos en Caddy (P0-4)
-- ⬜ Audit log de acciones admin (P1-6, modelado en S5)
-- ⬜ Logs JSON estructurados + correlationId (P1-8, en S9)
-- ⬜ Backup off-site verificado (P3-10)
+- ✅ Headers de seguridad HTTPS en Caddy (P0-4, PR #26). CSP pendiente (S9)
+- ⬜ Audit log de acciones admin (P1-6, S9)
+- ⬜ Logs JSON estructurados + correlationId (P1-8, S9)
+- ⚠️ Backup off-site a Backblaze B2 (P3-10) — implementado en cambios locales sin commitear; falta commitear y verificar con un restore real desde B2 (F0)
 
-## Prioridades actuales (2026-09-24)
+## Prioridades actuales (2026-10-15)
 
-Secuencia: notificaciones (mails → WhatsApp) sobre fundamentos mínimos → producto. Ver `ROADMAP.md` para detalle.
+Secuencia por fases (detalle, horas y criterios de salida en `ROADMAP.md`). Capacidad: 15 a 20 h por semana.
 
-🔴 **S3 — Cerrar hardening** (~1 día). Headers Caddy, rate limit, SQL injection, restore, alertas Kuma. **← PRÓXIMO**
-🔴 **S6 — Mails transaccionales** (~1 sem). `NotificationService` con interfaz por canal, Brevo SMTP + Thymeleaf, SPF/DKIM/DMARC, confirmación/cancelación/recordatorio 24h, password reset admin. Mails de presupuesto/pago se difieren a post-S5.
-🔴 **Mini S-Audit + S-Tests** (~1 sem). Solo lo que protege notificaciones: rate limit, lockout login, JUnit de Cita/Disponibilidad/Reserva, E2E reserva pública.
-🔴 **S10 — WhatsApp** (~1-2 sem). Twilio (API oficial, plantillas aprobadas por Meta, opt-in). Antes: P3-4 costo por mensaje. Enviar plantillas a Meta temprano.
-🟡 Agenda polish → S5 Presupuestos+Archivos → S7 Portal paciente → S8 Balance → S9 hardening consolidado.
-🟡 Resto de S-Audit/S-Tests (linters, Lighthouse, bundle, load test), S11 demo (subdominio+README), S12 SEO, S13 Observability → cliente #3+
-⏸️ **S4 — Theming foundations** — postergado on-demand. Solo si un cliente lo pide activamente.
+🔴 **F0 — Higiene** (12–18 h). Login 401, sacar defaults de Montecaseros y fallar si falta `CLINIC_*`, `og:` por instancia, restore probado, alertas Kuma. **← PRÓXIMO**
+🔴 **F1 — Instancia de Guille en paralelo + importación CSV** (42–63 h). VPS nuevo, deploy multi-host, texto del rubro y colores por configuración, `V10` (email nullable + único), importador con simulación. Guille sigue en Ágora.
+🔴 **F2a — Recordatorios por email** (20–28 h). `NotificationService` por canal, Brevo + Thymeleaf, cron idempotente con zona horaria por instancia, SPF/DKIM/DMARC.
+🔴 **Corte de Guille** (3–5 h). Importar sus clientas y salir en vivo.
+🟡 **F2b — WhatsApp** (23–33 h). Twilio, plantillas Meta, opt-in, E.164. Antes: P3-4 costo por mensaje.
+🟡 **F3 — Flags y presets** (20–30 h). `FEATURE_*` reales, moneda y locale por configuración, presets por rubro, `ONBOARDING_CLIENTE.md`.
+⏸️ **F3b — pt-BR** (30–45 h) — solo si firma un cliente de Brasil.
+⏸️ **F4 — Fisioterapia como complemento de Vedius** — condicionada a la reunión. El timer PWA (12–16 h) puede adelantarse con un piloto pago. Profesional no se construye mientras Vedius tenga la agenda.
+🟡 **F5 — Agente** (95–135 h) tras F2.
+🟢 Backlog posterior: agenda polish, theming completo, S5, S7, S8, S9, S11–S14.
 
 **Postergados explícitamente:**
 - **Fase Premium UX** (diseñador externo + delight: command palette, shared transitions, ilustraciones propias, etc.) — post 1+ cliente WhatsApp pagando 2+ meses sin churn. Antes de invertir en landing SaaS porque la landing tiene que mostrar este nivel. Detalle en `ROADMAP.md` § Fase Premium UX.
@@ -124,7 +129,7 @@ Secuencia: notificaciones (mails → WhatsApp) sobre fundamentos mínimos → pr
 - Multi-tenancy real — post 5 clientes activos.
 
 **Aprendizaje devops (proyecto + paralelo):**
-- En este proyecto: Prometheus/Grafana (Sprint 13+), Terraform (cliente #2).
+- En este proyecto: Prometheus/Grafana (S13), Terraform (cliente #2+).
 - Paralelo: Kubernetes (k3s + helm + CKA) — no aplicar a este proyecto.
 
 Todo el resto (prosa de snapshot, rutas de archivos clave, preguntas abiertas, tabla 4 futuro, secuencia narrativa) no se copia a CLAUDE.md. Vive o en el commit history o se regenera si hace falta.

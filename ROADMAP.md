@@ -1,30 +1,33 @@
-# Roadmap — Consultorio Odontológico
+# Roadmap — TurnosUy (Consultorio)
 
-> **Última actualización:** 2026-09-24 — Repriorización: mails (S6) y WhatsApp (S10) suben como prioridad. S-Audit/S-Tests se reducen a lo que protege las notificaciones. S3 ya está ~60% (Sentry + Uptime Kuma). Demo en Render adelantada (S11 parcial).
+> **Última actualización:** 2026-10-15 — Replanificación por fases F0–F5 contrastada contra el código de `main`. Entra Guille Blanchet Beauty (Uruguay) como piloto de belleza; la clínica de fisioterapia (Brasil) pasa a ser un paquete complementario de Vedius, condicionado. Reemplaza la secuencia por sprints del 2026-09-24 (S3→S6→S10…); los sprints viejos que siguen vigentes quedan en "Backlog posterior".
 
-## Secuencia recomendada
+## Restricciones
+
+- **Capacidad:** 15 a 20 h por semana. Las semanas de abajo asumen ~17 h.
+- **Un solo código** con módulos y presets por configuración; sin ramas ni repos por vertical o paquete.
+- **Una instancia Docker por cliente** hasta ~5 clientes; después se evalúa multi-tenancy.
+- **La infraestructura de Guille va antes que flags y presets** (F1 antes que F3).
+- **Guille no migra hasta tener recordatorios por email.** Su instancia se levanta en paralelo y ella sigue en Ágora hasta que F2a esté en producción. Sin recordatorios, el producto es inferior a Ágora.
+
+## Secuencia
+
 ```
-Cerrar S3 (~1 día)                           ← PRÓXIMO
-→ S6 Mails transaccionales (~1 semana)
-→ Mini S-Audit + S-Tests (~1 semana, solo lo que protege notificaciones)
-→ S10 WhatsApp con Twilio (~1-2 semanas)
-→ Agenda polish (~1 día)
-→ S5 Presupuestos + Archivos (~1 semana)
-→ S7 Portal paciente (~2-3 semanas)
-→ S8 Balance + Gastos (~1-2 semanas)
-→ S9 Hardening consolidado (~1-2 semanas)
-→ resto S-Audit/S-Tests → S11 (subdominio+README) → S12 SEO → S13 Observability → cliente #3+
-
-S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
+F0 Higiene (12–18 h)                                   ← PRÓXIMO
+→ F1 Instancia Guille en paralelo + importación CSV (42–63 h) — Guille sigue en Ágora
+→ F2a Recordatorios por email (20–28 h)
+→ Corte Guille: importar sus clientas y salir en vivo (3–5 h)
+→ F2b WhatsApp (23–33 h)
+→ F3 Flags y presets (20–30 h)
+→ F3b pt-BR (30–45 h)                     — solo si firma un cliente de Brasil
+→ F4 Fisio como complemento de Vedius     — condicionada a la reunión con la clínica
+→ F5 Agente (95–135 h)
+→ Backlog posterior (S5, S7, S8, S9, S11–S14)
 ```
 
-> **Decisiones 2026-09-24:** (1) Mails de presupuesto y pago se difieren a post-S5; S6 cubre solo cita + password reset. (2) WhatsApp vía Twilio (API oficial, sin riesgo de ban; requiere plantillas Meta + opt-in). (3) S5 no tiene cliente esperándolo, va después de WhatsApp. (4) `NotificationService` con interfaz por canal en S6 para que S10 solo agregue `WhatsAppChannel`.
+**Hasta Guille en vivo con recordatorios por email** (F0 + F1 + F2a + corte): **77–114 h, unas 5 a 7 semanas.**
 
-> **Lógica de la nueva secuencia (2026-06-10):** asegurar fundamentos (seguridad, calidad, tests) con 1 sola instancia live antes de que el blast radius crezca. S6 Mails sube porque desbloquea valor comercial inmediato (recordatorios + password reset). S4 Theming baja porque ningún cliente activo lo está pidiendo.
->
-> **Excepción S3:** los 6 items P0 son riesgos existenciales en prod — van primero siempre.
->
-> **Polish visual incremental:** los quick wins de UI (skeletons, density, hero pública, agenda, etc.) NO tienen sprint dedicado. Se aplican dentro del PR de cada sprint que toca esa zona. Ver inventario en `frontend/CLAUDE.md` § Polish backlog.
+**En paralelo y fuera de este repo:** FrontPet (entregar lo comprometido al cliente cerrado). Consume horas de la misma bolsa.
 
 ---
 
@@ -32,62 +35,228 @@ S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 
 | Fase | Estado |
 |------|--------|
-| MVP1 — Backend | ✅ Completo |
-| MVP1 — Frontend | ✅ Completo |
-| P1 — Hardening pre-producción | ✅ Completo |
-| P2 — Infraestructura profesional | ✅ Completo |
-| P3 Fase A — Producto usable | ✅ Completo |
-| P3 Fase B — código deploy | ✅ Completo |
-| Página pública clínica | ✅ Completo |
-| Admin polish | ✅ Completo |
-| Deploy real | ✅ Live (2026-04-21). Hoy solo `neodentalmaster.turnosuy.com`; dentalmontecaseros dada de baja |
-| Fix uploads caching (PR #25) | ✅ (2026-06-11) |
-| Demo en Render (seed + login precargado ES/EN) | ✅ (2026-08-19) — falta subdominio y README (resto de S11) |
-| Post-deploy hardening | ✅ Completo (PR #19, 2026-04-22) |
-| Public page polish | ✅ Completo (PR #20, 2026-04-28) |
-| fix/safari-white-screen | ✅ Completo (2026-05-11) |
-| Sprint 1 — Multi-rubro genérico | ✅ Completo (2026-05-11) — live en neodentalmaster.turnosuy.com |
-| fix/admin-branding | ✅ Completo (2026-05-11) |
-| Sprint 2 — Disponibilidad + Reserva sin login | ✅ Completo (2026-05-20) |
-| **Sprint 3 — Hardening urgente (P0)** | 🔄 Código listo en `feat/s3-hardening-urgente` (register cerrado, headers Caddy, rate limit reservas, honeypot). Pendiente tuyo: restore en VM, alertas Kuma. **Prod caído (sin VPS) — hay que reprovisionar y restaurar backup** |
-| **Sprint 4 — Theming foundations** | ⏸️ Postergado on-demand |
-| **Sprint 6 — Mails transaccionales** | ⏳ Tras S3 (~1 semana) |
-| **Mini S-Audit + S-Tests** | ⏳ Tras S6 (~1 semana) |
-| **Sprint 10 — WhatsApp (Twilio)** | ⏳ Tras mini S-Audit/Tests (~1-2 semanas) |
-| **Sprint 5 — Presupuestos + Archivos** | ⏳ Tras S10 (~1 semana) |
-| **Sprint 7 — Portal paciente opcional** | ⏳ Tras S5 (~2-3 semanas) |
-| **Sprint 8 — Balance + Gastos** | ⏳ Tras S7 (~1-2 semanas) |
-| **Sprint 9 — Hardening consolidado (seguridad P1 + pre-cliente #3)** | ⏳ Tras S8 (~1-2 semanas) |
-| **Sprint 11 — Demo instance + README pro** | 🔄 Demo en Render lista; falta subdominio + README + compose (1-2 días) |
-| **Sprint 12 — SEO multi-subdominio** | ⏳ Tras S11 (3-5 días) |
-| **Sprint 13 — Observability + rollback** | ⏳ Tras S12 (1 semana) |
-| **Sprint 14 — Google Calendar sync** | ⏳ Diferido — infraestructura lista (S13) |
-| 🎯 Primer cliente Web | ⏳ Tras S6 + S3 + S9 seguridad P1 (paquete básico vendible) |
-| 🎯 Primer cliente Web + WhatsApp | ⏳ Tras S10 (paquete premium) |
-| 🎯 Cliente #3 | ⏳ Tras S9 completo (pre-cliente #3 P2) |
-| **Fase Premium UX (diseñador + delight)** | ⏳ Post 1+ cliente WhatsApp pagando 2+ meses, antes de landing SaaS |
-| Landing SaaS proveedor | ⏳ Post Premium UX |
-| V5 — Multi-tenant SaaS | ⏳ Post ~5 clientes activos |
+| MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish | ✅ Completo |
+| Deploy real | ✅ Live desde 2026-04-21. Hoy en DigitalOcean (migrado desde Hetzner 2026-10-15) |
+| Sprint 1 — Multi-rubro (labels `labelServicio` / `labelHistorial`) | ✅ (PR #21, 2026-05-11) |
+| Sprint 2 — Disponibilidad + reserva sin login | ✅ (2026-05-20) |
+| Sprint 3 — Hardening urgente (register cerrado, headers Caddy, rate limit nginx, honeypot) | ✅ Mergeado (PR #26). Restore probado y alertas de Kuma pasan a F0 |
+| Race condition en reserva pública + PII en logs de reserva | ✅ (PR #32–#35, 2026-10-15). Falta test de concurrencia contra MySQL real dentro del repo |
+| Demo en Render (seed + login precargado) | ✅ (2026-08-19) |
+| **F0 — Higiene** | ⏳ Próximo |
+| **F1 — Instancia Guille + importación CSV** | ⏳ |
+| **F2a — Recordatorios por email** | ⏳ |
+| **Corte Guille** | ⏳ Tras F2a |
+| **F2b — WhatsApp** | ⏳ |
+| **F3 — Flags y presets** | ⏳ |
+| **F3b — pt-BR** | ⏸️ Condicionada a un cliente de Brasil |
+| **F4 — Fisio (complemento de Vedius)** | ⏸️ Condicionada a la reunión con la clínica |
+| **F5 — Agente** | ⏳ Tras F2 |
 
 ---
 
-## Pre-ventas — checklist mínimo antes de vender
+## Hechos verificados en el código (2026-10-15)
 
-**Paquete Local / Web básico (vendible tras S6 + hardening P1 de S9):**
-- ✅ Reserva como invitado desde página pública (sin login requerido)
-- ✅ Admin gestiona disponibilidad de horarios
-- ✅ Admin confirma / cancela / reagenda desde dashboard
-- ⬜ Email confirmación de turno al cliente (S6)
-- ⬜ Script de provisioning: dado dominio + datos de clínica, levanta instancia en < 15 min (S9)
-- ⬜ Backup automático verificado (cron + test de restore) (S3)
-- ✅ HTTPS automático por subdominio (Caddy)
+Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 
-**Paquete Web + WhatsApp (vendible tras S10):**
-- ⬜ Recordatorio automático 24h antes por WhatsApp
-- ⬜ Notificación al cliente cuando admin confirma / cancela
+| Tema | Estado real | Evidencia |
+|------|-------------|-----------|
+| Tests | 26 `@Test` en backend (7 clases), 6 specs de frontend | `backend/src/test`, `*.spec.ts` |
+| Login erróneo | Responde 500 | `AuthService` lanza `RuntimeException`; `AuthControllerTest.login_passwordIncorrecta_retorna500` |
+| Defaults del primer cliente | Datos reales de Dental Montecaseros en 5 lugares | `ClinicProperties:27-37`, `application.properties:45-52`, `index.html:5,9`, `clinic.config.ts` (código muerto), `.env.example` |
+| Validación de arranque | `StartupEnvValidator` no valida `CLINIC_*` | Solo JWT, CORS y credenciales admin |
+| Vista previa de links | `index.html` tiene `<title>` y `og:title` estáticos de Montecaseros; WhatsApp no ejecuta JS | `index.html:5,9`; `app.component.ts` cambia el título solo en runtime |
+| Feature flags | **No existen.** `ClinicProperties.Feature` son tarjetas de marketing | `ClinicProperties.java` |
+| Branding | Colores en SCSS, sin `BRAND_*` ni inyección en runtime | `_design-system.scss` |
+| Texto por rubro | Solo `labelServicio` y `labelHistorial` configurables; texto dental fijo en `home`, `public`, `servicios` | grep "sonrisa", "odontol" |
+| i18n | Ninguna biblioteca. 17 templates HTML + 15 inline en español; `LOCALE_ID: 'es'` | `app.config.ts` |
+| Moneda y locale | ~20 apariciones de `UY$` / `UYU` / `es-UY` / `es-ES` en 9 archivos | grep |
+| Agenda | Una sola agenda. `disponibilidad_semanal` con `UNIQUE (dia_semana)`; lock por día de semana | `V7`, `CitaService.lockDiaParaReserva` |
+| Alta automática de pacientes | Existe desde la reserva pública (`PacienteOrigen.AGENDA`) | `PublicReservaService:123` |
+| Pacientes: email | `NOT NULL`, `@NotBlank @Email`; sin índice único en la base, unicidad solo en la app (`existsByEmail`) | `V1`, `Paciente.java`, `PacienteService:38` |
+| Pacientes: teléfono | `VARCHAR(15) NOT NULL`, solo dígitos `^[0-9]{7,15}$`, sin código de país | `V1`, `Paciente.java` |
+| Pacientes: apellido | `NOT NULL` + `@NotBlank` | `V1`, `Paciente.java` |
+| Pacientes: origen | `creado_por ENUM('ADMIN','AGENDA')` en MySQL | `V8` |
+| PII en logs | `PacienteService:39,63` loguea el email en los warn | — |
+| Notificaciones | Ninguna. Sin `spring-boot-starter-mail` ni Twilio; solo links `wa.me`. `@EnableScheduling` existe (un cron de disponibilidad) | `pom.xml`, `ConsultorioApplication` |
+| Opt-in / consentimiento | No hay columnas | `Paciente.java` |
+| Roles | Rol único `ADMIN` | `User.java` |
+| Dashboard | Calculado en el cliente: descarga todas las citas, pacientes y pagos sin paginar | `dashboard.component.ts:132` |
+| Archivos clínicos | **No existen.** `FileStorageService` solo maneja imágenes subidas | No hay `ArchivoClinico` |
+| CI/CD | Despliega a un solo host (`DO_HOST`), tag `:latest`, sin rollback | `.github/workflows/ci.yml` |
+| Logging | `spring.jpa.show-sql=true` en la configuración base, sin override en prod | `application.properties:15` |
+| Backups | Uploads + copia off-site a B2 implementados en cambios locales, **todavía sin commitear** | `scripts/backup.sh` (working tree) |
 
-**Portal paciente (valor agregado, tras S10):**
-- ⬜ Registro/login opcional para ver historial, cancelar (72h), reagendar
+---
+
+## Detalle por fase
+
+### F0 — Higiene (12–18 h, semana 1)
+
+**Tareas**
+- [ ] Login fallido responde 401 con test (1–2 h).
+- [ ] Quitar los defaults de Montecaseros de `ClinicProperties`, `application.properties` y `.env.example`; borrar `clinic.config.ts`; `StartupEnvValidator` falla si falta un `CLINIC_*` de marca (3–4 h).
+- [ ] `index.html` con `<title>` y `og:*` por instancia, con envsubst en el arranque del contenedor de nginx (3–5 h).
+- [ ] Commitear los cambios de `backup.sh` / `restore.sh` (uploads + B2) y probar el restore con uploads en una VM limpia, cronometrado (4–6 h). Seguir `docs/RUNBOOK_S3.md`.
+- [ ] Confirmar las alertas de Uptime Kuma.
+- [ ] Contrastar el SHA de prod con `main` y apagar `show-sql` (1 h).
+
+**Entregables:** PR de higiene; restore documentado con tiempos.
+
+**Criterio de salida:** restore probado en máquina limpia; login devuelve 401; `grep Montecaseros` sin resultados en el código; prod en el mismo SHA que `main`.
+
+**Riesgo:** que prod difiera del repositorio.
+
+### F1 — Instancia de Guille en paralelo + importación CSV (42–63 h, semanas 2–4)
+
+Guille **sigue en Ágora** durante toda esta fase. La instancia se levanta y se valida, pero no se le migra ni se le anuncia a sus clientas.
+
+**Tareas — instancia (25–38 h)**
+- [ ] VPS nuevo, Docker Compose, `.env` con secretos propios (JWT, DB, admin distintos de los de prod), registro A del subdominio de turnosuy.com, Caddy y monitor en Kuma (6–8 h).
+- [ ] Deploy multi-host en CI: un merge a `main` llega a los dos hosts (3–5 h).
+- [ ] Texto del rubro desde la configuración: sacar el texto dental fijo de `home`, `public` y `servicios` (6–10 h).
+- [ ] Colores y logo en runtime con variables CSS `--brand-*`, el subconjunto mínimo de F-2/F-3/F-4 del viejo S4 (6–10 h).
+- [ ] Backups propios a B2 y restore probado de esta instancia (2–3 h).
+- [ ] Cargar servicios y horarios, smoke test y checklist de aislamiento (2–4 h).
+
+**Tareas — importación CSV (17–25 h)**
+
+El esquema actual tiene cuatro límites que la importación tiene que resolver: email obligatorio, teléfono de hasta 15 dígitos sin formato, sin unicidad de email en la base y apellido obligatorio.
+
+- [ ] Migración `V10` (4–6 h):
+  - `email` pasa a `NULL` y se normaliza con `lower(trim(email))`.
+  - Se agrega `UNIQUE(email)`; MySQL admite varios `NULL`.
+  - `creado_por` suma el valor `IMPORT`.
+  - La reserva pública sigue exigiendo email; se relaja solo en admin e importación. Ajustar el frontend para email nulo.
+  - **Prerrequisito en cada base de prod:** `SELECT lower(trim(email)) e, COUNT(*) FROM pacientes GROUP BY e HAVING COUNT(*) > 1;` debe devolver 0.
+- [ ] `PhoneNormalizer` por país de la instancia (`CLINIC_COUNTRY`: 598 o 55): deja solo dígitos y agrega el prefijo. F2b lo reutiliza (2–3 h).
+- [ ] Importador (8–12 h):
+  - Paso de simulación con estado por fila: `ok`, `error` con motivo, `duplicado en el archivo`, `ya existe` (email normalizado; si no hay email, teléfono normalizado).
+  - Paso de confirmación que inserta solo las filas `ok`; correr el mismo archivo dos veces no duplica nada.
+  - Nunca fusiona por nombre (error revertido en el PR #34).
+  - Nombre completo en una columna: separar en el último espacio; un solo token queda para revisión.
+  - Filas sin teléfono van al reporte de errores.
+  - Acepta UTF-8 y Latin-1, separador `;` o `,`, fechas `dd/MM/yyyy`.
+  - No usar emails de relleno.
+- [ ] Tests de integración con duplicados, filas sin email, teléfonos sucios y archivos Latin-1 (3–4 h).
+- [ ] Sacar el email de los logs de `PacienteService` (0.5 h).
+- v1 sin interfaz: un endpoint de admin y una plantilla CSV que se corre en el onboarding. La pantalla con vista previa (8–12 h) queda para después.
+
+**Entregables:** instancia de Guille en línea con su marca; importador probado con un CSV real de Ágora si se puede exportar.
+
+**Criterio de salida:** ninguna respuesta pública ni vista previa de WhatsApp menciona a Montecaseros; un merge a `main` llega a los dos hosts; simulación de importación del CSV de Guille sin errores no explicados.
+
+**Riesgos:** que una variable faltante publique datos ajenos; que Ágora no exporte clientas; que el VPS chico no aguante JVM + MySQL + Kuma.
+
+### F2a — Recordatorios por email (20–28 h, semanas 5–6)
+
+**Tareas**
+- [ ] `NotificationService` con interfaz por canal (`NotificationChannel` → `EmailChannel`), para que F2b solo agregue `WhatsAppChannel`.
+- [ ] `spring-boot-starter-mail` + Brevo SMTP y plantillas Thymeleaf con nombre y logo de la instancia.
+- [ ] Tabla `notificaciones_enviadas` con `UNIQUE (cita_id, tipo)`: el cron es idempotente.
+- [ ] Zona horaria por instancia (`CLINIC_TIMEZONE`) para el cron de recordatorio 24 h antes.
+- [ ] Confirmación, cancelación o reagendamiento, y recordatorio 24 h.
+- [ ] Link de baja en cada mail.
+- [ ] SPF, DKIM y DMARC en los subdominios de turnosuy.com.
+- [ ] Password reset de admin (P1-7) si entra en las horas; si no, pasa a F2b.
+
+**Criterio de salida:** recordatorios en producción en la instancia dental y en la de Guille, sin duplicados, y mails que no caen en spam.
+
+**Riesgo:** reputación del dominio de envío.
+
+### Corte de Guille (3–5 h, tras F2a)
+
+- [ ] Exportar sus clientas de Ágora, simular, corregir y confirmar la importación.
+- [ ] Cargar los turnos futuros que ya tiene agendados en Ágora.
+- [ ] Publicar su link de reserva y avisar a sus clientas.
+- [ ] Definir con ella una ventana de convivencia con Ágora y la fecha de baja.
+
+**Criterio de salida:** Guille agenda sus turnos reales en la instancia durante 2 semanas y recibe los recordatorios por email.
+
+### F2b — WhatsApp (23–33 h)
+
+**Tareas**
+- [ ] Modelar el costo por mensaje en UY y BR y cuántos mensajes incluye la cuota (P3-4), antes de construir.
+- [ ] Enviar las plantillas a Meta el primer día de la fase (español; portugués si F3b está en marcha).
+- [ ] Twilio WhatsApp Business API como `WhatsAppChannel` sobre los mismos triggers de F2a.
+- [ ] Columna de opt-in en `pacientes` + checkbox en la reserva pública; sin opt-in no se envía.
+- [ ] Normalización E.164 con el `PhoneNormalizer` de F1, incluida la migración de los teléfonos existentes sin código de país.
+
+**Criterio de salida:** 2 semanas en las dos instancias sin duplicados; ausencias medidas antes y después en la instancia dental.
+
+**Riesgo:** la aprobación de Meta lleva tiempo de calendario, no horas.
+
+### F3 — Flags y presets (20–30 h)
+
+**Tareas**
+- [ ] `FEATURE_*` reales en `ClinicProperties`, expuestos en `GET /api/public/config` y aplicados con guards de rutas en el frontend (6–10 h).
+- [ ] Moneda y locale por configuración en los ~20 lugares fijos, incluido `LOCALE_ID` y los `toLocale*String('es-ES')` de la agenda (8–12 h).
+- [ ] Presets por rubro (odontología, belleza, fisioterapia) como conjuntos de variables, y `docs/ONBOARDING_CLIENTE.md` (6–8 h).
+
+**Criterio de salida:** una instancia nueva se crea cambiando solo `.env`; no queda ningún `UY$` fijo.
+
+**Riesgo:** rediseñar de más antes de que un cliente lo pida.
+
+### F3b — pt-BR (30–45 h, condicionada)
+
+Solo si firma un cliente de Brasil. Introducir una biblioteca de i18n, extraer el texto de los 32 templates y traducir los mensajes del backend.
+
+### F4 — Fisioterapia como complemento de Vedius (condicionada)
+
+El jefe de la clínica no piensa dejar Vedius, y lo que más les molesta es el trabajo manual dentro de Vedius. Nuestra alta automática registra pacientes en nuestra base, no en la de Vedius, así que una segunda agenda duplicaría la carga.
+
+- **4a. Timer de intervalos como PWA independiente (12–16 h).** No depende del núcleo; puede adelantarse si aceptan pagar un piloto.
+- **4b. Web institucional sin reserva propia (6–10 h).** Botón a la reserva online de Vedius o a WhatsApp. Requiere F3 y F3b.
+- **4c. Integración con Vedius (0 h hasta saber si tiene API).** Hipótesis de 30–50 h si la tiene. Es lo único que les reduciría tareas en Vedius.
+- **Profesional: no se construye** mientras Vedius tenga la agenda. Se construye (55–85 h) cuando firme un cliente que adopte nuestra agenda con más de un profesional: esquema, disponibilidad y lock por profesional, slots, paso en la reserva pública, agenda y tests.
+- **Importación CSV:** se reutiliza la de F1 si Vedius exporta.
+
+**Criterio de salida:** usan el timer 4 semanas seguidas y pagan algo.
+
+### F5 — Agente (95–135 h, tras F2)
+
+- Prerrequisitos (15–25 h): credencial de servicio con permisos acotados (hoy hay un solo rol `ADMIN`), idempotencia en reservas, token de cancelación, límite propio para el gateway (el de nginx es 6 req/min por IP).
+- Agente con confirmación humana, primero sobre una instancia que use nuestra agenda.
+- Con la fisio y sin API de Vedius, el agente solo responde consultas y deriva al link de reserva de Vedius.
+
+**Criterio de salida:** el agente crea solicitudes durante 4 semanas sin incidentes; ningún turno se confirma sin una persona.
+
+**Riesgo:** competir con Sofia de AgendaPro sin un diferencial claro.
+
+---
+
+## Preguntas abiertas (solo se responden con clientes o producción)
+
+**Guille**
+- [ ] ¿Qué funciones le faltan en Ágora?
+- [ ] ¿Usa el cobro adelantado de Mercado Pago?
+- [ ] ¿Los recordatorios le llegan por WhatsApp o por mail?
+- [ ] ¿Cuántos turnos tiene por semana?
+- [ ] ¿Ágora exporta clientas a CSV o Excel, con qué columnas, y cuántas no tienen email?
+- [ ] ¿Tiene logo y colores definidos?
+- [ ] ¿Cuánto pagaría, y acepta pagar los dos sistemas durante la transición?
+
+**Clínica de fisioterapia**
+- [ ] ¿Vedius tiene API, exportación o importación?
+- [ ] ¿Qué tareas manuales exactas les molestan: alta de pacientes, confirmaciones, evoluciones, cobros?
+- [ ] ¿Usan el agendamiento online de Vedius?
+- [ ] ¿Las rutinas de ejercicios salen de Vedius?
+- [ ] ¿El timer lo usan en celular o en pantalla, y cuántos a la vez?
+- [ ] ¿Pagarían además de Vedius, y cuánto?
+- [ ] ¿Tienen dominio propio?
+
+**Cliente dental**
+- [ ] ¿Quién paga hoy? La instancia viva es `neodentalmaster`; `dentalmontecaseros` figura dada de baja.
+- [ ] ¿Qué tasa de ausencias tienen hoy?
+- [ ] ¿Atiende más de un profesional?
+
+**Producción**
+- [ ] ¿Qué SHA corre?
+- [ ] ¿Los `CLINIC_*` están definidos en `.env.prod`?
+- [ ] ¿Hay emails duplicados al normalizar mayúsculas y espacios? (prerrequisito de `V10`)
+- [ ] ¿Cuánta RAM y disco usa el droplet?
+- [ ] ¿Están activos los backups del droplet y el cron, y `rclone` contra B2?
+- [ ] ¿Llegan las alertas de Kuma?
+- [ ] ¿La cuenta de Meta Business está verificada para Twilio?
 
 ---
 
@@ -98,147 +267,44 @@ S4 Theming foundations — postergado on-demand (solo si un cliente lo pide)
 **Decisiones de diseño que no deben revertirse:**
 - La duración de cada cita la define el **servicio** (`duracionMinutos`), no el paciente ni el admin al reservar. El backend calcula slots usando esa duración.
 - Al confirmar una cita `PENDIENTE`, el admin puede editar la duración antes de confirmar (flexibilidad clínica). La agenda bloquea la duración final confirmada.
-- El **email es obligatorio** en la reserva pública — necesario para confirmaciones (S6) y recordatorio 24h.
+- El **email es obligatorio** en la reserva pública — necesario para confirmaciones y recordatorios. (Desde `V10` se relaja solo en admin e importación.)
 - Columna `google_event_id VARCHAR(255) NULL` en tabla `citas` (migración V9) para futura sincronización sin migración en prod.
-- `clinic.json` / `docker-entrypoint.sh` / vars `CLINIC_*` eliminados. `ClinicConfigService` llama a `/api/public/config` — una sola fuente de verdad.
+- `clinic.json` / `docker-entrypoint.sh` / vars `CLINIC_*` del frontend eliminados. `ClinicConfigService` llama a `/api/public/config` — una sola fuente de verdad.
+
+### Reserva pública concurrente ✅ (PR #32–#35, 2026-10-15)
+
+- `SELECT ... FOR UPDATE` sobre `disponibilidad_semanal` como **primera sentencia** de la transacción, antes de cualquier lectura normal (bajo REPEATABLE READ el snapshot se fija en la primera lectura normal).
+- Dedupe por email en la reserva pública, sin comparar nombres. La respuesta devuelve el nombre que mandó quien reservó, nunca el guardado.
 
 ---
 
-## Detalle por sprint
-
-### Sprint 3 — Hardening urgente (~1 día restante)
-
-> **Origen:** auditoría técnica 2026-05-19, prioridad P0. **Estado 2026-09-24:** P0-3 Sentry ✅ hecho. P0-2 Uptime Kuma desplegado en `status.{DOMAIN}` (falta confirmar alertas). Scripts `backup.sh`/`restore.sh`/`install-cron.sh` existen (falta probar restore en VM limpia). P0-4 pendiente: el `Caddyfile` solo tiene cache headers. P0-6: el comentario del Caddyfile menciona rate limiting "en nginx" pero no hay código en backend — verificar.
-
-- **[P0-1] Probar restore de backup en VM limpia (2-3 h).** Restaurar dump en VM Hetzner descartable, validar arranque + integridad. Sin esto un disco corrupto termina el negocio. Documentar en `scripts/`.
-- **[P0-2] Uptime monitor externo (30 min).** Better Stack / UptimeRobot free tier, alertas a mail + Telegram.
-- **[P0-3] Sentry backend + frontend (3-4 h).** Free tier, `release` por commit SHA, `environment` por subdominio.
-- **[P0-4] Headers de seguridad en Caddy (1 h).** `Strict-Transport-Security`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`. Verificar que `allowed-origins` CORS no tenga wildcards.
-- **[P0-5] Auditar `@Query` y `Specification` por SQL injection (1-2 h).** Grep en concatenación de strings en queries y Specification builders.
-- **[P0-6] Verificar endpoint público de reserva contra spam/DoS (1-2 h).** Rate limit por IP + validación email. Sin esto una botnet llena la agenda.
-
-**Total:** ~10-13 h (~1.5 días). Rama: `feat/s3-hardening-urgente`.
-
----
-
-### Sprint 4 — Theming foundations (~2 días)
-
-> **Motivación:** infraestructura SaaS para "mismo build Docker, color por cliente" vía env vars. No es refinamiento visual — es una feature de negocio. El polish visual se aplica incremental en cada sprint.
-
-- **[F-1] Migración Angular Material prebuilt → `@use mat`** (4-5 h). Quitar `@import 'indigo-pink.css'`, configurar `mat.theme()` con typography Inter + density 0, override de tokens MDC apuntando a `--color-primary`. Riesgo medio: verificar todos los componentes Material en uso.
-- **[F-2] Capa brand tokens en `_design-system.scss`** (1 h). `--brand-primary`, `--brand-primary-hover`, `--brand-primary-contrast`, `--brand-accent`, `--brand-surface-tint`, `--brand-focus-ring`. Defaults = navy actual → cero regresiones.
-- **[F-3] `applyBranding` en `ClinicConfigService`** (3-4 h). Extender `ClinicConfig` con bloque opcional `branding`. En `load()`, setear CSS vars en `document.documentElement`. Helpers: `shade()`, `alpha()`, `bestContrast()` (WCAG).
-- **[F-4] Backend `ClinicProperties.branding`** (2 h). Leer `BRAND_PRIMARY`, `BRAND_PRIMARY_HOVER`, `BRAND_ACCENT` del env. Incluir en `GET /api/public/config`. Si no están seteados → no enviar bloque → frontend usa defaults.
-- **[F-5] Nuevos design tokens base** (2 h). Gradientes, shadows brand-aware, motion tokens, z-index scale en `_design-system.scss`.
-- **[F-6] QA visual en 2 brand configs** (3-4 h). Navy actual + magenta hipotético. Admin completo + página pública. **No mergear sin F-6.**
-
-**Total:** ~13-16 h (~2 días). Rama: `feat/s4-theming-foundations`.
-**Dependencias:** F-1 desbloquea F-2/F-3. F-4/F-5 paralelos. F-6 al final.
-
----
-
-### Sprint 5 — Presupuestos + Archivos (~1 semana)
-
-> Solo producto. El hardening de seguridad asociado va en el sprint S9 consolidado post-S8.
-
-**Presupuestos:**
-- Entidad `Presupuesto`: paciente, fecha, descripción libre (texto), monto total, estado (`BORRADOR` / `ENVIADO`)
-- CRUD de presupuestos desde la ficha del paciente en el admin
-- Sin vinculación obligatoria a tratamientos ni aranceles — descripción libre
-- El envío por mail se implementa en S6
-
-**Archivos clínicos:**
-- Entidad `ArchivoClinico`: paciente, nombre original, path en disco, tipo MIME, tamaño, fecha subida, referencia opcional a presupuesto
-- `FileStorageService` (interfaz) + `LocalFileStorageServiceImpl`: guarda en `/app/uploads/pacientes/{id}/`
-- Docker volume en `docker-compose.prod.yml`: `/opt/consultorio/uploads:/app/uploads`
-- Endpoint `POST /api/admin/pacientes/{id}/archivos` (multipart) + `GET` para servir
-- UI: sección "Archivos" en ficha del paciente — upload drag&drop + lista + descarga/borrar
-
-> **Operaciones críticas:** agregar `/opt/consultorio/uploads` al cron de backup — los archivos no están en BD.
-> Backlog: migrar `LocalFileStorageServiceImpl` → `BackblazeStorageServiceImpl` cuando escale.
-
----
-
-### Sprint 6 — Mails transaccionales (~1 semana)
-
-- `spring-boot-starter-mail` + Brevo SMTP (free tier: 300 mails/día)
-- Templates Thymeleaf base con header/footer compartido (nombre + logo desde `ClinicProperties`)
-- **Password reset admin** incluido acá (P1-7) — SMTP ya disponible, evita SSH a producción
-- **`NotificationService` con interfaz por canal** (`NotificationChannel` → `EmailChannel`). S10 solo agrega `WhatsAppChannel` sobre los mismos triggers.
-- **SPF/DKIM/DMARC** en el subdominio (P3-7) — sin esto los mails van a spam. Parte del checklist de onboarding.
-
-**Notificaciones al paciente (alcance S6):**
-1. **Cita:** confirmación, cancelación/reagendamiento, recordatorio 24h antes (cron)
-
-**Diferido a post-S5:** mail de presupuesto (`BORRADOR` → `ENVIADO`) y mail de pago (monto abonado y saldo).
-
----
-
-### S-Audit — Auditoría seguridad + calidad (~3-5 días)
-
-> Insertado 2026-06-10. Validar fundamentos antes de seguir agregando features. Detalle completo en memoria `project_audit_checklist.md`.
-
-**Seguridad infra (P0):**
-- Puerto 22 SSH: chequear UFW (debería ser IP fija o VPN, no 0.0.0.0)
-- `ss -tlnp` server + `nmap` externo — solo 80/443/22
-- MySQL 3306 NO público (solo loopback / red Docker)
-- Backend 8080 solo vía Caddy
-- Caddy headers: HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
-- Fail2ban en SSH
-
-**Seguridad app (P0):**
-- Endpoints `/api/public/*` no exponen `password`/`passwordHash` (grep DTOs)
-- Cada controller no-`/public/*` con `@PreAuthorize` o SecurityConfig
-- SQL injection: grep `nativeQuery=true` + concatenaciones JPA
-- JWT en cookie httpOnly vs localStorage (XSS)
-- Rate limit `/api/auth/login` y `/api/reservas`
-- BCrypt cost ≥10
-- CORS solo dominios propios
-
-**Calidad código (P1):**
-- Paginación en `/api/pacientes`, `/api/citas`, `/api/tratamientos`, `/api/historial`
-- N+1 queries: `hibernate.show_sql=true` en dev
-- HTML semántico (`<main>`, `<nav>`, `<h1>` único, alt en `<img>`)
-- Cards-dentro-de-cards: grep `.card` anidados
-- CSS duplicado vs design system
-- Bundle size (1.2MB > budget 1MB)
-- Dead code: imports/componentes/rutas no usadas
-- Lighthouse audit
-
-**Performance (P1):**
-- RAM JVM (`docker stats` + setear `-Xmx`)
-- RAM MySQL (`innodb_buffer_pool_size`)
-- RAM VM total + swap
-- Load test BD (k6/JMeter) en `/api/reservas` y `/api/citas`
-
----
-
-### S-Tests — JUnit + E2E + linters (~1 semana)
-
-> Insertado 2026-06-10. Cobertura actual: 6 specs Angular + 5 tests Java — insuficiente.
-
-- **JUnit + Mockito** sobre services con lógica de negocio: `CitaService`, `DisponibilidadService`, `PagoService`, `ReservaService`
-- **`@DataJpaTest`** para repositorios con queries custom
-- **E2E Playwright** del flujo crítico: reserva pública end-to-end
-- **ESLint + Prettier** en frontend (faltan)
-- **Spotless + Checkstyle** en backend (faltan)
-- **GitHub Actions:** agregar job de tests frontend al CI
-
-Specs Angular de componentes solo para los que tengan lógica no-trivial (services, validators custom). No para componentes que solo renderizan.
-
----
+## Backlog posterior (post F5, o antes si un cliente lo pide)
 
 ### Agenda polish (~1 día)
-
-> Del polish backlog de `frontend/CLAUDE.md`. Se hace en un PR dedicado, no esperar al siguiente sprint de agenda.
 
 - Línea "ahora" roja horizontal cruzando el día actual (estilo Google Calendar)
 - Color del bloque por estado: confirmada `--color-primary`, pendiente outline `--color-warning`, cancelada ink-300 tachada
 - Tipografía bloque: hora 11px bold / paciente 13px regular / tratamiento 11px muted
 
----
+### Theming completo (resto del viejo S4, ~1 día)
 
-### Sprint 7 — Portal paciente opcional (~2-3 semanas)
+F1 cubre colores y logo en runtime. Queda la migración de Angular Material prebuilt → `@use mat` con override de tokens MDC (F-1), los tokens base nuevos (F-5) y QA visual en 2 marcas (F-6).
+
+### S5 — Presupuestos + Archivos (~1 semana)
+
+**Presupuestos:**
+- Entidad `Presupuesto`: paciente, fecha, descripción libre (texto), monto total, estado (`BORRADOR` / `ENVIADO`)
+- CRUD de presupuestos desde la ficha del paciente en el admin
+- Sin vinculación obligatoria a tratamientos ni aranceles — descripción libre
+- El envío por mail usa el `NotificationService` de F2a
+
+**Archivos clínicos** (diseño en `backend/CLAUDE.md`, no implementado):
+- Entidad `ArchivoClinico`: paciente, nombre original, path en disco, tipo MIME, tamaño, fecha subida, referencia opcional a presupuesto
+- `FileStorageService` (interfaz) + `LocalFileStorageServiceImpl`: guarda en `/app/uploads/pacientes/{id}/`
+- Endpoint `POST /api/admin/pacientes/{id}/archivos` (multipart) + `GET` para servir
+- UI: sección "Archivos" en ficha del paciente — upload drag&drop + lista + descarga/borrar
+
+### S7 — Portal paciente opcional (~2-3 semanas)
 
 - Registro/login opcional — el cliente puede "reclamar" su historial de reservas
 - Ver citas agendadas (próximas + historial), cancelar (hasta 72h antes), reagendar
@@ -248,156 +314,97 @@ Specs Angular de componentes solo para los que tengan lógica no-trivial (servic
 - JWT en cookie HttpOnly + SameSite=Strict
 - Consentimiento explícito de datos (Ley 18.331)
 
-> **Decisión P3-5:** unificar JWT ADMIN + JWT PACIENTE con `roles` claim al implementar este sprint. Dos sistemas de auth en paralelo es complejidad innecesaria.
+> **Decisión P3-5:** unificar JWT ADMIN + JWT PACIENTE con `roles` claim al implementar este sprint.
 
----
-
-### Sprint 8 — Balance + Gastos (~1-2 semanas)
+### S8 — Balance + Gastos (~1-2 semanas)
 
 - CRUD de gastos con categorías
 - Balance mensual: Σ cobros − Σ gastos del período
-- Vista resumen en dashboard admin
+- Vista resumen en dashboard admin (calculada en backend, no en el cliente)
 - Export básico (CSV)
 
----
+### S9 — Hardening consolidado + Pre-cliente #3 (~2-3 semanas)
 
-### Sprint 9 — Hardening consolidado + Pre-cliente #3 (~2-3 semanas)
+**Seguridad P1:**
+- **[P1-1] JWT de localStorage → cookie HttpOnly + SameSite=Strict (1-1.5 días).** Habilitar CSRF para endpoints state-changing.
+- **[P1-2] Rate limit + lockout en `/auth/login` (2-3 h).** nginx ya limita 5 req/min por IP; falta lockout por cuenta.
+- **[P1-3] Paginación `Pageable` en listados (1 día).** Incluye el dashboard, que hoy descarga todo.
+- **[P1-4] CSP — Content Security Policy (4-6 h).** Modo `Report-Only` primero.
+- **[P1-5] Endurecer file upload (2-3 h).**
+- **[P1-6] Audit log de acciones admin (1 día).**
+- **[P1-7] Password reset admin** — si no entró en F2a.
+- **[P1-8] Logs JSON + correlationId (2-3 h).**
+- **[P1-9] Revisar `GET /api/public/config` (30 min).**
+- **[P1-10] Spring Actuator en :8081 (30 min).**
+- Test de concurrencia de la reserva pública contra MySQL real (Testcontainers) dentro del repo.
 
-> Después de tener todas las pantallas y features construidas, un solo sprint de hardening y refinamiento sobre superficie conocida.
+**Pre-cliente #3 P2:**
+- **[P2-1] E2E happy path con Playwright (1-1.5 días).**
+- **[P2-2] Export datos del paciente JSON/CSV (4-6 h).**
+- **[P2-3] Soft delete en pacientes y turnos (3-4 h).**
+- **[P2-4] Multi-usuario admin — secretaria + profesional (2-3 días).**
+- **[P2-5] Healthcheck que valide bundle frontend (2 h).**
+- **[P2-6] Script de provisioning (1-2 días).** El checklist `ONBOARDING_CLIENTE.md` sale en F3.
+- **[P2-7] SLA documentado (4 h).**
+- **[P2-8] Página de status manual (2 h).**
 
-**Seguridad P1 (auditoría 2026-05-19):**
+### S-Tests restante
 
-- **[P1-1] JWT de localStorage → cookie HttpOnly + SameSite=Strict (1-1.5 días).** XSS roba localStorage trivialmente. Habilitar Spring Security CSRF para endpoints state-changing. Aplica a JWT admin + JWT paciente (S7).
-- **[P1-2] Rate limit + lockout en `/auth/login` (2-3 h).** Bucket4j, 5 intentos en 15 min → lockout temporal.
-- **[P1-3] Paginación `Pageable` en listados (1 día).** Listado de pacientes sin paginar explota con 3000+ registros.
-- **[P1-4] CSP — Content Security Policy (4-6 h).** Modo `Report-Only` primero, iterar con Angular Material, luego enforce.
-- **[P1-5] Endurecer file upload (2-3 h).** `Content-Disposition: attachment` + `X-Content-Type-Options: nosniff` en archivos clínicos.
-- **[P1-6] Audit log de acciones admin (1 día).** Tabla `audit_log` con `@EntityListeners` o AOP. Sin UI — modelar antes de multi-usuario.
-- **[P1-8] Logs JSON + correlationId (2-3 h).** Logback `logstash-encoder` + filtro `X-Correlation-Id`.
-- **[P1-9] Revisar `GET /api/public/config` (30 min).** No debe exponer versiones de libs, URLs internas o paths.
-- **[P1-10] Spring Actuator en :8081 (30 min).** Bindear a `127.0.0.1:8081` o red Docker interna.
+- JUnit + Mockito sobre services con lógica de negocio; `@DataJpaTest` para queries custom
+- ESLint + Prettier en frontend; Spotless + Checkstyle en backend
+- GitHub Actions: job de tests de frontend en el CI
+- Lighthouse, bundle size (1.2MB > budget 1MB), load test (k6) en `/api/public/reservas`
 
-**Pre-cliente #3 P2 (bloqueantes comerciales):**
+### S11 — Demo + README (1-2 días restantes)
 
-- **[P2-1] E2E happy path con Playwright (1-1.5 días).** Login → crear paciente → turno → agenda. Corriendo en CI.
-- **[P2-2] Export datos del paciente JSON/CSV (4-6 h).** Primera pregunta de cualquier cliente serio: "¿me llevo mis datos?".
-- **[P2-3] Soft delete en pacientes y turnos (3-4 h).** Flag `deleted_at`. Hoy borrar = ir al backup.
-- **[P2-4] Multi-usuario admin — secretaria + dentista (2-3 días).** El primer cliente con secretaria lo pide.
-- **[P2-5] Healthcheck que valide bundle frontend (2 h).** Caddy chequea HTML, no que Angular bootee.
-- **[P2-6] Script de provisioning + `docs/ONBOARDING_CLIENTE.md` (1-2 días).** Cliente #3 no se monta a mano. Checklist único: datos clínica, `BRAND_*`, `FEATURE_*`, servicios seed, DNS, backup, SPF/DKIM, smoke test.
-- **[P2-7] SLA documentado (4 h).** 99% mensual = 7h downtime. Necesario para firmar con expectativas alineadas.
-- **[P2-8] Página de status manual (2 h).** Estática editable cuando algo falla.
+Demo en Render lista. Falta subdominio `demo.turnosuy.com` y README con GIF.
 
-**Total S9:** ~3 semanas. Bloquea cliente #3 y habilita paquete básico vendible completo.
+### S12 — SEO multi-subdominio (3-5 días)
 
----
+- Prerender con `@angular/ssr`, meta tags dinámicos, JSON-LD `LocalBusiness`, `/sitemap.xml` por subdominio, `robots.txt`
 
-### Sprint 10 — WhatsApp automático (~1-2 semanas)
+### S13 — Observability + rollback (1 semana)
 
-> Después de hardening — no tiene sentido endurecer seguridad e integrar una API externa al mismo tiempo.
-
-- **Proveedor decidido (2026-09-24): Twilio WhatsApp Business API** — API oficial, sin riesgo de ban. UltraMsg descartado (número personal = riesgo de ban).
-- `WhatsAppChannel` implementa `NotificationChannel` (S6) — mismos triggers, canal distinto
-- Recordatorio 24h antes, confirmación, cancelación/cambio de horario
-- **Plantillas Meta:** los mensajes fuera de la ventana de 24h requieren plantillas pre-aprobadas (horas a días). Enviarlas a aprobar temprano, al empezar el sprint.
-- **Opt-in:** checkbox de consentimiento en la reserva pública, guardado en el paciente. Sin opt-in no se envía.
-- Flag `FEATURE_WHATSAPP` ya existe en `ClinicProperties`
-
-> **Antes de implementar:** modelar costo por mensaje y definir "X mensajes/mes incluidos" en precio del paquete (P3-4). Twilio ~$0.005/msg UY. UltraMsg con número personal = riesgo de ban. **Antes de S10.**
-
----
-
-### Sprint 11 — Demo instance + README pro (2-4 días)
-
-- `docker-compose.demo.yml` con datos fake realistas
-- Subdominio `demo.turnosuy.com` con usuario/contraseña públicos en README
-- README pro: badges, screenshot/GIF, arquitectura de deploy, link live + demo
-- Theming dinámico ya implementado desde S4 — acá solo se setean env vars de la demo
-
----
-
-### Sprint 12 — SEO multi-subdominio (3-5 días)
-
-- Prerender estático con `@angular/ssr` (build-time)
-- Meta tags dinámicos desde `ClinicConfig` usando `Title` + `Meta` services
-- JSON-LD genérico (`LocalBusiness` + tipo específico por instancia vía `ClinicProperties`)
-- Endpoint backend `/sitemap.xml` por subdominio
-- `robots.txt` estático con `Sitemap:`
-
----
-
-### Sprint 13 — Observability + rollback (1 semana)
-
-- Logs JSON + correlationId/MDC (adelantado a S9 si hace falta antes)
-- Micrometer + `actuator/prometheus` expuesto
-- `scripts/rollback.sh` que vuelve al SHA anterior
-- Tag de imagen por SHA en `docker-compose.prod.yml` (no `:latest`)
+- Micrometer + `actuator/prometheus`
+- `scripts/rollback.sh` y tag de imagen por SHA en lugar de `:latest`
 - Backup automático pre-deploy en CI/CD
-- Notificación de deploy a Telegram/Discord
-- Reglas Sentry + alertas a canal real
+- Notificación de deploy a Telegram/Discord; reglas de Sentry con alertas
 
-### Sprint 13+ — Pre-cliente #2
+### S14 — Google Calendar sync (diferido)
 
-- Terraform módulo Hetzner Cloud + Cloudflare
+Columna `google_event_id` ya existe (V9).
+
+### Pre-cliente #2+ — infra como código
+
+- Terraform módulo DigitalOcean + Cloudflare
 - Prometheus + Grafana (self-hosted)
 
 ---
 
-## Decisiones estratégicas pendientes (P3 auditoría 2026-05-19)
+## Decisiones estratégicas pendientes
 
-No urgentes pero caras si no se deciden ahora. Revisar al planificar el sprint relevante.
-
-- **[P3-1] Reevaluar trigger de multi-tenancy real (análisis ~1 día).** Hoy "post 5 clientes". El costo operativo (deploys, parches, migraciones x N instancias) probablemente hace que el trigger real sea 3. Modelar antes de cliente #3.
-- **[P3-2] Feature flags: env vars → tabla DB (1-2 días).** Hoy 3 booleanos via env. Al primer pedido tipo "portal sí, reserva no" se vuelve incómodo. **Decidir antes de S11.**
-- ~~**[P3-3] Estrategia theming Angular Material**~~ — ✅ resuelto en S4: opción (b) Material neutro + override tokens MDC vía CSS vars.
-- **[P3-4] Costo por mensaje WhatsApp y modelo "X incluidos/mes" (4 h).** Modelar antes de prometer "WhatsApp ilimitado". **Antes de S10.**
-- **[P3-5] Unificar JWT ADMIN + JWT PACIENTE con `roles` claim.** Integrado en S7.
-- **[P3-6] Reservar 20% de cada sprint para incidentes/soporte.** Con 2 clientes en producción el roadmap lineal sin buffer es ilusorio.
-- **[P3-7] SPF/DKIM/DMARC en onboarding de subdominio (2 h en S6).** Sin esto los mails van a spam. Parte del checklist de provisioning.
-- **[P3-8] Rotación de secrets documentada (2 h).** Procedimiento para rotar `JWT_SECRET`, `DB_PASSWORD`. Sin blacklist JWT, rotación = logout masivo.
-- **[P3-9] Docker secrets en lugar de env vars (1 día a partir de 3+ clientes).** Hoy `docker inspect` revela secrets.
-- **[P3-10] Backup off-site verificado (4-6 h).** Verificar retención, encriptación en reposo, y que el restore (P0-1) funcione desde copia off-site.
-
----
-
-## Backlog medio plazo
-
-- ~~Soft delete + auditoría acceso historial clínico~~ — soft delete en P2-3 (S9), audit log en P1-6 (S9).
-- ~~Paginación con `Pageable` en endpoints de listado~~ — en S9 como P1-3.
-- Export PDF historial clínico
-- Dark mode toggle
-- Cobertura tests backend ~50% / frontend ~40%
-- `FileStorageService` → `BackblazeStorageServiceImpl` cuando uploads escalen
+- **[P3-1] Reevaluar trigger de multi-tenancy real.** Hoy "~5 clientes". Con F1 ya hay dos hosts; medir el costo operativo real antes del cliente #3.
+- **[P3-2] Feature flags: env vars → tabla DB.** Se crean como env vars en F3; pasar a tabla al primer pedido de toggle en runtime.
+- **[P3-4] Costo por mensaje WhatsApp y modelo "X incluidos/mes".** Antes de F2b.
+- **[P3-5] Unificar JWT ADMIN + JWT PACIENTE con `roles` claim.** En S7; F5 necesita al menos un rol de servicio antes.
+- **[P3-6] Reservar 20% de cada fase para incidentes/soporte.** Con dos instancias en producción, el roadmap lineal sin buffer es ilusorio.
+- **[P3-7] SPF/DKIM/DMARC en onboarding de subdominio.** En F2a.
+- **[P3-8] Rotación de secrets documentada (2 h).**
+- **[P3-9] Docker secrets en lugar de env vars (1 día a partir de 3+ clientes).**
+- **[P3-10] Backup off-site verificado.** Implementado con B2 en cambios locales; se cierra con el restore desde B2 en F0.
+- **Vertical bandera:** elegir en 30 días la que primero cierre un segundo cliente pago.
 
 ## Fase Premium UX — diferido post primer cliente WhatsApp (antes de landing SaaS)
 
-> **Motivación:** S4 + polish incremental llevan el producto a "profesional y vendible" (~percentil 75 del SaaS B2B regional). Para "alto valor percibido" falta una capa de delight + diseño visual profesional que no se construye con tokens, se construye con criterio de diseñador y trabajo dedicado.
->
-> **Cuándo:** post S10 + 1-2 clientes pagando cuota mensual sin churn. Antes de invertir en `consultorio-landing`. Financiado por ingresos reales.
->
-> **No incluido:** features funcionales. Solo capa de percepción y delight.
+> **Trigger explícito:** al menos 1 cliente con WhatsApp pagando cuota mensual hace 2+ meses sin churn.
 
-**Bloque A — Diseño visual profesional (1 semana diseñador externo + 3-5 días integración):**
-- Contratar diseñador UI senior (~USD 800-1500) o usar plantilla curada premium (Untitled UI Angular kit, USD 349)
-- Entregables: paleta refinada por rubro, ilustraciones propias para empty states, jerarquía tipográfica dramática, iconografía custom (Lucide/Phosphor)
-
-**Bloque B — Delight & interacciones premium (~1-2 sem):**
-- Command palette (Cmd+K), atajos de teclado documentados
-- Autoguardado con indicador discreto, undo/redo en acciones destructivas
-- Shared element transitions, micro-feedback, skeletons con shimmer real
-- Empty states con personalidad: ilustración + microcopy + CTA contextual
-
-**Bloque C — Detalles de pulido fino (~3-5 días):**
-- Modo "focus" en agenda (presentación al paciente), print stylesheets, animaciones de éxito
-
-**Trigger explícito:** "tengo al menos 1 cliente WhatsApp pagando cuota mensual hace 2+ meses sin churn".
-
----
+- **Bloque A — Diseño visual profesional:** diseñador UI senior (~USD 800-1500) o plantilla premium; paleta por rubro, ilustraciones para empty states, iconografía custom.
+- **Bloque B — Delight & interacciones:** command palette, atajos, autoguardado, undo/redo, shared transitions, empty states con personalidad.
+- **Bloque C — Pulido fino:** modo "focus" en agenda, print stylesheets, animaciones de éxito.
 
 ## Backlog largo plazo (post 5 clientes activos)
 
 - Multi-tenancy real (schema MySQL por cliente)
-- i18n (es/pt/en)
 - App móvil PWA
 - Búsqueda global cross-módulo
 

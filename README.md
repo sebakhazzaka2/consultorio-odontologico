@@ -1,6 +1,6 @@
 # Consultorio Odontológico — B2B SaaS
 
-Practice management system for independent health professionals (dentistry, aesthetics, etc.). One Docker instance per client, per-client branding and feature flags via env vars, public booking page.
+Practice management system for independent health professionals (dentistry, aesthetics, etc.). One Docker instance per client, per-client clinic data via env vars, public booking page. Per-client colors and feature flags are planned (see roadmap).
 
 **Live in production:**
 
@@ -21,7 +21,7 @@ Independent practitioners managing appointments through WhatsApp + paper noteboo
 - A real scheduling system with clinical history, treatments, payments and outstanding balance.
 - Something that looks like *their* brand (their color, name, domain) — not a generic SaaS shell.
 
-Commercial model in 3 tiers (Local / Web / Web + WhatsApp), single Docker image, differentiated by feature flags.
+Commercial model in 3 tiers (Local / Web / Web + WhatsApp), single Docker image, to be differentiated by feature flags.
 
 ## Stack
 
@@ -30,20 +30,20 @@ Commercial model in 3 tiers (Local / Web / Web + WhatsApp), single Docker image,
 | Backend | Spring Boot 3.2.5 · Java 17 · Spring Security · JWT · Flyway |
 | Frontend | Angular 19 · Angular Material · SCSS with `--brand-*` tokens |
 | Database | MySQL 8 |
-| Infrastructure | Docker Compose · Caddy (reverse proxy + automatic Let's Encrypt TLS) · Hetzner Cloud |
-| CI/CD | GitHub Actions — backend tests, image build & push to GHCR, SSH deploy to Hetzner on merge to `main` |
-| Operations | Automated daily backups · Uptime Kuma monitoring · centralized logs |
+| Infrastructure | Docker Compose · Caddy (reverse proxy + automatic Let's Encrypt TLS) · DigitalOcean |
+| CI/CD | GitHub Actions — backend tests, image build & push to GHCR, SSH deploy to DigitalOcean on merge to `main` |
+| Operations | Automated daily backups · Uptime Kuma monitoring · Sentry |
 
 ## Technical decisions (and their trade-offs)
 
 **One Docker instance per client, not real multitenancy.**
 Simpler to operate and isolate failures with few clients; migration to real multitenancy planned once active paying clients pass ~5. Conscious decision: the cost of premature multitenancy (RLS, `tenant_id` everywhere, cross-tenant bugs) outweighs the operational cost of N instances while N stays small.
 
-**Feature flags via env vars, not a DB table.**
-The package catalog (Local / Web / Web+WhatsApp) lives in `ClinicProperties` and is exposed via `GET /api/public/config`. Switching tiers = `docker compose up -d` with different env vars. Migration to a DB-backed flag table is planned once runtime toggling is actually needed.
+**Feature flags via env vars, not a DB table (planned).**
+The package catalog (Local / Web / Web+WhatsApp) will live in `ClinicProperties` and be exposed via `GET /api/public/config`, so switching tiers = `docker compose up -d` with different env vars. Clinic data (name, contact, hours, service labels) already works this way. Migration to a DB-backed flag table only once runtime toggling is actually needed.
 
-**Per-client branding via env vars (`BRAND_*`) + CSS `--brand-*` layer.**
-Same Docker build, different color and logo per client. Migration from Angular Material prebuilt themes → `@use mat` is planned to avoid coupling new components to the hardcoded navy.
+**Per-client branding via a CSS `--brand-*` layer (planned).**
+Same Docker build, different color and logo per client, injected at runtime from the config endpoint. Components already consume semantic tokens (`--color-primary`) so the switch is drop-in.
 
 **Snapshot/ledger pattern in clinical history.**
 `precio_aplicado` is copied from the treatment at the moment of registration — historical price is preserved even if the catalog changes later. Intentional denormalization; the rest of the schema is 3NF.
@@ -63,10 +63,11 @@ No migration has ever been applied by hand in production.
 
 Prioritized and planned in [`ROADMAP.md`](ROADMAP.md). Listing it here because the meaningful part of technical debt is knowing it exists:
 
-- **Security (S3):** JWT in localStorage → HttpOnly cookie, rate limit on login, strict CSP, admin action audit log.
-- **Operations (S2.5):** restore-from-backup tested on a clean VM, external uptime monitor, Sentry (backend + frontend), strict security headers in Caddy.
-- **Quality (S3.5):** Playwright E2E tests, soft delete, per-client data export, multi-user admin.
-- **Observability (S10):** structured JSON logs with `correlationId`, Micrometer + Prometheus + Grafana.
+- **Hygiene (F0):** failed login returns 500 instead of 401; first client's data used as config defaults; restore-from-backup not yet tested on a clean VM.
+- **Notifications (F2):** no email or WhatsApp reminders yet.
+- **Security (S9):** JWT in localStorage → HttpOnly cookie, login lockout, strict CSP, admin action audit log.
+- **Quality:** 26 backend tests, 6 frontend specs; Playwright E2E, soft delete, per-client data export and multi-user admin still pending.
+- **Observability (S13):** structured JSON logs with `correlationId`, Micrometer + Prometheus + Grafana.
 - **Scale (post 5 clients):** real multitenancy, Terraform for provisioning, Docker secrets.
 
 Full roadmap, P0/P1/P2/P3 priorities and per-sprint gates in [`ROADMAP.md`](ROADMAP.md).
@@ -134,7 +135,7 @@ npm start
 
 SPA at `http://localhost:4200`.
 
-## Current status (2026-05-19)
+## Current status (2026-10-15)
 
 | Block | Status |
 |------|--------|
@@ -142,10 +143,13 @@ SPA at `http://localhost:4200`.
 | P1 Hardening (validation, logging, Flyway, tests) | Done |
 | P2 Infrastructure (Docker, Caddy, backups, real deploy) | Done |
 | P3 Public page + admin polish | Done |
-| Sprint 1 — Multi-vertical (genericity across dental/aesthetics) | Done (PR #21) |
-| Sprint 2.0 — Theming foundations | In progress |
-| Sprint 2 — Admin availability + login-less booking | Pending |
-| Sprint 2.5 — Urgent hardening (P0 from audit) | Pending |
-| Sprint 3 — Diagnoses + treatment plans + security hardening | Pending |
+| Sprint 1 — Multi-vertical labels (dental/aesthetics) | Done (PR #21) |
+| Sprint 2 — Admin availability + login-less booking | Done |
+| S3 — Urgent hardening (closed register, rate limits, security headers) | Done (PR #26) |
+| Concurrent booking fix (`FOR UPDATE` lock) + PII out of booking logs | Done (PR #32–#35) |
+| F0 — Hygiene (401 login, config defaults, tested restore) | Next |
+| F1 — Second client instance (aesthetics) + CSV patient import | Planned |
+| F2 — Email, then WhatsApp reminders | Planned |
+| F3 — Feature flags, currency/locale and vertical presets | Planned |
 
 Full roadmap and per-sprint sequencing in [`ROADMAP.md`](ROADMAP.md).

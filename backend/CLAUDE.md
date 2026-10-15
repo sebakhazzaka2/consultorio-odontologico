@@ -39,16 +39,17 @@ backend/src/main/java/com/consultorio/
 
 ## Estado MVP1 (✅ mergeado a main)
 
-- **Auth:** registro + login JWT, `JwtAuthFilter` stateless, rutas públicas: `POST /api/auth/login`
-- **Pacientes:** CRUD completo, validación email único
+- **Auth:** login JWT, `JwtAuthFilter` stateless, rol único `ADMIN`. `/auth/register` cerrado al público desde S3 (PR #26). Login fallido hoy responde 500 (fix en F0)
+- **Pacientes:** CRUD completo. Unicidad de email solo en la aplicación (`existsByEmail`), sin índice único en la base hasta `V10` (F1). Email, teléfono (7–15 dígitos, sin código de país) y apellido son `NOT NULL`
+- **Reserva pública:** crea el paciente si el email no existe (`creado_por = AGENDA`); lock `FOR UPDATE` sobre `disponibilidad_semanal` como primera sentencia de la transacción (PR #35)
 - **Citas:** CRUD + `PATCH /cancelar` + `PATCH /confirmar` + `GET /disponibilidad?fecha&duracion`
   - `fechaHoraInicio` como `LocalDateTime` (columna migrada desde `fecha`+`hora` separados)
   - Slots de 15 min, validación solapamiento solo contra CONFIRMADA/PENDIENTE
   - `/{id:[0-9]+}` para evitar conflicto con `/disponibilidad`
 - **Historial Clínico:** CRUD, scoped a paciente, `precio_aplicado` copiado del tratamiento al crear (snapshot pattern)
-- **Tratamientos:** CRUD + `PATCH /toggle` activo/inactivo
+- **Servicios** (ex Tratamientos, renombrado en V6): CRUD + `PATCH /toggle` activo/inactivo
 - **Pagos:** POST + DELETE (sin PUT), `GET /pacientes/{id}/saldo` calcula dinámicamente
-- **GlobalExceptionHandler:** maneja 404, 400, 422, 500
+- **GlobalExceptionHandler:** maneja 404, 400, 409 (integridad y lock timeout), 422, 500
 
 ### P1 — Hardening (✅ mergeado a main)
 - **P1.1 Bean Validation** — todos los DTOs tienen `@NotBlank`, `@NotNull`, `@Email`, `@DecimalMin`, etc.
@@ -68,11 +69,13 @@ backend/src/main/java/com/consultorio/
 
 ### Tablas
 - `users` — admin hardcodeado (MVP2 agrega pacientes)
-- `pacientes` — FK nullable `user_id` a `users` (reservado MVP2)
-- `citas` — `fecha_hora_inicio DATETIME`, FK a `pacientes`
-- `historial_clinico` — FK a `pacientes`, FK nullable a `citas`, FK nullable a `tratamientos`
-- `tratamientos`
+- `pacientes` — FK nullable `user_id` a `users` (reservado MVP2); `creado_por ENUM('ADMIN','AGENDA')` (V8)
+- `citas` — `fecha_hora_inicio DATETIME`, FK a `pacientes`, `google_event_id` nullable (V9)
+- `historial_clinico` — FK a `pacientes`, FK nullable a `citas`, FK nullable a `servicios`
+- `servicios` (ex `tratamientos`, V6)
 - `pagos` — FK a `pacientes`
+- `disponibilidad_semanal` — `UNIQUE (dia_semana)`: una sola agenda por instancia, sin profesionales (V7)
+- `fechas_bloqueadas` (V7)
 
 ### Normalización
 - Esquema en 3NF — verificado, no requiere cambios.
@@ -93,7 +96,9 @@ backend/src/main/java/com/consultorio/
 - **Solapamiento de citas:** valida solo contra CONFIRMADA y PENDIENTE — CANCELADA libera el slot.
 - **Disponibilidad de slots:** backend genera slots 09:00–17:45 cada 15 min y excluye los ocupados dada una fecha y duración.
 
-### Storage de archivos clínicos (implementado en S3)
+### Storage de archivos clínicos (diseño — no implementado, ver S5 en ROADMAP)
+
+> Hoy solo existe `FileStorageService` para imágenes públicas (hero, servicios). No hay entidad `ArchivoClinico` ni endpoints de archivos clínicos.
 
 **Nombres en disco:** siempre `{uuid}.{ext}`, nunca el nombre original. El nombre original se guarda solo en BD (`nombre_original`). Razones: evita colisiones, caracteres especiales que rompen el filesystem, y path traversal.
 
@@ -107,13 +112,13 @@ backend/src/main/java/com/consultorio/
 
 **Backup:** el cron de backup en el servidor debe incluir un `rsync` o `tar` de `/opt/consultorio/uploads` además del dump MySQL. Los archivos **no están en BD** — si no se backupean se pierden independientemente del backup de base de datos.
 
-**Monitorear espacio en disco:** radiografías clínicas pesan 5-20 MB c/u. Con crecimiento real, monitorear uso del volumen de Hetzner.
+**Monitorear espacio en disco:** radiografías clínicas pesan 5-20 MB c/u. Con crecimiento real, monitorear uso del volumen del droplet de DigitalOcean.
 
 **Migración a Backblaze B2:** cuando el volumen justifique el costo, escribir `BackblazeStorageServiceImpl` implementando la misma interfaz `FileStorageService`. Script de migración: leer paths de BD, subir archivos a B2, actualizar paths en BD. El resto del código no cambia.
 
 ## Decisiones de infraestructura
 
-- **Hetzner sobre DigitalOcean:** CAX11 ARM €3.79/mes vs DO Basic $6/mes. 12-factor compatible → migración a AWS straightforward cuando corresponda.
+- **Hosting: DigitalOcean** (migrado desde Hetzner el 2026-10-15 tras la baja por impago; ver `tasks/lessons.md`). 12-factor compatible → cambiar de proveedor es directo. Backups off-site en Backblaze B2, un proveedor distinto al del server.
 - **Rate limiting en Nginx, no en Spring:** pertenece a la capa de infraestructura (SRP arquitectónico). `limit_req_zone` en `nginx.conf` es cero cambios en la lógica de negocio.
 - **JWT expiration corta (≤ 2h) como mitigante de revocación:** sin blacklist ni refresh tokens (MVP1, un solo admin). Refresh tokens con rotación va en MVP2.
 - **MySQL nunca expuesto en `ports` en docker-compose.prod.yml:** solo accesible desde la Docker network interna.
