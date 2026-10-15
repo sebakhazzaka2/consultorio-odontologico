@@ -28,6 +28,13 @@ services:
       # validación de checksum acá (solo en el demo; neodentalmaster no usa render.yaml).
       - key: SPRING_FLYWAY_VALIDATE_ON_MIGRATE
         value: "false"
+      # Aiven free tier limita a 5 conexiones simultáneas por usuario. El default de
+      # HikariCP (10) excede ese límite apenas arranca, y los redeploys fallidos
+      # repetidos dejaban conexiones colgadas hasta agotarlo del todo
+      # ("max_user_connections ... current value: 5"). 2 alcanza para esta app
+      # de bajo tráfico (Flyway usa su propia conexión, separada del pool).
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "2"
       # Free tier de Render = 512MB RAM total. Sin esto el JVM sobreestima el heap
       # disponible y el proceso muere con OOM kill (exit 137). Override puntual —
       # no toca el Dockerfile real (Hetzner tiene otro perfil de memoria).
