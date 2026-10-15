@@ -39,6 +39,12 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse("Unprocessable Entity", firstValidationError));
   }
 
+  @ExceptionHandler(ReservaEnProcesoException.class)
+  public ResponseEntity<ErrorResponse> handleReservaEnProceso(ReservaEnProcesoException ex) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse("Conflict", ex.getMessage()));
+  }
+
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
     log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
