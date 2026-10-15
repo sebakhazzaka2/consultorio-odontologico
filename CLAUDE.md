@@ -112,7 +112,7 @@ Checklist operacional antes de seguir agregando features sobre instancias live:
 
 Secuencia por fases (detalle, horas y criterios de salida en `ROADMAP.md`). Capacidad: 15 a 20 h por semana.
 
-🔴 **F0 — Higiene** (12–18 h). Login 401, sacar defaults de Montecaseros y fallar si falta `CLINIC_*`, `og:` por instancia, restore probado, alertas Kuma. **← PRÓXIMO**
+🔴 **F0 — Higiene** (12–18 h). Login 401, sacar defaults de Montecaseros y fallar si falta `CLINIC_*`, `og:` por instancia, alertas Kuma, SHA de prod contra `main` (restore y B2 ya hechos). **← PRÓXIMO**
 🔴 **F1 — Instancia de Guille en paralelo + importación CSV** (42–63 h). VPS nuevo, deploy multi-host, texto del rubro y colores por configuración, `V10` (email nullable + único), importador con simulación. Guille sigue en Ágora.
 🔴 **F2a — Recordatorios por email** (20–28 h). `NotificationService` por canal, Brevo + Thymeleaf, cron idempotente con zona horaria por instancia, SPF/DKIM/DMARC.
 🔴 **Corte de Guille** (3–5 h). Importar sus clientas y salir en vivo.

@@ -1,10 +1,10 @@
 # Runbook S3 — Cierre de hardening
 
-**Estado: ⏳ PENDIENTE** — ya no está bloqueado: la VPS está en pie en DigitalOcean (verificado 2026-10-15). Ejecutar el restore.
+**Estado: 🔄 PARCIAL** — la VPS está en pie en DigitalOcean (verificado 2026-10-15). El restore ya se verificó; quedan las alertas de Kuma.
 
 | Item | Estado |
 |------|--------|
-| P0-1 Restore probado en VM limpia | ⬜ Pendiente |
+| P0-1 Restore probado fuera de producción | ✅ Contenedor descartable, DB + uploads (PR #37–#38, 2026-10-15). Cronometrarlo en VM limpia es opcional |
 | P0-2 Alertas de Uptime Kuma confirmadas | ⬜ Pendiente |
 
 ---
