@@ -30,6 +30,9 @@ services:
 
   frontend:
     build: ./frontend
+    environment:
+      CLINIC_NOMBRE: ${CLINIC_NOMBRE:-}
+      CLINIC_TAGLINE: ${CLINIC_TAGLINE:-}
     ports:
       - "80:80"
     depends_on:

@@ -44,6 +44,11 @@ services:
   frontend:
     image: ${GHCR_IMAGE_PREFIX}/consultorio-frontend:latest
     build: ./frontend
+    # Solo lo que usa 40-clinic-meta.sh (título y og:* del index.html).
+    # No usar env_file: .env.prod acá — le pasaría secretos a nginx.
+    environment:
+      CLINIC_NOMBRE: ${CLINIC_NOMBRE:-}
+      CLINIC_TAGLINE: ${CLINIC_TAGLINE:-}
     depends_on:
       - backend
     restart: unless-stopped
