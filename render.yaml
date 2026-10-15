@@ -92,3 +92,10 @@ services:
     dockerfilePath: ./frontend/Dockerfile.render
     dockerContext: ./frontend
     plan: free
+    envVars:
+      # Título y og:* del index.html, sustituidos al arrancar nginx (40-clinic-meta.sh).
+      # Mismos valores que el backend demo.
+      - key: CLINIC_NOMBRE
+        value: Consultorio Demo
+      - key: CLINIC_TAGLINE
+        value: Cuidado dental profesional para toda la familia
