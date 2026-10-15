@@ -26,6 +26,11 @@ _Ninguna lección registrada aún._
 **Error:** un archivo versionado modificado localmente en el server (sin commitear) que también cambia en main hace abortar `git pull` → el deploy falla. El repo del server además arrastraba otros mods locales inertes (`docker-compose.yml`, `frontend/src/*`).
 **Regla:** el deploy usa `git fetch + git reset --hard origin/main` (idempotente; `.env.prod` gitignored y `backups/` untracked no se tocan). El server es un checkout pristino de main: todo lo de entorno vive en `.env.prod` y volúmenes. No editar archivos versionados directo en el server.
 
+### [2026-10-15] VPS de Hetzner dado de baja irrevocable por impago — sin backup off-site
+**Contexto:** 3 avisos de pago ignorados → Hetzner canceló el contrato y borró todos los datos sin posibilidad de reversión. `scripts/backup.sh` guardaba los dumps en `backups/` del mismo servidor, así que el VPS perdido se llevó también los backups. No había copia off-site (P3-10 seguía pendiente en el roadmap).
+**Error:** backup local-only = sin backup real ante pérdida total del servidor. Además, nunca se había ejercitado un reprovisioning desde cero, así que un bug de Flyway (`V5` duplicaba una columna ya presente en el baseline `V1`) quedó sin detectar durante meses — solo rompe en una DB completamente nueva.
+**Regla:** (1) backup off-site obligatorio en un proveedor **distinto** al de cómputo, con alertas de billing propias — un solo proveedor cancelado no puede llevarse infra + backup a la vez. (2) ejercitar el disaster-recovery runbook (`docs/DEPLOY.md`) al menos una vez contra un servidor vacío real, no solo en papel — es la única forma de detectar bugs de "fresh install" como este. Migrado a DigitalOcean el mismo día.
+
 ---
 
 ## Formato de entrada
