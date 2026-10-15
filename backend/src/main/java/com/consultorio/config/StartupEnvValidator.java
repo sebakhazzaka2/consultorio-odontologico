@@ -31,6 +31,21 @@ public class StartupEnvValidator implements ApplicationListener<ContextRefreshed
   @Value("${app.admin.password}")
   private String adminPassword;
 
+  @Value("${clinic.nombre:}")
+  private String clinicNombre;
+
+  @Value("${clinic.direccion:}")
+  private String clinicDireccion;
+
+  @Value("${clinic.telefono:}")
+  private String clinicTelefono;
+
+  @Value("${clinic.whatsapp:}")
+  private String clinicWhatsapp;
+
+  @Value("${clinic.email:}")
+  private String clinicEmail;
+
   private boolean validated = false;
 
   @Override
@@ -60,14 +75,29 @@ public class StartupEnvValidator implements ApplicationListener<ContextRefreshed
       errors.add("ADMIN_PASSWORD must not be the default development value");
     }
 
+    // Datos de marca: sin defaults de cliente, cada instancia los define en su .env.prod
+    requireNotBlank(errors, clinicNombre, "CLINIC_NOMBRE");
+    requireNotBlank(errors, clinicDireccion, "CLINIC_DIRECCION");
+    requireNotBlank(errors, clinicTelefono, "CLINIC_TELEFONO");
+    requireNotBlank(errors, clinicWhatsapp, "CLINIC_WHATSAPP");
+    requireNotBlank(errors, clinicEmail, "CLINIC_EMAIL");
+
     if (!errors.isEmpty()) {
       log.error("=== STARTUP FAILED: missing or insecure environment variables ===");
       errors.forEach(e -> log.error("  - {}", e));
       log.error("Set the required variables and restart the application.");
-      System.exit(1);
+      // Lanzar (en vez de System.exit) aborta el refresh: SpringApplication.run falla y
+      // el proceso termina con código != 0 igual, pero el validador se puede testear.
+      throw new IllegalStateException("Startup environment validation failed: " + String.join("; ", errors));
     }
 
     log.info("Environment validation passed.");
+  }
+
+  private void requireNotBlank(List<String> errors, String value, String envName) {
+    if (isBlank(value)) {
+      errors.add(envName + " is not set");
+    }
   }
 
   private boolean isBlank(String value) {
