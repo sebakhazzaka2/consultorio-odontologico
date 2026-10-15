@@ -2,7 +2,6 @@ package com.consultorio.service;
 
 import com.consultorio.dto.PublicReservaRequest;
 import com.consultorio.dto.PublicReservaResponse;
-import com.consultorio.exception.ReservaEnProcesoException;
 import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Cita;
 import com.consultorio.model.CitaEstado;
@@ -12,10 +11,8 @@ import com.consultorio.model.Servicio;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.PacienteRepository;
 import com.consultorio.repository.ServicioRepository;
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,25 +23,19 @@ public class PublicReservaService {
 
   private static final Logger log = LoggerFactory.getLogger(PublicReservaService.class);
 
-  // Segundos que esperamos el GET_LOCK antes de rendirnos y pedirle al cliente que reintente.
-  private static final int LOCK_TIMEOUT_SEGUNDOS = 10;
-
   private final CitaRepository citaRepository;
   private final PacienteRepository pacienteRepository;
   private final ServicioRepository servicioRepository;
   private final CitaService citaService;
-  private final EntityManager entityManager;
 
   public PublicReservaService(CitaRepository citaRepository,
       PacienteRepository pacienteRepository,
       ServicioRepository servicioRepository,
-      CitaService citaService,
-      EntityManager entityManager) {
+      CitaService citaService) {
     this.citaRepository = citaRepository;
     this.pacienteRepository = pacienteRepository;
     this.servicioRepository = servicioRepository;
     this.citaService = citaService;
-    this.entityManager = entityManager;
   }
 
   public List<String> getSlots(LocalDate fecha, Long servicioId) {
@@ -60,33 +51,13 @@ public class PublicReservaService {
 
     LocalDate fecha = request.getFechaHoraInicio().toLocalDate();
 
-    // Lock a nivel de conexión MySQL (GET_LOCK), uno por día: dos reservas públicas
-    // para el mismo día no pueden evaluar disponibilidad + guardar en simultáneo.
-    // Sin esto, dos requests concurrentes para el mismo horario pasan ambas el chequeo
-    // de getDisponibilidad() (ninguna ve todavía la cita de la otra) y las dos insertan.
-    // Vive dentro de @Transactional: misma conexión física de principio a fin, así el
-    // RELEASE_LOCK siempre corre en la misma sesión que pidió el lock.
-    String lockName = "reserva_publica_" + fecha;
-    Object lockResult = entityManager
-        .createNativeQuery("SELECT GET_LOCK(:name, :timeout)")
-        .setParameter("name", lockName)
-        .setParameter("timeout", LOCK_TIMEOUT_SEGUNDOS)
-        .getSingleResult();
-    if (!Integer.valueOf(1).equals(lockResult)) {
-      log.warn("No se pudo obtener el lock de reserva para la fecha {} (timeout {}s)", fecha, LOCK_TIMEOUT_SEGUNDOS);
-      throw new ReservaEnProcesoException(
-          "Hay otra reserva en proceso para ese día. Intentá de nuevo en unos segundos.");
-    }
-    try {
-      return reservarConLock(request, servicio, fecha);
-    } finally {
-      entityManager.createNativeQuery("SELECT RELEASE_LOCK(:name)")
-          .setParameter("name", lockName)
-          .getSingleResult();
-    }
-  }
+    // Lock pesimista de fila (FOR UPDATE), atado a esta transacción — serializa
+    // todo lo que quiera reservar/confirmar/editar el mismo día de semana. Debe
+    // pedirse ANTES de leer disponibilidad: si se pide después, otra transacción ya
+    // pudo haber leído el estado viejo y decidido (erróneamente) que el slot estaba
+    // libre. Se libera solo al hacer commit/rollback (lo maneja MySQL, no nosotros).
+    citaService.lockDiaParaReserva(fecha);
 
-  private PublicReservaResponse reservarConLock(PublicReservaRequest request, Servicio servicio, LocalDate fecha) {
     // Verificar que el slot solicitado esté disponible
     List<String> slotsDisponibles = citaService.getDisponibilidad(fecha, servicio.getDuracionMinutos());
     String horaSlot = request.getFechaHoraInicio().toLocalTime().toString().substring(0, 5);
@@ -123,25 +94,22 @@ public class PublicReservaService {
   }
 
   /**
-   * Dedupe por email, pero solo si el nombre coincide con el paciente ya guardado.
-   * Si alguien reserva con el email de otro paciente pero un nombre distinto, lo
-   * tratamos como una persona distinta (paciente nuevo) en vez de colgarle una cita
-   * a la cuenta real — email solo no alcanza para verificar identidad en un endpoint
-   * público sin login.
+   * Dedupe por email: reutiliza el paciente existente si el email ya está
+   * registrado. Deliberadamente NO exige que el nombre coincida: email es la única
+   * clave de identidad que tenemos en un endpoint público sin login, y
+   * {@code pacientes.email} no tiene constraint único en la base — el resto de la
+   * app (ej. {@code PacienteService}) asume que hay a lo sumo un paciente por email.
+   * Crear un segundo paciente con el mismo email rompe esa asunción: cualquier
+   * {@code findByEmail} posterior para ese email (login futuro, edición de otro
+   * paciente, esta misma reserva) revienta con
+   * {@code IncorrectResultSizeDataAccessException} y bloquea reservas legítimas
+   * (acentos, un padre reservando para su hijo con el mismo mail familiar, etc.).
+   * El nombre/apellido real nunca se expone en la respuesta (ver {@code reservar}),
+   * así que no filtramos PII aunque reusemos el paciente.
    */
   private Paciente resolverPaciente(PublicReservaRequest request) {
     return pacienteRepository.findByEmail(request.getEmail())
-        .filter(existente -> coincideNombre(existente, request))
         .orElseGet(() -> crearPacienteDesdeAgenda(request));
-  }
-
-  private boolean coincideNombre(Paciente existente, PublicReservaRequest request) {
-    return normalizar(existente.getNombre()).equals(normalizar(request.getNombre()))
-        && normalizar(existente.getApellido()).equals(normalizar(request.getApellido()));
-  }
-
-  private String normalizar(String valor) {
-    return Objects.requireNonNullElse(valor, "").trim().toLowerCase();
   }
 
   private Paciente crearPacienteDesdeAgenda(PublicReservaRequest request) {
