@@ -4,32 +4,33 @@
 
 | Ítem | Valor |
 |------|-------|
-| Proveedor | Hetzner Cloud |
-| Plan | CX-23 (2 vCPU, 4GB RAM, 40GB SSD) |
-| OS | Ubuntu 22.04 LTS |
-| IP pública | 167.235.134.150 |
-| Dominio | turnouy.com |
-| DNS | Cloudflare (A record @ → 167.235.134.150, DNS only) |
+| Proveedor | DigitalOcean (migrado 2026-10-15, Hetzner anterior dado de baja por impago — ver `tasks/lessons.md`) |
+| Plan | Basic Droplet (1 vCPU, 2GB RAM, 50GB SSD, $12/mes) |
+| OS | Ubuntu 24.04 LTS |
+| IP pública | 142.93.198.84 |
+| Dominio | turnosuy.com |
+| DNS | Cloudflare (A record @ → 142.93.198.84, DNS only) — **pendiente apuntar, ver checklist de migración** |
 
 ## Acceso SSH
 
 ```bash
-ssh sebastian@167.235.134.150
+ssh -i ~/.ssh/id_ed25519_consultorio sebastian@142.93.198.84
 ```
 
-- Usuario no-root con sudo y grupo docker
+- Usuario no-root con sudo (passwordless, solo accesible ya autenticado por key) y grupo docker
 - Login root por SSH deshabilitado (`PermitRootLogin no`)
-- Autenticación por SSH key únicamente
+- Autenticación por SSH key únicamente (`PasswordAuthentication no`)
 
-## Firewall (Hetzner Cloud)
+## Firewall (DigitalOcean Cloud Firewall + UFW en el host)
 
 | Dirección | Protocolo | Puerto | Fuente |
 |-----------|-----------|--------|--------|
 | Entrada | TCP | 22 | IP del admin (solo) |
 | Entrada | TCP | 80 | Any |
 | Entrada | TCP | 443 | Any |
-| Salida | TCP | Any | Any |
-| Salida | UDP | Any | Any |
+| Salida | TCP/UDP | Any | Any |
+
+> ⚠️ **La regla de SSH (puerto 22) está atada a una IP fija**, no "cualquiera". Si te conectás desde otra red (otra PC, 4G, otro wifi) vas a quedar bloqueado hasta actualizar la IP de origen en **DigitalOcean → Networking → Firewalls → (el firewall del droplet) → regla SSH**. Hacelo ANTES de cambiar de red si podés anticiparlo (ej. antes de ir a otra ubicación), agregando también la IP de la otra PC/red como fuente adicional.
 
 ## Stack en producción
 
@@ -43,9 +44,14 @@ ssh sebastian@167.235.134.150
 # Ubicación en el server
 /home/sebastian/consultorio-odontologico
 
-# Clonar (si hay que reinstalar)
-git clone https://github.com/sebitas71133/consultorio-odontologico.git
+# Clonar (si hay que reinstalar) — vía deploy key SSH, repo es privado
+# El owner real en GitHub es sebakhazzaka2 (no sebitas71133, renombrado en algún momento)
+git clone git@github.com:sebakhazzaka2/consultorio-odontologico.git
 ```
+
+**Deploy key:** cada server nuevo necesita su propia SSH key agregada como "Deploy key" (solo lectura) en
+`https://github.com/sebakhazzaka2/consultorio-odontologico/settings/keys`, y un `~/.ssh/config` en el server
+apuntando `Host github.com` a esa key (ver clave del droplet actual en el propio server, `~/.ssh/id_ed25519_github`).
 
 ## Variables de entorno
 
