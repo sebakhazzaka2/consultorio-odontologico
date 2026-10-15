@@ -39,7 +39,8 @@ F0 Higiene (12–18 h)                                   ← PRÓXIMO
 | Deploy real | ✅ Live desde 2026-04-21. Hoy en DigitalOcean (migrado desde Hetzner 2026-10-15) |
 | Sprint 1 — Multi-rubro (labels `labelServicio` / `labelHistorial`) | ✅ (PR #21, 2026-05-11) |
 | Sprint 2 — Disponibilidad + reserva sin login | ✅ (2026-05-20) |
-| Sprint 3 — Hardening urgente (register cerrado, headers Caddy, rate limit nginx, honeypot) | ✅ Mergeado (PR #26). Restore probado y alertas de Kuma pasan a F0 |
+| Sprint 3 — Hardening urgente (register cerrado, headers Caddy, rate limit nginx, honeypot) | ✅ Mergeado (PR #26). Restore probado (PR #37–#38); alertas de Kuma pendientes en F0 |
+| Backup off-site a Backblaze B2 + uploads (P3-10) | ✅ (PR #37–#38, 2026-10-15) |
 | Race condition en reserva pública + PII en logs de reserva | ✅ (PR #32–#35, 2026-10-15). Falta test de concurrencia contra MySQL real dentro del repo |
 | Demo en Render (seed + login precargado) | ✅ (2026-08-19) |
 | **F0 — Higiene** | ⏳ Próximo |
@@ -84,7 +85,7 @@ Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 | Archivos clínicos | **No existen.** `FileStorageService` solo maneja imágenes subidas | No hay `ArchivoClinico` |
 | CI/CD | Despliega a un solo host (`DO_HOST`), tag `:latest`, sin rollback | `.github/workflows/ci.yml` |
 | Logging | `spring.jpa.show-sql=true` en la configuración base, sin override en prod | `application.properties:15` |
-| Backups | Uploads + copia off-site a B2 implementados en cambios locales, **todavía sin commitear** | `scripts/backup.sh` (working tree) |
+| Backups | Uploads + copia off-site a B2, mergeados y verificados con restore en contenedor descartable | `scripts/backup.sh`, PR #37–#38 |
 
 ---
 
@@ -96,13 +97,13 @@ Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 - [ ] Login fallido responde 401 con test (1–2 h).
 - [ ] Quitar los defaults de Montecaseros de `ClinicProperties`, `application.properties` y `.env.example`; borrar `clinic.config.ts`; `StartupEnvValidator` falla si falta un `CLINIC_*` de marca (3–4 h).
 - [ ] `index.html` con `<title>` y `og:*` por instancia, con envsubst en el arranque del contenedor de nginx (3–5 h).
-- [ ] Commitear los cambios de `backup.sh` / `restore.sh` (uploads + B2) y probar el restore con uploads en una VM limpia, cronometrado (4–6 h). Seguir `docs/RUNBOOK_S3.md`.
+- [x] ~~Commitear `backup.sh` / `restore.sh` (uploads + B2) y probar el restore~~ — hecho (PR #37 y #38, 2026-10-15): backup real subido a B2 y restore verificado en un contenedor descartable (DB + uploads). Falta, si se quiere, cronometrarlo en una VM limpia.
 - [ ] Confirmar las alertas de Uptime Kuma.
 - [ ] Contrastar el SHA de prod con `main` y apagar `show-sql` (1 h).
 
-**Entregables:** PR de higiene; restore documentado con tiempos.
+**Entregables:** PR de higiene; restore documentado (ver `docs/DEPLOY.md` y `tasks/lessons.md`).
 
-**Criterio de salida:** restore probado en máquina limpia; login devuelve 401; `grep Montecaseros` sin resultados en el código; prod en el mismo SHA que `main`.
+**Criterio de salida:** restore probado fuera del server de producción ✅; login devuelve 401; `grep Montecaseros` sin resultados en el código; prod en el mismo SHA que `main`.
 
 **Riesgo:** que prod difiera del repositorio.
 
@@ -391,7 +392,7 @@ Columna `google_event_id` ya existe (V9).
 - **[P3-7] SPF/DKIM/DMARC en onboarding de subdominio.** En F2a.
 - **[P3-8] Rotación de secrets documentada (2 h).**
 - **[P3-9] Docker secrets en lugar de env vars (1 día a partir de 3+ clientes).**
-- **[P3-10] Backup off-site verificado.** Implementado con B2 en cambios locales; se cierra con el restore desde B2 en F0.
+- **[P3-10] Backup off-site verificado.** ✅ Cerrado (PR #37–#38, 2026-10-15).
 - **Vertical bandera:** elegir en 30 días la que primero cierre un segundo cliente pago.
 
 ## Fase Premium UX — diferido post primer cliente WhatsApp (antes de landing SaaS)
