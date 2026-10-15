@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CitaService {
@@ -48,7 +49,10 @@ public class CitaService {
     return toResponse(cita);
   }
 
+  @Transactional
   public CitaResponse create(CitaRequest request) {
+    lockDiaParaReserva(request.getFechaHoraInicio().toLocalDate());
+
     Long pacienteId = request.getPacienteId();
     Paciente paciente =
         pacienteRepository
@@ -80,7 +84,10 @@ public class CitaService {
     return toResponse(creada);
   }
 
+  @Transactional
   public CitaResponse update(Long id, CitaRequest request) {
+    lockDiaParaReserva(request.getFechaHoraInicio().toLocalDate());
+
     Cita existente =
         citaRepository
             .findById(id)
@@ -126,11 +133,14 @@ public class CitaService {
     return toResponse(cancelada);
   }
 
+  @Transactional
   public CitaResponse confirmar(Long id, Integer duracionMinutosOverride) {
     Cita cita =
         citaRepository
             .findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con id: " + id));
+
+    lockDiaParaReserva(cita.getFechaHoraInicio().toLocalDate());
 
     if (duracionMinutosOverride != null) {
       cita.setDuracionMinutos(duracionMinutosOverride);
@@ -238,6 +248,23 @@ public class CitaService {
 
   private LocalDateTime calcularFin(LocalDateTime inicio, Integer duracionMinutos) {
     return inicio.plusMinutes(duracionMinutos.longValue());
+  }
+
+  /**
+   * Toma el lock pesimista (FOR UPDATE) de la config de disponibilidad del día de
+   * semana correspondiente a {@code fecha}, dentro de la transacción actual. Hasta
+   * que esa transacción haga commit o rollback, cualquier otra que intente lockear
+   * el mismo día de semana queda bloqueada — así se serializan las reservas/
+   * confirmaciones concurrentes para el mismo horario, sin la ventana que existía
+   * con GET_LOCK + RELEASE_LOCK (que se liberaba antes del commit de la transacción).
+   *
+   * <p>Debe llamarse desde un método {@code @Transactional}, antes de leer
+   * disponibilidad o solapamiento — si se llama después, otra transacción ya pudo
+   * haber leído y decidido que el slot estaba libre.
+   */
+  public void lockDiaParaReserva(LocalDate fecha) {
+    int diaSemana = fecha.getDayOfWeek().getValue() % 7;
+    disponibilidadService.lockDiaSemana(diaSemana);
   }
 
   private boolean haySolapamiento(LocalDateTime inicio, LocalDateTime fin, Long excluirCitaId) {

@@ -52,6 +52,17 @@ public class DisponibilidadService {
     return toSemanalResponse(guardado);
   }
 
+  /**
+   * Toma el lock de fila (FOR UPDATE) de la config del día de semana, si existe.
+   * Serializa todo lo que quiera reservar/confirmar ese mismo día-de-semana dentro
+   * de la misma transacción — debe llamarse desde un método @Transactional, el lock
+   * se libera solo al hacer commit/rollback. No hace nada si el día no está
+   * configurado (nada que lockear = nada reservable ese día de todos modos).
+   */
+  public void lockDiaSemana(int diaSemana) {
+    semanalRepo.findByDiaSemanaForUpdate(diaSemana);
+  }
+
   public Optional<DisponibilidadSemanal> findByDiaSemana(int diaSemana) {
     return semanalRepo.findByDiaSemana(diaSemana);
   }

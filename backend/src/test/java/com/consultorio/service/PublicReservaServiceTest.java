@@ -4,33 +4,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.consultorio.dto.PublicReservaRequest;
 import com.consultorio.dto.PublicReservaResponse;
-import com.consultorio.exception.ReservaEnProcesoException;
 import com.consultorio.model.Paciente;
 import com.consultorio.model.Servicio;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.PacienteRepository;
 import com.consultorio.repository.ServicioRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 /**
- * Tests unitarios con mocks — no levantan Spring ni tocan H2. La verificación del
- * GET_LOCK/RELEASE_LOCK de verdad (contra MySQL real) queda para un test manual en
- * un ambiente con MySQL, porque H2 no implementa esas funciones (MODE=MySQL no las
- * emula) y romper eso por culpa de los tests de integración no es el objetivo acá.
+ * Tests unitarios con mocks — no levantan Spring ni tocan H2. El lock real
+ * (SELECT ... FOR UPDATE) se verifica aparte, con un test de concurrencia contra
+ * MySQL real (no H2: H2 no soporta bien el mismo comportamiento de bloqueo de filas
+ * entre conexiones distintas que InnoDB).
  */
 class PublicReservaServiceTest {
 
@@ -38,7 +34,6 @@ class PublicReservaServiceTest {
   private PacienteRepository pacienteRepository;
   private ServicioRepository servicioRepository;
   private CitaService citaService;
-  private EntityManager entityManager;
   private PublicReservaService service;
 
   private Servicio servicio;
@@ -49,21 +44,13 @@ class PublicReservaServiceTest {
     pacienteRepository = mock(PacienteRepository.class);
     servicioRepository = mock(ServicioRepository.class);
     citaService = mock(CitaService.class);
-    entityManager = mock(EntityManager.class);
-    service = new PublicReservaService(
-        citaRepository, pacienteRepository, servicioRepository, citaService, entityManager);
+    service = new PublicReservaService(citaRepository, pacienteRepository, servicioRepository, citaService);
 
     servicio = new Servicio();
     servicio.setId(1L);
     servicio.setNombre("Limpieza");
     servicio.setDuracionMinutos(30);
     when(servicioRepository.findById(1L)).thenReturn(Optional.of(servicio));
-
-    // GET_LOCK y RELEASE_LOCK: simulamos que siempre se obtiene el lock (resultado 1).
-    Query lockQuery = mock(Query.class);
-    when(lockQuery.setParameter(anyString(), any())).thenReturn(lockQuery);
-    when(lockQuery.getSingleResult()).thenReturn(1);
-    when(entityManager.createNativeQuery(anyString())).thenReturn(lockQuery);
 
     when(citaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
   }
@@ -82,68 +69,61 @@ class PublicReservaServiceTest {
   }
 
   @Test
-  void reservar_emailExistente_mismoNombre_reutilizaPaciente() {
-    Paciente existente = new Paciente();
-    existente.setId(5L);
-    existente.setNombre("Ana");
-    existente.setApellido("Pérez");
-    existente.setEmail("ana@test.com");
-    when(pacienteRepository.findByEmail("ana@test.com")).thenReturn(Optional.of(existente));
+  void reservar_pideElLockAntesDeLeerDisponibilidad() {
+    when(pacienteRepository.findByEmail(any())).thenReturn(Optional.empty());
+    when(pacienteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-    PublicReservaRequest req = request("ana", " pérez ", "ana@test.com");
+    PublicReservaRequest req = request("Ana", "Pérez", "ana@test.com");
     service.reservar(req);
 
-    verify(pacienteRepository, org.mockito.Mockito.never()).save(any());
+    verify(citaService).lockDiaParaReserva(req.getFechaHoraInicio().toLocalDate());
   }
 
   @Test
-  void reservar_emailExistente_nombreDistinto_creaPacienteNuevo_noFiltraElReal() {
+  void reservar_emailExistente_reutilizaPacienteSinImportarElNombre() {
+    // Dedupe es solo por email: name-matching se sacó porque rompía reservas
+    // legítimas (acentos, email familiar compartido) sin frenar a un atacante
+    // decidido que ya sabe el nombre real de la víctima.
     Paciente existente = new Paciente();
     existente.setId(5L);
     existente.setNombre("Ana");
     existente.setApellido("Pérez");
     existente.setEmail("ana@test.com");
     when(pacienteRepository.findByEmail("ana@test.com")).thenReturn(Optional.of(existente));
+
+    PublicReservaRequest req = request("Alguien Distinto", "Otro Apellido", "ana@test.com");
+    PublicReservaResponse response = service.reservar(req);
+
+    // No se crea un segundo paciente con el mismo email (rompería
+    // findByEmail en cualquier otro lado de la app que asuma unicidad).
+    verify(pacienteRepository, never()).save(any());
+    // La respuesta sigue sin filtrar el nombre real guardado de Ana.
+    assertThat(response.nombrePaciente()).isEqualTo("Alguien Distinto");
+    assertThat(response.apellidoPaciente()).isEqualTo("Otro Apellido");
+  }
+
+  @Test
+  void reservar_emailNuevo_creaPaciente() {
+    when(pacienteRepository.findByEmail("nuevo@test.com")).thenReturn(Optional.empty());
     when(pacienteRepository.save(any())).thenAnswer(inv -> {
       Paciente p = inv.getArgument(0);
       p.setId(99L);
       return p;
     });
 
-    // Alguien que conoce el email de Ana pero no es ella, manda otro nombre.
-    PublicReservaRequest req = request("Desconocido", "Atacante", "ana@test.com");
-    PublicReservaResponse response = service.reservar(req);
+    PublicReservaRequest req = request("Juan", "García", "nuevo@test.com");
+    service.reservar(req);
 
-    // Se crea un paciente nuevo (no se reutiliza el de Ana)...
     verify(pacienteRepository).save(any());
-    // ...y la respuesta nunca expone el nombre real de Ana.
-    assertThat(response.nombrePaciente()).isEqualTo("Desconocido");
-    assertThat(response.apellidoPaciente()).isEqualTo("Atacante");
   }
 
   @Test
-  void reservar_noConsigueLock_lanzaReservaEnProceso() {
-    Query lockQuery = mock(Query.class);
-    when(lockQuery.setParameter(anyString(), any())).thenReturn(lockQuery);
-    when(lockQuery.getSingleResult()).thenReturn(0); // GET_LOCK no lo consiguió (timeout)
-    when(entityManager.createNativeQuery(anyString())).thenReturn(lockQuery);
-
+  void reservar_slotNoDisponible_lanzaExcepcionYNoGuardaNada() {
+    when(citaService.getDisponibilidad(any(), anyInt())).thenReturn(List.of()); // sin slots
     PublicReservaRequest req = request("Ana", "Pérez", "ana@test.com");
-
-    assertThatThrownBy(() -> service.reservar(req))
-        .isInstanceOf(ReservaEnProcesoException.class);
-  }
-
-  @Test
-  void reservar_siempreLiberaElLock_incluseSiFalla() {
-    when(citaService.getDisponibilidad(any(), anyInt())).thenReturn(List.of()); // slot no disponible
-    PublicReservaRequest req = request("Ana", "Pérez", "ana@test.com");
-    req.setFechaHoraInicio(LocalDateTime.of(2030, 1, 7, 11, 0)); // no está en la lista de slots
 
     assertThatThrownBy(() -> service.reservar(req)).isInstanceOf(IllegalArgumentException.class);
 
-    ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
-    verify(entityManager, org.mockito.Mockito.atLeastOnce()).createNativeQuery(sqlCaptor.capture());
-    assertThat(sqlCaptor.getAllValues()).anyMatch(sql -> sql.contains("RELEASE_LOCK"));
+    verify(citaRepository, never()).save(any());
   }
 }

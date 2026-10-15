@@ -3,6 +3,7 @@ package com.consultorio.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -39,10 +40,18 @@ public class GlobalExceptionHandler {
         .body(new ErrorResponse("Unprocessable Entity", firstValidationError));
   }
 
-  @ExceptionHandler(ReservaEnProcesoException.class)
-  public ResponseEntity<ErrorResponse> handleReservaEnProceso(ReservaEnProcesoException ex) {
+  /**
+   * No pudimos tomar el lock de fila (FOR UPDATE) a tiempo — otra reserva/
+   * confirmación para el mismo día de semana está en curso. El cliente puede
+   * reintentar; innodb_lock_wait_timeout (default 50s en MySQL) es quien decide
+   * cuánto esperamos antes de llegar acá.
+   */
+  @ExceptionHandler(PessimisticLockingFailureException.class)
+  public ResponseEntity<ErrorResponse> handleLockTimeout(PessimisticLockingFailureException ex) {
+    log.warn("No se pudo tomar el lock de reserva a tiempo: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body(new ErrorResponse("Conflict", ex.getMessage()));
+        .body(new ErrorResponse("Conflict",
+            "Hay otra reserva en proceso para ese día. Intentá de nuevo en unos segundos."));
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
