@@ -31,6 +31,11 @@ _Ninguna lección registrada aún._
 **Error:** backup local-only = sin backup real ante pérdida total del servidor. Además, nunca se había ejercitado un reprovisioning desde cero, así que un bug de Flyway (`V5` duplicaba una columna ya presente en el baseline `V1`) quedó sin detectar durante meses — solo rompe en una DB completamente nueva.
 **Regla:** (1) backup off-site obligatorio en un proveedor **distinto** al de cómputo, con alertas de billing propias — un solo proveedor cancelado no puede llevarse infra + backup a la vez. (2) ejercitar el disaster-recovery runbook (`docs/DEPLOY.md`) al menos una vez contra un servidor vacío real, no solo en papel — es la única forma de detectar bugs de "fresh install" como este. Migrado a DigitalOcean el mismo día.
 
+### [2026-10-15] Reserva pública: race condition, PII leak y backlog de idempotencia
+**Contexto:** revisión manual post-deploy de `PublicReservaService`/`CitaService` encontró un leak de PII (nombre real filtrado por dedupe de email), solapamiento inconsistente entre disponibilidad pública y validación de admin, y falta de lock ante reservas concurrentes para el mismo slot.
+**Resuelto el mismo día:** lock `GET_LOCK` por día (MySQL) envolviendo check+insert de `reservar()`, dedupe por email condicionado a que el nombre coincida (si no, se crea paciente nuevo en vez de reusar uno ajeno), solapamiento unificado a CONFIRMADA+PENDIENTE en todos lados, logs sin PII (solo ids).
+**Backlog explícito, no resuelto:** reintentar una reserva exitosa hoy da "horario no disponible" en vez de devolver la cita ya creada — falta una clave de idempotencia en el request (ej. UUID generado client-side, guardado en la cita, chequeado antes de insertar). Evaluar en S-Audit o S7 (portal paciente) si se justifica antes.
+
 ---
 
 ## Formato de entrada
