@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { switchMap } from 'rxjs/operators';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ClinicConfigService } from '../../../core/config/clinic-config.service';
 import { CitaService, ResultadoCita } from './cita.service';
 import { PacienteService } from '../pacientes/paciente.service';
 import { Cita } from '../../../core/models/cita.model';
@@ -45,6 +46,7 @@ import type { CitaPayload } from '../../../core/models/cita.model';
   styleUrl: './cita-form.component.scss'
 })
 export class CitaFormComponent implements OnInit {
+  readonly clinic = inject(ClinicConfigService);
   registroForm: FormGroup;
   idEdicion: number | null = null;
   enviando = false;

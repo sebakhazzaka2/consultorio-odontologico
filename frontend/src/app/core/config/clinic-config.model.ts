@@ -24,7 +24,9 @@ export interface ClinicConfig {
   stats_calificacion: string;
   hero_imagenes: string[];
   features: ClinicFeature[];
+  hero_eyebrow: string;
   label_servicio: string;
+  label_servicio_plural: string;
   label_historial: string;
   features_title: string;
   features_subtitle: string;

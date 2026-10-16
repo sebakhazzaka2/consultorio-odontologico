@@ -36,8 +36,10 @@ const FALLBACK: ClinicConfig = {
   stats_pacientes: '', stats_anos_experiencia: '', stats_calificacion: '',
   hero_imagenes: [],
   features: [],
+  hero_eyebrow: '',
   label_servicio: 'Servicio',
-  label_historial: 'Historial clínico',
+  label_servicio_plural: 'Servicios',
+  label_historial: 'Historial',
   features_title: 'Una experiencia pensada en vos',
   features_subtitle: '',
 };
@@ -53,11 +55,10 @@ const FALLBACK: ClinicConfig = {
 export class PublicComponent implements OnInit, OnDestroy {
   heroPage = signal(0);
   private heroTimer: ReturnType<typeof setInterval> | null = null;
-  private readonly HERO_FALLBACK = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80';
 
   readonly heroImagenes = computed(() => {
     const imgs = this.clinica().hero_imagenes;
-    return imgs?.length ? imgs : [this.HERO_FALLBACK];
+    return imgs?.length ? imgs : [];
   });
 
   servicios = signal<PublicServicio[]>([]);

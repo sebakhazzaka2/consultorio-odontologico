@@ -1,5 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ClinicConfigService } from '../../../core/config/clinic-config.service';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -170,6 +171,7 @@ export class PagoPromptDialogComponent {
   styleUrl: './paciente-detalle.component.scss'
 })
 export class PacienteDetalleComponent implements OnInit {
+  readonly clinic = inject(ClinicConfigService);
   paciente: Paciente | null = null;
   historial: HistorialProcedimientos[] = [];
   pagos: Pago[] = [];

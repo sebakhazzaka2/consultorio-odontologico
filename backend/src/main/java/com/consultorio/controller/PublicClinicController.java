@@ -45,6 +45,8 @@ public class PublicClinicController {
     response.setFeatures(features);
     response.setHeroImagenes(clinic.getHeroImagenes());
     response.setLabelServicio(clinic.getLabelServicio());
+    response.setLabelServicioPlural(clinic.getLabelServicioPlural());
+    response.setHeroEyebrow(clinic.getHeroEyebrow());
     response.setLabelHistorial(clinic.getLabelHistorial());
     response.setFeaturesTitle(clinic.getFeaturesTitle());
     response.setFeaturesSubtitle(clinic.getFeaturesSubtitle());
