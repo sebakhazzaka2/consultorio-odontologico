@@ -1,11 +1,14 @@
 package com.consultorio.mysql;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Base para tests contra MySQL 8 real (Testcontainers) con Flyway V1..V9 y
@@ -18,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * saltean (no fallan).
  */
 @SpringBootTest
-@Testcontainers(disabledWithoutDocker = true)
 public abstract class AbstractMySqlTest {
 
   static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0")
@@ -26,10 +28,25 @@ public abstract class AbstractMySqlTest {
       .withUsername("test")
       .withPassword("test");
 
+  static final boolean DOCKER_DISPONIBLE = DockerClientFactory.instance().isDockerAvailable();
+
   static {
-    // Solo arrancar si hay Docker; si no, @Testcontainers saltea la clase.
-    if (DockerClientFactory.instance().isDockerAvailable()) {
+    if (DOCKER_DISPONIBLE) {
       MYSQL.start();
+    }
+  }
+
+  /**
+   * Sin Docker: en CI (env CI definida) es un error, para que los tests de MySQL
+   * nunca se salteen en silencio; en local se saltean con un mensaje claro.
+   */
+  @BeforeAll
+  static void verificarDocker() {
+    if (!DOCKER_DISPONIBLE) {
+      if (System.getenv("CI") != null) {
+        fail("Docker no disponible en CI: los tests de MySQL no pueden saltearse");
+      }
+      assumeTrue(false, "Docker no disponible: se saltean los tests de MySQL (Testcontainers)");
     }
   }
 
