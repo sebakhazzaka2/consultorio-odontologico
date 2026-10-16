@@ -53,7 +53,7 @@
 
 Kuma corre en `status.{DOMAIN}`, con datos persistidos en el volumen `kuma_data`.
 
-**Estado actual (2026-10-15):** la instancia `neodentalmaster` ya tiene la notificación configurada y los avisos llegan a un **canal de Discord**. Los pasos de abajo sirven para replicarlo en una instancia nueva (p. ej. la de Guille en F1). Kuma permite elegir *Discord* como tipo de notificación (basta la URL del webhook del canal) y es la opción más simple de las tres. La URL del webhook es un secreto: guardarla en el gestor de contraseñas, no en el repo. Los datos de Kuma viven en `kuma_data`, que **no entra en `backup.sh`**: si se pierde el volumen hay que reconfigurar monitores y notificación (ver `docs/DEPLOY.md`, paso 9).
+**Estado actual (2026-10-15):** la instancia `neodentalmaster` ya tiene la notificación configurada y los avisos llegan a un **canal de Discord**. Los pasos de abajo sirven para replicarlo en una instancia nueva (p. ej. la de Guille en F1). Kuma permite elegir *Discord* como tipo de notificación (basta la URL del webhook del canal) y es la opción más simple de las tres. La URL del webhook es un secreto: guardarla en el gestor de contraseñas, no en el repo. Los datos de Kuma viven en `kuma_data`, que `backup.sh` empaqueta como `kuma_<timestamp>.tar.gz` desde 2026-10-16 (se restaura con `restore.sh --kuma`, ver `docs/DEPLOY.md` § Backup off-site). Sin ese archivo hay que reconfigurar monitores y notificación a mano (paso 9 del disaster recovery).
 
 1. **Entrar a `https://status.<dominio>`.** Si es la primera vez, crear el usuario admin.
 2. **Configurar canal de notificación** en *Settings → Notifications → Setup Notification*:

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Instala el cronjob de backup en el servidor Hetzner.
-# Ejecutar una sola vez después del deploy inicial.
+# Instala el cronjob de backup en el servidor de la instancia.
+# Ejecutar una vez después del deploy inicial (es idempotente: si ya está, no lo duplica).
 # Requiere: docker, acceso al .env.prod en el directorio raíz del proyecto.
 
 set -euo pipefail
