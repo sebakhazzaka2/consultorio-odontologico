@@ -1,10 +1,38 @@
 # Consultorio Odontológico
 
-## Stack
+## Qué es este producto
+Sistema de gestión de turnos para profesionales independientes de la salud y la belleza (hoy odontología; próximo cliente: estética). Incluye agenda admin, reserva pública sin login, pacientes/clientes, catálogo de servicios, historial de procedimientos con precio y pagos con saldo calculado.
+Se vende como SaaS B2B en tres paquetes (Local / Web / Web + WhatsApp) con **una instancia Docker por cliente** (sin multitenancy todavía). Marca: TurnosUy (`turnosuy.com`). Un cliente live (`neodentalmaster.turnosuy.com`) más una demo en Render.
+Documentación fina del estado real y de los riesgos: `docs/ESTADO.md`.
+
+## Stack y cómo correrlo
 - **Backend:** Spring Boot 3.2.5, Java 17 — ver `backend/CLAUDE.md`
 - **Frontend:** Angular 19 + Angular Material — ver `frontend/CLAUDE.md`
 - **Base de datos:** MySQL (`consultorio_db`, `localhost:3306`)
 - **Backend:** puerto 8080, context path `/api`
+
+Comandos (verificados contra `README.md`, `ci.yml`, `package.json` y `scripts/`):
+
+| Qué | Comando |
+|-----|---------|
+| Crear DB local | `CREATE DATABASE IF NOT EXISTS consultorio_db;` (Flyway migra al arrancar) |
+| Backend (dev) | `cd backend && mvn spring-boot:run -Dspring-boot.run.profiles=local` — requiere `application-local.properties` (gitignored) con `spring.datasource.password` y `jwt.secret` |
+| Tests backend | `cd backend && mvn verify -B` (lo que corre CI; H2 en memoria, no necesita MySQL) |
+| Maven con JDK 17 en Windows | `.\scripts\mvn17.ps1 test` (fija `JAVA_HOME` solo para ese proceso) |
+| Frontend (dev) | `cd frontend && npm install && npm start` → `http://localhost:4200` |
+| Tests frontend | `cd frontend && npm test` (Karma + ChromeHeadless; **CI no lo corre**) |
+| Stack prod local | `docker compose --env-file .env.prod -f docker-compose.prod.yml up -d` (variables en `.env.example`) |
+| Backup / restore | `scripts/backup.sh`, `scripts/restore.sh` (ver `docs/DEPLOY.md`, `docs/RUNBOOK_S3.md`) |
+
+CI/CD (`.github/workflows/ci.yml`): `mvn verify` → build/push de imágenes a GHCR (tag = SHA del commit) → deploy por SSH a cada instancia (GitHub Environments, matriz `instance`) en cada push a `main`; ver `docs/DEPLOY.md`. Un merge a `main` **despliega a producción**.
+
+## Arquitectura
+- **Monolito modular + SPA.** Backend en capas `controller → service → repository → model`, DTOs separados de entidades, mapping manual en el service (`com.consultorio.*`). Frontend Angular standalone: `core/` (auth, config, interceptors), `features/{admin,public,auth}`, `shared/`.
+- **Flujo:** navegador → Caddy (TLS, headers) → nginx (SPA, rate limit, proxy `/api`) → Spring Boot (:8080; Actuator :8081 interno) → MySQL (sin puertos publicados). Uploads en volumen Docker `uploads_data`, servidos en `/api/uploads/**`.
+- **Auth:** JWT stateless (BCrypt), un solo rol `ADMIN` sin autorización por rol. Público: `POST /auth/login`, `GET /public/**`, `POST /public/reservas`, `GET /uploads/**`; todo lo demás exige JWT. Token en `localStorage` del frontend.
+- **Dominio:** `Paciente`, `Cita` (PENDIENTE/CONFIRMADA/CANCELADA/COMPLETADA), `Servicio`, `HistorialProcedimientos` (snapshot de `precio_aplicado`), `Pago` (saldo = Σ historial − Σ pagos, calculado), `DisponibilidadSemanal` (UNIQUE por día → una agenda por instancia), `FechaBloqueada`, `User`. Migraciones Flyway `V1`–`V9`.
+- **Integraciones:** Google Places (reseñas públicas, clave solo en backend), Sentry (backend + frontend), Uptime Kuma, Backblaze B2 (backups vía rclone). No hay email, WhatsApp ni pasarela de pago.
+- **Multi-tenant: no existe.** Ninguna tabla tiene `tenant_id`; el aislamiento es una base y un contenedor por cliente. La marca vive en env vars (`ClinicProperties`, `GET /api/public/config`). Detalle y brecha en `docs/ESTADO.md`.
 
 ## Estructura del repositorio
 ```
@@ -25,6 +53,84 @@ consultorio-odontologico/
 | Roadmap, fases, próximos pasos | `ROADMAP.md` |
 | Cómo trabajar, subagents, task management | `WORKFLOWS.md` |
 | Lecciones aprendidas, errores comunes | `tasks/lessons.md` |
+
+---
+
+## Convenciones
+Resumen; las reglas completas y obligatorias están en `backend/CLAUDE.md` y `frontend/CLAUDE.md`.
+- **Backend:** constructor injection (nunca `@Autowired` en campo); DTOs con `@JsonNaming(SnakeCaseStrategy)`; entidades sin lógica; `@Valid` en controllers; `Instant` para auditoría y `LocalDateTime` para fechas de negocio; SQL en snake_case; cambios de esquema solo con migración Flyway nueva.
+- **Frontend:** standalone components, constructor injection (no `inject()`), tipos explícitos (sin `any`), solo tokens del design system (`var(--color-primary)`, nunca colores fijos), fechas `dd/MM/yyyy`.
+- **Errores:** `GlobalExceptionHandler` mapea excepciones a 400/401/404/409/422/500 con `ErrorResponse`; mensajes de usuario en español. El frontend centraliza errores HTTP en `http-error.interceptor.ts`.
+- **Idioma:** documentación y UI en español; commits y PRs en inglés (conventional commits, sin atribución a Claude), squash and merge.
+- **Config:** nada específico de un cliente en el código; todo por env vars. Cada feature nueva trae su flag en `ClinicProperties` desde el día uno (regla de la sección Feature flags).
+- **Secretos:** nunca en el repo; `.env.prod` vive solo en el servidor.
+
+<!-- BEGIN COMMON -->
+## Contrato común del ecosistema (v1 · 2026-10-16)
+
+Fuente de verdad: proyecto "AI SaaS Ecosystem" (claude.ai), documento CONTRATO-COMUN.md. No editar este bloque dentro de un repo: se cambia en la fuente y se copia idéntico a TurnosUy y FrontPet.
+
+### 1. Contexto
+- Dos productos SaaS comercialmente independientes que comparten criterios y, cuando convenga, componentes:
+  - TurnosUy: repo `consultorio-odontologico`, neodentalmaster.turnosuy.com, clínicas odontológicas (Uruguay).
+  - FrontPet: repo `frontpet`, frontpet.com.br, pet shops (Brasil).
+- Objetivo: ingresos recurrentes con agentes comerciales de IA (consultas, disponibilidad real, turnos o pedidos, derivación a una persona), sin implementaciones manuales por cliente.
+- Prioridad: validar con clientes reales antes de construir plataforma. No construir portal central, suscripciones ni multitenancy completa sin demanda validada.
+
+### 2. Convención de evidencia
+- HECHO: verificado en el código (citar archivo). HIPÓTESIS: inferido o no verificable desde el repo. RECOMENDACIÓN: propuesta sin decidir. DECIDIDO / PENDIENTE: estado de una decisión.
+- Nunca presentar una hipótesis como hecho. La documentación puede ir por delante del código: comprobar antes de afirmar.
+
+### 3. Reglas de trabajo
+- Cambios pequeños, con pruebas automatizadas y rollback documentado.
+- No ejecutar comandos destructivos, migraciones ni despliegues sin aprobación explícita.
+- No modificar producción ni acceder a sistemas ajenos sin autorización.
+- No commitear secretos, tokens ni datos de clientes. No leer `.env` reales.
+- Revisar licencia y seguridad de cualquier dependencia o código externo antes de incorporarlo.
+- No introducir varias herramientas nuevas a la vez; cada una debe justificar un caso de uso concreto.
+
+### 4. Seguridad
+- Un agente nunca tiene acceso directo a la base de datos: solo a herramientas acotadas que llaman a APIs autorizadas.
+- Credenciales, datos y conversaciones separados por cliente.
+- Operaciones sensibles requieren confirmación humana.
+- Verificar el resultado de cada operación comercial antes de comunicarlo al usuario final.
+
+### 5. Decisiones tomadas (DECIDIDO)
+- Los productos siguen siendo independientes comercialmente.
+- No se decide de antemano microservicios ni base compartida: se compara con evidencia de los repos.
+- El agente se valida primero en un producto y después se reutiliza en el otro.
+- Fase actual: auditoría y diseño; no se implementan funcionalidades del agente todavía.
+
+### 6. Decisiones abiertas (PENDIENTE: no asumir)
+- Multitenancy en una instancia vs. una instancia por cliente.
+- Núcleo de agente común (librería o servicio) vs. implementación por producto.
+- Producto en el que se valida primero el agente.
+- Canal WhatsApp (API oficial o proveedor), proveedor de LLM y política de datos personales hacia el LLM (LGPD en Brasil, Ley 18.331 en Uruguay).
+- Vocabulario de dominio común (Negocio, Cliente, Recurso/Profesional, Servicio, Turno y sus estados).
+
+### 7. Requisitos candidatos para el agente (RECOMENDACIÓN, validar con clientes)
+- Credencial de máquina por negocio con scopes mínimos (leer servicios, leer disponibilidad, crear turno); el negocio se resuelve desde la credencial, no desde configuración global.
+- Los turnos que crea el agente nacen en estado pendiente y los confirma una persona.
+- Cancelar o reprogramar solo con identidad verificada del cliente (código o enlace por turno), nunca con credencial de admin.
+- Idempotencia en reservas, límites por credencial, por teléfono y por negocio, y validación de fechas pasadas y horizonte máximo.
+- Registro de auditoría con origen de la acción (humano, web, agente).
+- Contrato OpenAPI y errores semánticos para que el agente interprete resultados.
+- Aviso al negocio cuando llega un turno pendiente.
+
+### 8. Brechas comunes verificadas (auditoría 2026-10-15; revisar tras cada hito)
+- Ambos son single-tenant en ejecución (TurnosUy sin `tenant_id`; FrontPet con `tenant_id` en el esquema pero tenant fijo por configuración).
+- Ninguno tiene autorización por rol, autenticación de máquina, cancelación segura para el cliente final, ni contrato OpenAPI.
+- Ninguno envía recordatorios ni mensajes de WhatsApp desde el backend (solo enlace `wa.me`), y no hay jobs programados de notificación.
+- Marca, textos, moneda y rubro están hardcodeados en frontend y modelo; sin flags de módulos por negocio.
+- Backups: restauración verificada en TurnosUy (restore desde B2 probado el 2026-10-15); no verificada en FrontPet.
+
+### 9. Diferencias a respetar (no unificar a ciegas)
+- Stacks distintos: TurnosUy = Java 17, Spring Boot 3.2, Angular 19, MySQL; FrontPet = Java 21, Spring Boot 3.5, Next 16, PostgreSQL. No se asume stack común.
+- Despliegue: TurnosUy = una instancia Docker Compose por cliente en DigitalOcean; FrontPet = destino Hetzner + Coolify.
+- Sesión: TurnosUy = JWT en localStorage; FrontPet = JWT en cookie HttpOnly.
+- Modelo: TurnosUy tiene Paciente, historial y pagos; FrontPet no tiene entidad cliente y agrega catálogo y pedidos.
+- Estados de turno: TurnosUy PENDIENTE/CONFIRMADA/CANCELADA/COMPLETADA; FrontPet PENDING/CONFIRMED/CANCELLED.
+<!-- END COMMON -->
 
 ---
 
@@ -95,6 +201,9 @@ Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin p
 **F0 cerrada (2026-10-15):** restore y backup B2 (#37–#38), login 401 (#40), sin defaults de cliente + validación de `CLINIC_*` (#41), `show-sql` apagado y alertas Kuma→Discord (#42), `<title>`/`og:*` por instancia (#43). Prod verificado: corre el último `main`. Pendientes menores en `ROADMAP.md` § F0.
 
 Ver la secuencia completa, los hechos verificados en el código y las preguntas abiertas en `ROADMAP.md`.
+
+**Resumen para el proyecto de planificación (2026-10-16):** producto funcional en producción con agenda, reserva pública, pacientes, servicios, pagos y dashboard; 33 `@Test` en backend (10 clases, incluidos tests contra MySQL real con Testcontainers) y 26 `it` de frontend en 6 specs. Sin recordatorios, sin flags `FEATURE_*`, sin roles ni multitenancy. Próximo paso: F1 (instancia de Guille + importador CSV + `V10`). Evidencia, dudas y deuda priorizada en `docs/ESTADO.md`.
+**Doc sync 2026-10-16:** se agregó `docs/ESTADO.md`, las secciones de producto/arquitectura/convenciones y el bloque COMMON v1. Tras sincronizar con `main` (PR #47–#49: texto del rubro por configuración, test de reserva concurrente contra MySQL real, deploy multi-host con imagen por SHA y backups por instancia) se actualizaron CI y conteo de tests. **Desvío deliberado del COMMON:** la línea de backups en el § 8 se editó para TurnosUy (restore B2 verificado el 2026-10-15, ver `tasks/lessons.md`); replicar el cambio en la fuente CONTRATO-COMUN.md para que vuelvan a ser idénticos.
 
 ## Operaciones mínimas
 
