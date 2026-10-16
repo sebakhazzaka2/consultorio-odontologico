@@ -115,7 +115,7 @@ Base sobre la que se estimaron las fases. Si alguno cambia, revisar las horas.
 **Pendientes que quedan fuera de F0:**
 - `mvn test` local falla 8 tests de Mockito en JDK 25 (`CitaServiceTest`, `PublicReservaServiceTest`); el CI corre en JDK 17 y pasa. Fijar el JDK local en 17 o actualizar Mockito.
 - Falta el test de concurrencia contra MySQL real dentro del repo (S9, o F1 si se toca la reserva).
-- `kuma_data` no está en `backup.sh`: si se pierde el volumen hay que reconfigurar Kuma a mano.
+- ~~`kuma_data` no está en `backup.sh`~~: resuelto en el PR de deploy multi-host (`ci/deploy-multi-host`): `backup.sh` lo empaqueta y sube a B2, `restore.sh --kuma` lo restaura.
 - ~~Verificar `CLINIC_TELEFONO` y `CLINIC_WHATSAPP`~~: confirmado, son los reales (es el mismo cliente que Montecaseros).
 
 **Riesgo:** que prod difiera del repositorio.
@@ -126,7 +126,7 @@ Guille **sigue en Ágora** durante toda esta fase. La instancia se levanta y se 
 
 **Tareas — instancia (25–38 h)**
 - [ ] VPS nuevo, Docker Compose, `.env` con secretos propios (JWT, DB, admin distintos de los de prod), registro A del subdominio de turnosuy.com, Caddy y monitor en Kuma (6–8 h).
-- [ ] Deploy multi-host en CI: un merge a `main` llega a los dos hosts (3–5 h).
+- [ ] Deploy multi-host en CI: un merge a `main` llega a los dos hosts (3–5 h). Pipeline listo en `ci/deploy-multi-host` (matrix por GitHub Environment, imagen por SHA, rollback); falta dar de alta el Environment de Guille cuando exista el droplet (`docs/DEPLOY.md` § Alta de una instancia nueva).
 - [ ] Texto del rubro desde la configuración: sacar el texto dental fijo de `home`, `public` y `servicios` (6–10 h).
 - [ ] Colores y logo en runtime con variables CSS `--brand-*`, el subconjunto mínimo de F-2/F-3/F-4 del viejo S4 (6–10 h).
 - [ ] Backups propios a B2 y restore probado de esta instancia (2–3 h).
