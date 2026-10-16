@@ -14,7 +14,8 @@ permissions:
 jobs:
   # ─────────────────────────────────────────────
   # Paso 1: Compilar y testear backend
-  # Tests contra H2 en memoria — no requiere MySQL.
+  # Tests contra H2 en memoria; los de com.consultorio.mysql usan
+  # Testcontainers (MySQL 8 real) — ubuntu-latest trae Docker.
   # ─────────────────────────────────────────────
   backend-test:
     name: Backend — compile & test
