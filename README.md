@@ -123,6 +123,8 @@ cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
+Requires **JDK 17** (the one CI and production use). On Windows with another JDK as default, run Maven through `.\scripts\mvn17.ps1 test` — it sets `JAVA_HOME` for that process only.
+
 API at `http://localhost:8080/api`.
 
 ### Frontend
