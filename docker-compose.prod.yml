@@ -1,3 +1,10 @@
+# Nombre de proyecto fijo: containers (consultorio-odontologico-db-1, ...) y
+# volúmenes (consultorio-odontologico_mysql_data, ...) no dependen de la carpeta
+# donde se clonó el repo. Es el mismo nombre que Compose derivaba de la carpeta
+# en neodental, así que reusa los volúmenes existentes. scripts/backup.sh y
+# scripts/restore.sh asumen este nombre: si se cambia, cambiarlo también ahí.
+name: consultorio-odontologico
+
 services:
 
   db:
@@ -18,7 +25,8 @@ services:
     restart: unless-stopped
 
   backend:
-    image: ${GHCR_IMAGE_PREFIX}/consultorio-backend:latest
+    # IMAGE_TAG lo pasa el CI (SHA del commit); a mano, sin setear → :latest.
+    image: ${GHCR_IMAGE_PREFIX}/consultorio-backend:${IMAGE_TAG:-latest}
     build: ./backend
     env_file:
       - .env.prod
@@ -42,7 +50,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ${GHCR_IMAGE_PREFIX}/consultorio-frontend:latest
+    image: ${GHCR_IMAGE_PREFIX}/consultorio-frontend:${IMAGE_TAG:-latest}
     build: ./frontend
     # Solo lo que usa 40-clinic-meta.sh (título y og:* del index.html).
     # No usar env_file: .env.prod acá — le pasaría secretos a nginx.
