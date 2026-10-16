@@ -88,7 +88,7 @@ FEATURE_WHATSAPP=true
 Completado: MVP1, P1 hardening, P2 infra, P3 Fase A/B, página pública, admin polish, deploy real (live 2026-04-21), post-deploy hardening (PR #19), public page polish (PR #20), Sprint 1 multi-rubro (PR #21), Sprint 2 Disponibilidad + Reserva sin login (2026-05-20), fix uploads caching (PR #25), S3 hardening (PR #26: register cerrado, headers Caddy, `X-Real-IP` no falsificable, rate limit nginx, honeypot), migración Hetzner → DigitalOcean (PR #28–#29), demo en Render (2026-08-19), reserva concurrente con `FOR UPDATE` como primera sentencia + PII fuera de los logs de reserva (PR #32–#35).
 
 **Instancias en producción:**
-- `neodentalmaster.turnosuy.com` — única instancia live (odontología, Montevideo), en DigitalOcean (verificado 2026-10-15: sitio responde, Uptime Kuma activo). `dentalmontecaseros` dada de baja.
+- `neodentalmaster.turnosuy.com` — única instancia live (odontología, Montevideo), en DigitalOcean (verificado 2026-10-15: sitio responde, Uptime Kuma activo). Es el mismo cliente que antes figuraba como Dental Montecaseros (cambió el nombre, paga).
 - Demo pública en Render (datos fake).
 - **Próxima:** Guille Blanchet Beauty (belleza, Uruguay) en un VPS nuevo con subdominio de turnosuy.com. Se levanta en F1 pero ella sigue en Ágora hasta tener recordatorios por email (F2a).
 
@@ -121,11 +121,12 @@ Secuencia por fases (detalle, horas y criterios de salida en `ROADMAP.md`). Capa
 ⏸️ **F3b — pt-BR** (30–45 h) — solo si firma un cliente de Brasil.
 ⏸️ **F4 — Fisioterapia como complemento de Vedius** — condicionada a la reunión. El timer PWA (12–16 h) puede adelantarse con un piloto pago. Profesional no se construye mientras Vedius tenga la agenda.
 🟡 **F5 — Agente** (95–135 h) tras F2.
+🟡 **F6 — Adquisición y embudo en turnosuy.com** (35–55 h, 6a–6d). Sitio de ventas mínimo con eventos del embudo, puntos de contacto (WhatsApp, email de bienvenida, chat solo en el sitio de ventas), onboarding asistido, cobro. Tras el corte de Guille. Anuncios pagos solo con el gate 6f cumplido. Analytics de terceros **solo** en `turnosuy.com`, nunca en el admin ni en la reserva pública.
 🟢 Backlog posterior: agenda polish, theming completo, S5, S7, S8, S9, S11–S14.
 
 **Postergados explícitamente:**
 - **Fase Premium UX** (diseñador externo + delight: command palette, shared transitions, ilustraciones propias, etc.) — post 1+ cliente WhatsApp pagando 2+ meses sin churn. Antes de invertir en landing SaaS porque la landing tiene que mostrar este nivel. Detalle en `ROADMAP.md` § Fase Premium UX.
-- Landing comercial `consultorio-landing` — post Fase Premium UX, con caso de éxito real.
+- Landing comercial **premium** `consultorio-landing` — post Fase Premium UX, con caso de éxito real. La versión **mínima** con medición entra antes, en F6a.
 - Multi-tenancy real — post 5 clientes activos.
 
 **Aprendizaje devops (proyecto + paralelo):**
