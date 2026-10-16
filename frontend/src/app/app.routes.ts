@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ServiciosComponent } from './features/public/servicios/servicios.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { authGuard } from './core/auth/auth.guard';
 
@@ -8,7 +7,7 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./features/public/public.component').then(m => m.PublicComponent)
   },
-  { path: 'servicios', component: ServiciosComponent },
+  { path: 'servicios', redirectTo: '', pathMatch: 'full' },
   {
     path: 'reservar',
     loadComponent: () => import('./features/public/reserva/reserva.component').then(m => m.ReservaComponent)

@@ -23,5 +23,6 @@ export class ClinicConfigService {
   get phone(): string { return this.config()?.telefono ?? ''; }
   get whatsapp(): string { return this.config()?.whatsapp ?? ''; }
   get email(): string { return this.config()?.email ?? ''; }
+  get historialLabel(): string { return this.config()?.label_historial || 'Historial'; }
   get hours(): string { return this.config()?.horario ?? ''; }
 }

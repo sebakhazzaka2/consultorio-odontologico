@@ -2,7 +2,7 @@
   <div class="nav-container">
     <a class="nav-brand" href="#top">{{ clinica().nombre }}</a>
     <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
-      <a href="#servicios" (click)="mobileMenuOpen.set(false)">{{ clinica().label_servicio }}s</a>
+      <a href="#servicios" (click)="mobileMenuOpen.set(false)">{{ clinica().label_servicio_plural }}</a>
       @if (clinica().reviews_enabled) {
         <a href="#resenas" (click)="mobileMenuOpen.set(false)">Reseñas</a>
       }
@@ -25,10 +25,12 @@
 <section class="hero" id="top">
   <div class="hero-container">
     <div class="hero-content">
-      <span class="hero-eyebrow">
-        <span class="hero-eyebrow-dot"></span>
-        Clínica odontológica en Montevideo
-      </span>
+      @if (clinica().hero_eyebrow) {
+        <span class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          {{ clinica().hero_eyebrow }}
+        </span>
+      }
       <h1 class="hero-title">{{ clinica().nombre }}</h1>
       <p class="hero-subtitle">{{ clinica().tagline }}</p>
       <div class="hero-actions">
@@ -36,7 +38,7 @@
           Reservar turno
         </a>
         <a class="btn-ghost" href="#servicios">
-          Ver {{ clinica().label_servicio }}s
+          Ver {{ clinica().label_servicio_plural }}
           <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M13 5l7 7-7 7"/>
           </svg>
@@ -56,11 +58,13 @@
 
     <div class="hero-visual">
       <div class="hero-visual-frame">
-        <img [@heroFade]="heroPage()"
-             [src]="heroImagenes()[heroPage()]"
-             alt="Clínica odontológica"
-             loading="eager"
-             fetchpriority="high" />
+        @if (heroImagenes().length) {
+          <img [@heroFade]="heroPage()"
+               [src]="heroImagenes()[heroPage()]"
+               [alt]="clinica().nombre"
+               loading="eager"
+               fetchpriority="high" />
+        }
         @if (heroImagenes().length > 1) {
           <div class="hero-img-nav">
             <button class="hero-img-btn" (click)="prevHero()" aria-label="Imagen anterior">
@@ -167,8 +171,8 @@
 <section class="servicios-section" id="servicios">
   <div class="section-container">
     <div class="section-header">
-      <span class="section-eyebrow">{{ clinica().label_servicio }}s</span>
-      <h2 class="section-title">{{ clinica().label_servicio }}s que ofrecemos</h2>
+      <span class="section-eyebrow">{{ clinica().label_servicio_plural }}</span>
+      <h2 class="section-title">{{ clinica().label_servicio_plural }} que ofrecemos</h2>
       <p class="section-lead">Carta de servicios con precios transparentes. Consultá por planes de pago.</p>
     </div>
 
@@ -424,7 +428,7 @@
         <ul>
           <li><a href="#top">Inicio</a></li>
           <li><a href="#features">Por qué elegirnos</a></li>
-          <li><a href="#servicios">{{ clinica().label_servicio }}s</a></li>
+          <li><a href="#servicios">{{ clinica().label_servicio_plural }}</a></li>
           @if (clinica().reviews_enabled) {
             <li><a href="#resenas">Reseñas</a></li>
           }

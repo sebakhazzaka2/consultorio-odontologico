@@ -130,9 +130,15 @@
           <mat-card-title>Contacto</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <p><mat-icon>phone</mat-icon> (555) 123-4567</p>
-          <p><mat-icon>email</mat-icon> info&#64;consultorio.com</p>
-          <p><mat-icon>schedule</mat-icon> Lun - Vie: 9:00 AM - 6:00 PM</p>
+          @if (clinic.phone) {
+            <p><mat-icon>phone</mat-icon> {{ clinic.phone }}</p>
+          }
+          @if (clinic.email) {
+            <p><mat-icon>email</mat-icon> {{ clinic.email }}</p>
+          }
+          @if (clinic.hours) {
+            <p><mat-icon>schedule</mat-icon> {{ clinic.hours }}</p>
+          }
         </mat-card-content>
       </mat-card>
     </div>

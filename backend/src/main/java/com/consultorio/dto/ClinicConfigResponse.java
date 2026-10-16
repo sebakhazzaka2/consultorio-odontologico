@@ -28,7 +28,9 @@ public class ClinicConfigResponse {
   private String statsCalificacion;
   private List<String> heroImagenes;
   private List<FeatureResponse> features;
+  private String heroEyebrow;
   private String labelServicio;
+  private String labelServicioPlural;
   private String labelHistorial;
   private String featuresTitle;
   private String featuresSubtitle;
@@ -89,6 +91,12 @@ public class ClinicConfigResponse {
 
   public List<FeatureResponse> getFeatures() { return features; }
   public void setFeatures(List<FeatureResponse> features) { this.features = features; }
+
+  public String getHeroEyebrow() { return heroEyebrow; }
+  public void setHeroEyebrow(String heroEyebrow) { this.heroEyebrow = heroEyebrow; }
+
+  public String getLabelServicioPlural() { return labelServicioPlural; }
+  public void setLabelServicioPlural(String labelServicioPlural) { this.labelServicioPlural = labelServicioPlural; }
 
   public String getLabelServicio() { return labelServicio; }
   public void setLabelServicio(String labelServicio) { this.labelServicio = labelServicio; }
