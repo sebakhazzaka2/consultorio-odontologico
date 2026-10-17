@@ -1,5 +1,6 @@
 package com.consultorio.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.List;
@@ -8,6 +9,11 @@ import java.util.List;
 public class ClinicConfigResponse {
 
   public record FeatureResponse(String titulo, String texto, String icono) {}
+
+  /** Campos vacíos se omiten del JSON; si no hay ninguno, no se manda `branding`. */
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  public record BrandingResponse(String primary, String primaryHover, String accent, String logoUrl) {}
 
   private String nombre;
   private String tagline;
@@ -34,6 +40,11 @@ public class ClinicConfigResponse {
   private String labelHistorial;
   private String featuresTitle;
   private String featuresSubtitle;
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private BrandingResponse branding;
+
+  public BrandingResponse getBranding() { return branding; }
+  public void setBranding(BrandingResponse branding) { this.branding = branding; }
 
   public String getNombre() { return nombre; }
   public void setNombre(String nombre) { this.nombre = nombre; }

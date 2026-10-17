@@ -41,6 +41,13 @@ button:focus-visible {
   letter-spacing: -0.01em;
 }
 
+.nav-logo {
+  display: block;
+  max-height: 40px;
+  max-width: 200px;
+  object-fit: contain;
+}
+
 // Mobile-first: overlay, hidden off-screen to the right
 .nav-links {
   position: fixed;
@@ -149,7 +156,7 @@ button:focus-visible {
   display: flex;
   align-items: center;
   background:
-    radial-gradient(circle at 1px 1px, rgba(59, 91, 219, 0.10) 1px, transparent 0),
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--color-primary-light) 10%, transparent) 1px, transparent 0),
     linear-gradient(180deg, var(--color-navy-50) 0%, #fff 100%);
   background-size: 28px 28px, 100% 100%;
   padding: clamp(48px, 8vw, 96px) 0;
@@ -394,7 +401,7 @@ button:focus-visible {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(11, 26, 58, 0.15) 100%);
+    background: linear-gradient(180deg, transparent 50%, color-mix(in srgb, var(--color-primary) 15%, transparent) 100%);
     pointer-events: none;
   }
 }

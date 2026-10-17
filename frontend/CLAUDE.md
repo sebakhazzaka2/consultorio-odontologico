@@ -99,7 +99,7 @@ Para **botones en Material** usar `mat-flat-button` (primary fill) o `mat-stroke
 
 ## Theming dinámico por cliente
 
-> **Status (2026-10-15): no implementado.** No existen `--brand-*` inyectados en runtime ni `BRAND_*` en el backend; los colores viven fijos en `_design-system.scss`. El mínimo (colores y logo por instancia) entra en F1 para la instancia de Guille; el resto (migración a `@use mat`, QA en 2 marcas) queda en backlog. Ver `ROADMAP.md`. Mientras tanto, los componentes ya deben consumir `--color-primary` (no `--color-navy-950` directo) para que la migración sea drop-in.
+> **Status (2026-10-16): mínimo implementado.** `BRAND_PRIMARY/PRIMARY_HOVER/ACCENT/LOGO_URL` → `ClinicProperties.Branding` (validado) → `branding` en `/api/public/config` → `ClinicConfigService.applyBranding()` setea `--brand-*` (incl. derivados `--brand-navy-*`) en `<html>`; la escala `--color-navy-*` de `_design-system.scss` hace fallback a los valores originales. Material: en vez de migrar a `@use mat`, `styles/_material-brand.scss` (generado del prebuilt indigo-pink) reapunta los tokens primary/accent a `--mat-brand-*`. Logo en nav público y sidebar admin. Pendiente en backlog: migración a `@use mat`, QA en 2 marcas. Mientras tanto, los componentes ya deben consumir `--color-primary` (no `--color-navy-950` directo) para que la migración sea drop-in.
 >
 > **Tampoco hay i18n:** `LOCALE_ID: 'es'` fijo, textos en español en los templates y ~20 apariciones de `UY$` / `UYU` / `es-UY` / `es-ES`. Moneda y locale por configuración en F3; pt-BR en F3b.
 

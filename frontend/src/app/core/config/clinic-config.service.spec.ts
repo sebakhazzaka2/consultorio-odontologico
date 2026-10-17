@@ -71,6 +71,73 @@ describe('ClinicConfigService', () => {
     expect(service.tagline).toBe('Testing tagline');
   });
 
+  describe('applyBranding', () => {
+    const VARS = [
+      '--brand-primary', '--brand-primary-hover', '--brand-primary-contrast', '--brand-accent',
+      '--brand-navy-900', '--brand-navy-700', '--brand-navy-500', '--brand-navy-100', '--brand-navy-50',
+    ];
+    const get = (k: string) => document.documentElement.style.getPropertyValue(k);
+    const clear = () => VARS.forEach(k => document.documentElement.style.removeProperty(k));
+    beforeEach(clear);
+    afterEach(clear);
+
+    it('sets brand vars for valid hex colors', () => {
+      service.applyBranding({ primary: '#8A2BE2', primary_hover: '#6A1FB5', accent: '#FF69B4' });
+      expect(get('--brand-primary')).toBe('#8A2BE2');
+      expect(get('--brand-primary-hover')).toBe('#6A1FB5');
+      expect(get('--brand-accent')).toBe('#FF69B4');
+      expect(get('--brand-primary-contrast')).toBe('#FFFFFF');
+      expect(get('--brand-navy-900')).toMatch(/^#[0-9a-f]{6}$/);
+    });
+
+    it('derives hover and accent from primary when missing', () => {
+      service.applyBranding({ primary: '#000000' });
+      expect(get('--brand-primary-hover')).toBe('#262626');
+      expect(get('--brand-accent')).toBe('#000000');
+    });
+
+    it('picks a dark contrast color for light primaries', () => {
+      service.applyBranding({ primary: '#FFD700' });
+      expect(get('--brand-primary-contrast')).toBe('#0F172A');
+    });
+
+    it('ignores invalid values', () => {
+      service.applyBranding({
+        primary: 'red', primary_hover: '#12', accent: '#000000;background:url(x)',
+      });
+      VARS.forEach(k => expect(get(k)).toBe(''));
+    });
+
+    it('ignores only the invalid field when others are valid', () => {
+      service.applyBranding({ primary: '#8A2BE2', primary_hover: 'nope' });
+      expect(get('--brand-primary')).toBe('#8A2BE2');
+      expect(get('--brand-primary-hover')).toBe('#9c4be6');
+    });
+
+    it('does nothing without branding', () => {
+      service.applyBranding(undefined);
+      service.applyBranding({});
+      VARS.forEach(k => expect(get(k)).toBe(''));
+    });
+
+    it('is applied from load() and logoUrl is exposed', () => {
+      service.load().subscribe();
+      httpMock.expectOne(API_URL).flush({
+        ...MOCK_CONFIG,
+        branding: { primary: '#8A2BE2', logo_url: '/api/uploads/branding/logo.png' },
+      });
+      expect(get('--brand-primary')).toBe('#8A2BE2');
+      expect(service.logoUrl).toBe('/api/uploads/branding/logo.png');
+    });
+
+    it('load() without branding leaves vars untouched', () => {
+      service.load().subscribe();
+      httpMock.expectOne(API_URL).flush(MOCK_CONFIG);
+      VARS.forEach(k => expect(get(k)).toBe(''));
+      expect(service.logoUrl).toBe('');
+    });
+  });
+
   it('getters return empty string before load', () => {
     expect(service.name).toBe('');
     expect(service.tagline).toBe('');

@@ -1,5 +1,8 @@
 @use 'styles/design-system';
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
+// Override de los colores del tema Material por el brand (debe ir DESPUÉS del prebuilt;
+// con @use saldría antes en el CSS final y perdería la cascada).
+@import 'styles/material-brand';
 
 html, body {
   height: 100%;

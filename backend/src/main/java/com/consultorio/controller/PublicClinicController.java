@@ -2,6 +2,7 @@ package com.consultorio.controller;
 
 import com.consultorio.config.ClinicProperties;
 import com.consultorio.dto.ClinicConfigResponse;
+import com.consultorio.dto.ClinicConfigResponse.BrandingResponse;
 import com.consultorio.dto.ClinicConfigResponse.FeatureResponse;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,17 @@ public class PublicClinicController {
     response.setLabelHistorial(clinic.getLabelHistorial());
     response.setFeaturesTitle(clinic.getFeaturesTitle());
     response.setFeaturesSubtitle(clinic.getFeaturesSubtitle());
+    response.setBranding(toBranding(clinic.getBranding()));
     return ResponseEntity.ok(response);
+  }
+
+  /** null si no hay ningún valor de branding: el frontend usa los defaults. */
+  private static BrandingResponse toBranding(ClinicProperties.Branding b) {
+    if (b == null) return null;
+    if (b.getPrimary().isEmpty() && b.getPrimaryHover().isEmpty()
+        && b.getAccent().isEmpty() && b.getLogoUrl().isEmpty()) {
+      return null;
+    }
+    return new BrandingResponse(b.getPrimary(), b.getPrimaryHover(), b.getAccent(), b.getLogoUrl());
   }
 }

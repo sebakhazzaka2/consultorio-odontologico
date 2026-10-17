@@ -2,10 +2,51 @@ package com.consultorio.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "clinic")
+@Validated
 public class ClinicProperties {
+
+  /**
+   * Colores y logo por instancia (BRAND_*). Todo opcional (vacío = look por defecto).
+   * Los valores terminan en CSS (variables) y en un atributo src, así que se validan
+   * estrictamente en TODOS los perfiles: un valor inválido hace fallar el arranque.
+   */
+  public static class Branding {
+    public static final String HEX_REGEX = "^(#[0-9a-fA-F]{6})?$";
+    // Vacío, https://... sin espacios ni caracteres de inyección, o ruta /api/uploads/... sin ".."
+    public static final String LOGO_URL_REGEX =
+        "^(|https://[^\\s\"'<>()\\\\]+|/api/uploads/(?!.*\\.\\.)[A-Za-z0-9._~%/-]+)$";
+
+    @Pattern(regexp = HEX_REGEX, message = "BRAND_PRIMARY must be a hex color like #AABBCC")
+    private String primary = "";
+    @Pattern(regexp = HEX_REGEX, message = "BRAND_PRIMARY_HOVER must be a hex color like #AABBCC")
+    private String primaryHover = "";
+    @Pattern(regexp = HEX_REGEX, message = "BRAND_ACCENT must be a hex color like #AABBCC")
+    private String accent = "";
+    @Pattern(regexp = LOGO_URL_REGEX,
+        message = "BRAND_LOGO_URL must be https://... or a relative /api/uploads/... path")
+    private String logoUrl = "";
+
+    public String getPrimary() { return primary; }
+    public void setPrimary(String v) { this.primary = v == null ? "" : v.trim(); }
+    public String getPrimaryHover() { return primaryHover; }
+    public void setPrimaryHover(String v) { this.primaryHover = v == null ? "" : v.trim(); }
+    public String getAccent() { return accent; }
+    public void setAccent(String v) { this.accent = v == null ? "" : v.trim(); }
+    public String getLogoUrl() { return logoUrl; }
+    public void setLogoUrl(String v) { this.logoUrl = v == null ? "" : v.trim(); }
+  }
+
+  @Valid
+  private Branding branding = new Branding();
+
+  public Branding getBranding() { return branding; }
+  public void setBranding(Branding branding) { this.branding = branding; }
 
   public static class Feature {
     private String titulo = "";

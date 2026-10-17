@@ -119,7 +119,7 @@ export interface PagoPromptData {
       padding: 12px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px;
       background: #fff; cursor: pointer; transition: border-color 150ms, background 150ms;
     }
-    .opcion-btn.selected { border-color: #3B5BDB; background: #EEF2FF; }
+    .opcion-btn.selected { border-color: var(--color-primary-light); background: var(--brand-navy-50, #EEF2FF); }
     .opcion-label { font-size: 0.8rem; color: #64748B; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
     .opcion-monto { font-size: 1rem; font-weight: 700; color: #0F172A; margin-top: 4px; }
     .monto-field { width: 100%; }
