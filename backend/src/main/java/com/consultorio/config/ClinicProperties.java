@@ -48,6 +48,22 @@ public class ClinicProperties {
   public Branding getBranding() { return branding; }
   public void setBranding(Branding branding) { this.branding = branding; }
 
+  public static final String DEFAULT_COUNTRY = "598";
+
+  /**
+   * Código de país de la instancia (CLINIC_COUNTRY): 598 (Uruguay) o 55 (Brasil).
+   * Lo usa {@code util.PhoneNormalizer} para completar teléfonos locales. Vacío o sin
+   * setear = 598, así las instancias existentes arrancan igual. Se valida en todos los
+   * perfiles: otro valor hace fallar el arranque.
+   */
+  @Pattern(regexp = "^(598|55)$", message = "CLINIC_COUNTRY must be 598 (Uruguay) or 55 (Brazil)")
+  private String country = DEFAULT_COUNTRY;
+
+  public String getCountry() { return country; }
+  public void setCountry(String v) {
+    this.country = (v == null || v.isBlank()) ? DEFAULT_COUNTRY : v.trim();
+  }
+
   public static class Feature {
     private String titulo = "";
     private String texto = "";
