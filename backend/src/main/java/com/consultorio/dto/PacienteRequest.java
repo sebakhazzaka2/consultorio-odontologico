@@ -30,7 +30,18 @@ public class PacienteRequest {
   @PastOrPresent
   private LocalDate fechaNacimiento;
 
+  // Opcional (V11). null = alta con true / edición que conserva el valor guardado.
+  private Boolean recordatoriosEmail;
+
   public PacienteRequest() {}
+
+  public Boolean getRecordatoriosEmail() {
+    return recordatoriosEmail;
+  }
+
+  public void setRecordatoriosEmail(Boolean recordatoriosEmail) {
+    this.recordatoriosEmail = recordatoriosEmail;
+  }
 
   public String getNombre() {
     return nombre;

@@ -53,6 +53,56 @@ class StartupEnvValidatorTest {
         });
   }
 
+  // --- Emails (FEATURE_EMAIL_NOTIFICATIONS) ---
+
+  @Test
+  void emailsApagados_noExigeMail() {
+    prodRunner
+        .withPropertyValues(VALID_CLINIC)
+        .withPropertyValues("clinic.flags.email-notifications=false")
+        .run(context -> assertThat(context).hasNotFailed());
+  }
+
+  @Test
+  void emailsPrendidosConAuth_sinCredencialesNiUrl_fallaYListaTodo() {
+    prodRunner
+        .withPropertyValues(VALID_CLINIC)
+        .withPropertyValues("clinic.flags.email-notifications=true", "spring.mail.host=smtp-relay.brevo.com")
+        .run(context -> {
+          assertThat(context).hasFailed();
+          assertThat(context.getStartupFailure())
+              .hasMessageContaining("MAIL_USERNAME is not set")
+              .hasMessageContaining("MAIL_PASSWORD is not set")
+              .hasMessageContaining("APP_BASE_URL or DOMAIN");
+        });
+  }
+
+  @Test
+  void emailsPrendidosConAuth_credencialesYDomain_arranca() {
+    prodRunner
+        .withPropertyValues(VALID_CLINIC)
+        .withPropertyValues(
+            "clinic.flags.email-notifications=true",
+            "spring.mail.host=smtp-relay.brevo.com",
+            "spring.mail.username=usuario",
+            "spring.mail.password=clave",
+            "notifications.domain=clinica.turnosuy.com")
+        .run(context -> assertThat(context).hasNotFailed());
+  }
+
+  @Test
+  void emailsPrendidosSinAuth_noExigeCredenciales() {
+    // Relay sin autenticación (p. ej. Mailpit): MAIL_SMTP_AUTH=false.
+    prodRunner
+        .withPropertyValues(VALID_CLINIC)
+        .withPropertyValues(
+            "clinic.flags.email-notifications=true",
+            "spring.mail.host=mailpit",
+            "spring.mail.properties.mail.smtp.auth=false",
+            "notifications.base-url=http://localhost:4200")
+        .run(context -> assertThat(context).hasNotFailed());
+  }
+
   @Test
   void sinPerfilProd_elValidadorNoSeCarga() {
     new ApplicationContextRunner()

@@ -26,12 +26,23 @@ class PacienteControllerTest extends BaseIntegrationTest {
 
   /** Body de paciente válido; {@code email} puede ser null (se manda como null en el JSON). */
   private String pacienteBody(String nombre, String email) throws Exception {
+    return objectMapper.writeValueAsString(pacienteMap(nombre, email));
+  }
+
+  /** Igual que {@link #pacienteBody} pero con {@code recordatorios_email}. */
+  private String pacienteBody(String nombre, String email, boolean recordatorios) throws Exception {
+    Map<String, Object> body = pacienteMap(nombre, email);
+    body.put("recordatorios_email", recordatorios);
+    return objectMapper.writeValueAsString(body);
+  }
+
+  private Map<String, Object> pacienteMap(String nombre, String email) {
     Map<String, Object> body = new HashMap<>();
     body.put("nombre", nombre);
     body.put("apellido", "García");
     body.put("telefono", "099123456");
     body.put("email", email);
-    return objectMapper.writeValueAsString(body);
+    return body;
   }
 
   private ResultActions crear(String nombre, String email) throws Exception {
@@ -157,6 +168,56 @@ class PacienteControllerTest extends BaseIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isUnprocessableEntity());
+  }
+
+  // --- recordatorios_email (V11, contrato con el frontend) ---
+
+  @Test
+  void crearPaciente_sinRecordatorios_defaultTrueEnDetalleYListado() throws Exception {
+    long id = crearYDevolverId("Juan", "juan@rec.com");
+    crear("Pedro", null).andExpect(status().isCreated())
+        .andExpect(jsonPath("$.recordatorios_email").value(true));
+
+    mockMvc.perform(get("/pacientes/" + id).header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.recordatorios_email").value(true));
+    mockMvc.perform(get("/pacientes").header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].recordatorios_email").isBoolean())
+        .andExpect(jsonPath("$[1].recordatorios_email").isBoolean());
+  }
+
+  @Test
+  void crearPaciente_conRecordatoriosFalse_seGuarda() throws Exception {
+    mockMvc.perform(post("/pacientes")
+            .header("Authorization", "Bearer " + token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(pacienteBody("Juan", null, false)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.recordatorios_email").value(false));
+  }
+
+  @Test
+  void actualizarPaciente_sinElCampo_conservaElValor_yConElCampo_loCambia() throws Exception {
+    long id = crearYDevolverId("Juan", "juan@rec.com");
+    Paciente p = pacienteRepository.findById(id).orElseThrow();
+    p.setRecordatoriosEmail(false);
+    pacienteRepository.saveAndFlush(p);
+
+    // PUT sin recordatorios_email: no lo resetea a true (p. ej. tras una baja desde el mail).
+    mockMvc.perform(put("/pacientes/" + id)
+            .header("Authorization", "Bearer " + token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(pacienteBody("Juan Editado", "juan@rec.com")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.recordatorios_email").value(false));
+
+    mockMvc.perform(put("/pacientes/" + id)
+            .header("Authorization", "Bearer " + token)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(pacienteBody("Juan", "juan@rec.com", true)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.recordatorios_email").value(true));
   }
 
   @Test

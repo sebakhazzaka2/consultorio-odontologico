@@ -56,6 +56,11 @@ public class Paciente {
   @Column(name = "creado_por", nullable = false, length = 10)
   private PacienteOrigen creadoPor = PacienteOrigen.ADMIN;
 
+  // V11: false = el paciente se dio de baja de los recordatorios (link del mail) o el
+  // admin los apagó. Solo afecta RECORDATORIO_24H; los transaccionales se envían igual.
+  @Column(name = "recordatorios_email", nullable = false)
+  private boolean recordatoriosEmail = true;
+
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = true)
   private User user;
@@ -136,6 +141,14 @@ public class Paciente {
 
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public boolean isRecordatoriosEmail() {
+    return recordatoriosEmail;
+  }
+
+  public void setRecordatoriosEmail(boolean recordatoriosEmail) {
+    this.recordatoriosEmail = recordatoriosEmail;
   }
 
   public User getUser() {

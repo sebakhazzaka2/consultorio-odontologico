@@ -1,8 +1,11 @@
 package com.consultorio.config;
 
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
@@ -63,6 +66,51 @@ public class ClinicProperties {
   public void setCountry(String v) {
     this.country = (v == null || v.isBlank()) ? DEFAULT_COUNTRY : v.trim();
   }
+
+  public static final String DEFAULT_TIMEZONE = "America/Montevideo";
+
+  /**
+   * Zona horaria IANA de la clínica (CLINIC_TIMEZONE). Las citas se guardan como
+   * LocalDateTime en hora local de la clínica y la JVM de prod corre en UTC, así que el
+   * bean {@code Clock} (ver {@code TimeConfig}) se arma con esta zona. Vacío = Montevideo.
+   * Se valida en todos los perfiles: una zona inexistente hace fallar el arranque.
+   */
+  private String timezone = DEFAULT_TIMEZONE;
+
+  public String getTimezone() { return timezone; }
+  public void setTimezone(String v) {
+    this.timezone = (v == null || v.isBlank()) ? DEFAULT_TIMEZONE : v.trim();
+  }
+
+  @AssertTrue(message = "CLINIC_TIMEZONE must be a valid IANA zone id like America/Montevideo")
+  public boolean isTimezoneValida() {
+    try {
+      ZoneId.of(timezone);
+      return true;
+    } catch (DateTimeException e) {
+      return false;
+    }
+  }
+
+  /** Zona ya parseada; solo llamar después de la validación del arranque. */
+  public ZoneId zoneId() { return ZoneId.of(timezone); }
+
+  /**
+   * Feature flags por instancia (FEATURE_*). Regla del repo: cada feature nueva trae su
+   * flag acá desde el día uno. No confundir con {@link Feature} (tarjetas de marketing).
+   */
+  public static class Flags {
+    /** FEATURE_EMAIL_NOTIFICATIONS: emails a pacientes y aviso a la clínica. Default apagado. */
+    private boolean emailNotifications = false;
+
+    public boolean isEmailNotifications() { return emailNotifications; }
+    public void setEmailNotifications(boolean v) { this.emailNotifications = v; }
+  }
+
+  private Flags flags = new Flags();
+
+  public Flags getFlags() { return flags; }
+  public void setFlags(Flags flags) { this.flags = flags; }
 
   public static class Feature {
     private String titulo = "";

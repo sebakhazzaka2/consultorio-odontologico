@@ -1,0 +1,15 @@
+Hola, [(${pacienteNombre})]:
+
+Te recordamos tu turno en [(${clinica})].
+
+Fecha: [(${fecha})]
+Hora: [(${hora})]
+[# th:if="${servicio}"]Servicio: [(${servicio})]
+[/][# th:if="${direccion}"]Dirección: [(${direccion})]
+[/]
+Si no podés venir, avisanos cuanto antes respondiendo este correo[# th:if="${whatsappUrl}"] o por WhatsApp: [(${whatsappUrl})][/], así le damos el lugar a otra persona.
+
+¿No querés recibir más recordatorios? Date de baja acá: [(${bajaUrl})]
+(Vas a seguir recibiendo las confirmaciones y cambios de tus turnos.)
+
+[# th:insert="~{pie.txt}" /]

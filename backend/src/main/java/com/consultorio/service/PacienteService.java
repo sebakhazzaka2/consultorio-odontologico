@@ -77,6 +77,10 @@ public class PacienteService {
     existente.setTelefono(request.getTelefono());
     existente.setEmail(nuevoEmail);
     existente.setFechaNacimiento(request.getFechaNacimiento());
+    // Sin el campo en el body se conserva lo guardado (p. ej. una baja hecha desde el mail).
+    if (request.getRecordatoriosEmail() != null) {
+      existente.setRecordatoriosEmail(request.getRecordatoriosEmail());
+    }
 
     Paciente actualizado = pacienteRepository.save(existente);
     log.info("Paciente actualizado — id: {}", actualizado.getId());
@@ -101,7 +105,8 @@ public class PacienteService {
         paciente.getEmail(),
         paciente.getFechaNacimiento(),
         paciente.getCreadoPor(),
-        paciente.getCreatedAt());
+        paciente.getCreatedAt(),
+        paciente.isRecordatoriosEmail());
   }
 
   private Paciente toEntity(PacienteRequest request) {
@@ -112,6 +117,8 @@ public class PacienteService {
     paciente.setEmail(EmailNormalizer.normalizar(request.getEmail()));
     paciente.setFechaNacimiento(request.getFechaNacimiento());
     paciente.setCreadoPor(PacienteOrigen.ADMIN);
+    paciente.setRecordatoriosEmail(
+        request.getRecordatoriosEmail() == null || request.getRecordatoriosEmail());
     return paciente;
   }
 }
