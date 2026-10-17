@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -18,7 +19,9 @@ import java.time.LocalDate;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "pacientes")
+@Table(
+    name = "pacientes",
+    uniqueConstraints = @UniqueConstraint(name = "uk_pacientes_email", columnNames = "email"))
 public class Paciente {
 
   @Id
@@ -38,9 +41,12 @@ public class Paciente {
   @Column(nullable = false, length = 15)
   private String telefono;
 
-  @NotBlank
+  // Opcional desde V10 (pacientes sin email o importados). Único: el constraint se
+  // declara en @Table con el mismo nombre que en V10 (uk_pacientes_email) para que
+  // GlobalExceptionHandler lo reconozca también en H2. Se guarda normalizado
+  // (EmailNormalizer): minúsculas y sin espacios, o NULL.
   @Email
-  @Column(nullable = false, length = 255)
+  @Column(nullable = true, length = 255)
   private String email;
 
   @Column(name = "fecha_nacimiento")

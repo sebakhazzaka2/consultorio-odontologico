@@ -2,10 +2,12 @@ package com.consultorio.service;
 
 import com.consultorio.dto.PacienteRequest;
 import com.consultorio.dto.PacienteResponse;
+import com.consultorio.exception.ConflictException;
 import com.consultorio.exception.ResourceNotFoundException;
 import com.consultorio.model.Paciente;
 import com.consultorio.model.PacienteOrigen;
 import com.consultorio.repository.PacienteRepository;
+import com.consultorio.util.EmailNormalizer;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +36,14 @@ public class PacienteService {
     return toResponse(paciente);
   }
 
+  // El chequeo previo de email da un mensaje claro en el caso común; el constraint
+  // uk_pacientes_email (V10) es quien garantiza la unicidad ante altas concurrentes
+  // (GlobalExceptionHandler lo traduce al mismo 409). Nunca se loguea el email (PII).
   public PacienteResponse create(PacienteRequest request) {
-    if (pacienteRepository.existsByEmail(request.getEmail())) {
-      log.warn("Intento de crear paciente con email ya registrado: {}", request.getEmail());
-      throw new IllegalArgumentException("El email ya está registrado");
+    String email = EmailNormalizer.normalizar(request.getEmail());
+    if (email != null && pacienteRepository.existsByEmail(email)) {
+      log.warn("Intento de crear paciente con email ya registrado");
+      throw new ConflictException("El email ya está registrado");
     }
 
     Paciente paciente = toEntity(request);
@@ -53,15 +59,15 @@ public class PacienteService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Paciente no encontrado con id: " + id));
 
-    String nuevoEmail = request.getEmail();
+    String nuevoEmail = EmailNormalizer.normalizar(request.getEmail());
     if (nuevoEmail != null) {
       pacienteRepository
           .findByEmail(nuevoEmail)
           .ifPresent(
               encontrado -> {
                 if (!encontrado.getId().equals(id)) {
-                  log.warn("Intento de actualizar paciente id {} con email ya registrado: {}", id, nuevoEmail);
-                  throw new IllegalArgumentException("El email ya está registrado");
+                  log.warn("Intento de actualizar paciente id {} con email ya registrado", id);
+                  throw new ConflictException("El email ya está registrado");
                 }
               });
     }
@@ -69,7 +75,7 @@ public class PacienteService {
     existente.setNombre(request.getNombre());
     existente.setApellido(request.getApellido());
     existente.setTelefono(request.getTelefono());
-    existente.setEmail(request.getEmail());
+    existente.setEmail(nuevoEmail);
     existente.setFechaNacimiento(request.getFechaNacimiento());
 
     Paciente actualizado = pacienteRepository.save(existente);
@@ -103,7 +109,7 @@ public class PacienteService {
     paciente.setNombre(request.getNombre());
     paciente.setApellido(request.getApellido());
     paciente.setTelefono(request.getTelefono());
-    paciente.setEmail(request.getEmail());
+    paciente.setEmail(EmailNormalizer.normalizar(request.getEmail()));
     paciente.setFechaNacimiento(request.getFechaNacimiento());
     paciente.setCreadoPor(PacienteOrigen.ADMIN);
     return paciente;
