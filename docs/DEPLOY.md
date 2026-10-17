@@ -73,6 +73,8 @@ Archivo: `/home/sebastian/consultorio-odontologico/.env.prod`
 DB_PASSWORD=<password segura>
 JWT_SECRET=<string random 64 chars>
 CORS_ALLOWED_ORIGINS=https://turnosuy.com
+DOMAIN=turnosuy.com
+# ...más ADMIN_*, CLINIC_*, BRAND_*, MAIL_* y FEATURE_EMAIL_NOTIFICATIONS: lista completa y comentada en .env.example
 ```
 
 Para generar valores seguros:
@@ -298,6 +300,70 @@ gh variable set DEPLOY_PATH --env neodental --body /home/sebastian/consultorio-o
 gh secret delete DO_HOST && gh secret delete DO_USER && gh secret delete DO_SSH_KEY
 ```
 
+## Email (Brevo)
+
+Los emails (recordatorios de turno, recuperación de contraseña del admin) salen por **Brevo SMTP** desde un único remitente `turnos@turnosuy.com` para todas las instancias. El nombre visible es el de la clínica y el Reply-To es `CLINIC_EMAIL`. Se hace **una sola vez** (no por instancia).
+
+### Alta de Brevo y del dominio (una vez)
+
+1. Crear la cuenta en Brevo (plan gratis: 300 emails/día).
+2. **SMTP & API → SMTP keys**: crear una SMTP key. Guardar login SMTP y key en Bitwarden (la key se ve una sola vez).
+3. **Senders, domains → Domains**: agregar `turnosuy.com`. Brevo entrega los registros a crear en Cloudflare:
+   - **DKIM** (CNAME o TXT, según lo que muestre Brevo).
+   - **Código de Brevo** (TXT, verificación de dominio).
+4. **SPF** (TXT en la raíz `turnosuy.com`): `v=spf1 include:spf.brevo.com ~all`.
+   **Solo puede haber UN registro SPF por dominio.** Si ya existe uno, no crear otro: agregar `include:spf.brevo.com` al existente.
+5. **DMARC** (TXT en `_dmarc.turnosuy.com`): `v=DMARC1; p=none; rua=mailto:<buzón que se revise>`. Empezar con `p=none`; tras 2 a 4 semanas de reportes limpios, subir a `p=quarantine`.
+6. **Cloudflare:** los CNAME de DKIM deben estar en **DNS only** (nube gris). Con proxy (nube naranja) la verificación falla.
+7. En Brevo, crear el sender `turnos@turnosuy.com` (con el dominio ya autenticado).
+
+### Cómo verificar
+
+- Brevo → Domains: `turnosuy.com` en verde (autenticado).
+- Enviar un email de prueba a [mail-tester.com](https://www.mail-tester.com): puntaje **≥ 9/10**.
+- En un Gmail propio, "Mostrar original": `DKIM: PASS`, `SPF: PASS`, `DMARC: PASS`.
+
+### Activar emails en una instancia
+
+1. En el server, editar `.env.prod` (`chmod 600 .env.prod`):
+   ```env
+   FEATURE_EMAIL_NOTIFICATIONS=true
+   CLINIC_TIMEZONE=America/Montevideo
+   MAIL_HOST=smtp-relay.brevo.com
+   MAIL_PORT=587
+   MAIL_USERNAME=<login SMTP de Brevo>
+   MAIL_PASSWORD=<SMTP key de Brevo>
+   MAIL_FROM=turnos@turnosuy.com
+   # APP_BASE_URL solo si el link público no es https://${DOMAIN}
+   ```
+   Con el flag en `true`, `MAIL_USERNAME` y `MAIL_PASSWORD` son obligatorias. `CLINIC_EMAIL` (ya obligatoria) se usa como Reply-To.
+2. Recrear el backend: `docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --force-recreate backend`.
+3. Hacer una reserva de prueba desde la página pública con un email propio y confirmar que llega el mail de confirmación.
+4. Revisar Brevo → Transactional → Logs: el mensaje figura como entregado.
+
+**Apagado rápido:** `FEATURE_EMAIL_NOTIFICATIONS=false` en `.env.prod` y recrear el backend (mismo comando). No se envía nada; los pendientes quedan en la tabla `notificaciones`.
+
+### Desarrollo local
+
+`docker compose up mailpit` levanta Mailpit: UI en <http://localhost:8025>, SMTP en `localhost:1025` (solo localhost, **sin TLS ni autenticación**). Para que el backend lo use: `FEATURE_EMAIL_NOTIFICATIONS=true MAIL_HOST=localhost MAIL_PORT=1025 MAIL_SMTP_AUTH=false MAIL_STARTTLS=false`.
+
+### Monitoreo del outbox
+
+Cola de emails en la tabla `notificaciones`. Sin imprimir secretos (la password se toma del `.env.prod`):
+
+```bash
+cd /home/sebastian/consultorio-odontologico
+set -a; . ./.env.prod; set +a
+# Conteo por estado
+docker exec -e MYSQL_PWD="$DB_PASSWORD" consultorio-odontologico-db-1 \
+  mysql -uroot consultorio_db -e "SELECT estado, COUNT(*) AS n FROM notificaciones GROUP BY estado;"
+# Fallidas en las últimas 24 h
+docker exec -e MYSQL_PWD="$DB_PASSWORD" consultorio-odontologico-db-1 \
+  mysql -uroot consultorio_db -e "SELECT COUNT(*) AS fallidas_24h FROM notificaciones WHERE estado='FALLIDA' AND created_at >= NOW() - INTERVAL 24 HOUR;"
+```
+
+(La contraseña root de MySQL es `DB_PASSWORD` en `.env.prod`; `MYSQL_PWD` evita ponerla en la línea de comandos.) Si hay `FALLIDA` en aumento: revisar `docker compose logs backend | grep -i mail`, la SMTP key y la cuota diaria de Brevo.
+
 ## Alta de una instancia nueva
 
 Ejemplo: Guille Blanchet Beauty → Environment `guille`, dominio `guilleblanchetbeauty.turnosuy.com`. Regla: **todo secreto es nuevo y propio de la instancia**; nada se copia de otro `.env.prod`.
@@ -309,6 +375,7 @@ Ejemplo: Guille Blanchet Beauty → Environment `guille`, dominio `guilleblanche
 5. **`.env.prod`** desde `.env.example`, con valores nuevos:
    - `JWT_SECRET=$(openssl rand -hex 32)`, `DB_PASSWORD=$(openssl rand -hex 24)`, `ADMIN_EMAIL` / `ADMIN_PASSWORD` propios (password larga, generada).
    - `DOMAIN=guilleblanchetbeauty.turnosuy.com`, `CORS_ALLOWED_ORIGINS=https://guilleblanchetbeauty.turnosuy.com`, `GHCR_IMAGE_PREFIX`, `CLINIC_*` de la clienta, `SENTRY_DSN` (puede ser el mismo proyecto de Sentry con otro `environment`, o vacío).
+   - Emails: `MAIL_*`, `CLINIC_TIMEZONE` y `FEATURE_EMAIL_NOTIFICATIONS` según "Email (Brevo)" (el dominio y la SMTP key de Brevo ya existen; se comparten). Dejar el flag en `false` hasta el smoke test.
    - Guardar todo en Bitwarden, en una entrada por instancia.
 6. **Backup:** bucket B2 propio `consultorio-backups-guille` + Application Key limitada a ese bucket, `rclone config` (remote `b2`) en el droplet y `BACKUP_B2_REMOTE=b2:consultorio-backups-guille` en `.env.prod` (ver "Backup off-site"). Después `./scripts/install-cron.sh`, correr `./scripts/backup.sh` a mano una vez y confirmar los tres archivos con `rclone ls`.
 7. **Primer arranque** (a mano, antes de sumarla al CI): `echo <PAT> | docker login ghcr.io -u <usuario> --password-stdin`, después `docker compose --env-file .env.prod -f docker-compose.prod.yml pull backend frontend` y `up -d --no-build`.
@@ -322,7 +389,7 @@ Ejemplo: Guille Blanchet Beauty → Environment `guille`, dominio `guilleblanche
    ```
    Desde el próximo merge a `main`, el deploy llega a las dos. Ojo con el firewall: la tabla de arriba limita el 22 a la IP del admin, pero los runners de GitHub Actions también entran por SSH. Antes del primer deploy por CI, copiar en el droplet nuevo exactamente la regla de SSH que hoy deja entrar al CI en `neodental` (DigitalOcean → Networking → Firewalls); si no, el job de esa instancia falla por timeout de SSH.
 9. **Uptime Kuma** en `https://status.guilleblanchetbeauty.turnosuy.com`: crear el usuario admin (password propia), monitores del sitio y de `/api/public/config`, y notificación a un webhook de Discord (canal propio o el mismo con nombre de instancia). La URL del webhook es un secreto: gestor de contraseñas, nunca el repo. Ver `docs/RUNBOOK_S3.md` § 2.
-10. **Smoke test:** `curl -I https://guilleblanchetbeauty.turnosuy.com` con headers de seguridad, login admin, alta de un servicio y horario, una reserva de prueba desde la página pública.
+10. **Smoke test:** `curl -I https://guilleblanchetbeauty.turnosuy.com` con headers de seguridad, login admin, alta de un servicio y horario, una reserva de prueba desde la página pública. Después activar los emails (ver "Activar emails en una instancia") y repetir la reserva con un email propio: debe llegar el mail y figurar en los logs de Brevo.
 11. **Checklist de aislamiento** (no pasa nada de un cliente a otro):
     - [ ] `curl -s https://guilleblanchetbeauty.turnosuy.com/api/public/config` no tiene ningún dato de neodental (nombre, teléfono, WhatsApp, dirección, email, imágenes).
     - [ ] `<title>` y `og:*` del HTML (`curl -s https://guilleblanchetbeauty.turnosuy.com | grep -E '<title>|og:'`) son los de la clienta.
