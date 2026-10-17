@@ -98,6 +98,13 @@
       <version>7.14.0</version>
     </dependency>
 
+    <!-- Commons CSV (Apache-2.0) — importación de pacientes desde CSV -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.14.1</version>
+    </dependency>
+
     <!-- Tests -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
