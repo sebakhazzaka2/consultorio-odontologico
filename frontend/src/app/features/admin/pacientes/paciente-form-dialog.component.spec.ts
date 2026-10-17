@@ -23,7 +23,8 @@ describe('PacienteFormDialogComponent', () => {
   }
 
   const sinEmail: Paciente = {
-    id: 1, nombre: 'Ana', apellido: 'Pérez', telefono: '099123456', email: null, fecha_nacimiento: null
+    id: 1, nombre: 'Ana', apellido: 'Pérez', telefono: '099123456', email: null, fecha_nacimiento: null,
+    recordatorios_email: false
   };
 
   it('permite editar un paciente sin email y manda email null', () => {
@@ -31,6 +32,20 @@ describe('PacienteFormDialogComponent', () => {
     expect(c.form.valid).toBeTrue();
     c.guardar();
     expect(dialogRef.close).toHaveBeenCalledWith(jasmine.objectContaining({ email: null }));
+  });
+
+  it('al editar preserva recordatorios_email', () => {
+    const c = crear({ paciente: { ...sinEmail, recordatorios_email: true } });
+    c.guardar();
+    expect(dialogRef.close).toHaveBeenCalledWith(jasmine.objectContaining({ recordatorios_email: true }));
+  });
+
+  it('al crear no manda recordatorios_email', () => {
+    const c = crear({});
+    c.form.patchValue({ nombre: 'Juan', apellido: 'García', telefono: '099123456', email: 'j@test.com' });
+    c.guardar();
+    const payload = dialogRef.close.calls.mostRecent().args[0] as Record<string, unknown>;
+    expect('recordatorios_email' in payload).toBeFalse();
   });
 
   it('crea un paciente con email vacío como null', () => {
