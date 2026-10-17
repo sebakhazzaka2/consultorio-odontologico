@@ -349,20 +349,18 @@ Los emails (recordatorios de turno, recuperación de contraseña del admin) sale
 
 ### Monitoreo del outbox
 
-Cola de emails en la tabla `notificaciones`. Sin imprimir secretos (la password se toma del `.env.prod`):
+Cola de emails en la tabla `notificaciones`. Sin imprimir secretos (la password la toma el propio contenedor de su variable `MYSQL_ROOT_PASSWORD`):
 
 ```bash
-cd /home/sebastian/consultorio-odontologico
-set -a; . ./.env.prod; set +a
 # Conteo por estado
-docker exec -e MYSQL_PWD="$DB_PASSWORD" consultorio-odontologico-db-1 \
-  mysql -uroot consultorio_db -e "SELECT estado, COUNT(*) AS n FROM notificaciones GROUP BY estado;"
+docker exec consultorio-odontologico-db-1 sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot consultorio_db \
+  -e "SELECT estado, COUNT(*) AS n FROM notificaciones GROUP BY estado;"'
 # Fallidas en las últimas 24 h
-docker exec -e MYSQL_PWD="$DB_PASSWORD" consultorio-odontologico-db-1 \
-  mysql -uroot consultorio_db -e "SELECT COUNT(*) AS fallidas_24h FROM notificaciones WHERE estado='FALLIDA' AND created_at >= NOW() - INTERVAL 24 HOUR;"
+docker exec consultorio-odontologico-db-1 sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot consultorio_db \
+  -e "SELECT COUNT(*) AS fallidas_24h FROM notificaciones WHERE estado=\"FALLIDA\" AND created_at >= NOW() - INTERVAL 24 HOUR;"'
 ```
 
-(La contraseña root de MySQL es `DB_PASSWORD` en `.env.prod`; `MYSQL_PWD` evita ponerla en la línea de comandos.) Si hay `FALLIDA` en aumento: revisar `docker compose logs backend | grep -i mail`, la SMTP key y la cuota diaria de Brevo.
+(No hacer `source` de `.env.prod` en la shell: tiene valores con espacios sin comillas y bash los ejecutaría como comandos.) Si hay `FALLIDA` en aumento: revisar `docker compose logs backend | grep -i mail`, la SMTP key y la cuota diaria de Brevo.
 
 ## Alta de una instancia nueva
 
