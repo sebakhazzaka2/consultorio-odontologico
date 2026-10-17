@@ -1,0 +1,12 @@
+Hola, [(${pacienteNombre})]:
+
+Tu turno en [(${clinica})] está confirmado. Te esperamos.
+
+Fecha: [(${fecha})]
+Hora: [(${hora})]
+[# th:if="${servicio}"]Servicio: [(${servicio})]
+[/][# th:if="${direccion}"]Dirección: [(${direccion})]
+[/]
+Si no podés venir, avisanos respondiendo este correo[# th:if="${whatsappUrl}"] o por WhatsApp: [(${whatsappUrl})][/].
+
+[# th:insert="~{pie.txt}" /]

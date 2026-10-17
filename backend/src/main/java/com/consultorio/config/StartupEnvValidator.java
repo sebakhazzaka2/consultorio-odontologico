@@ -46,6 +46,27 @@ public class StartupEnvValidator implements ApplicationListener<ContextRefreshed
   @Value("${clinic.email:}")
   private String clinicEmail;
 
+  @Value("${clinic.flags.email-notifications:false}")
+  private boolean emailNotifications;
+
+  @Value("${spring.mail.host:}")
+  private String mailHost;
+
+  @Value("${spring.mail.username:}")
+  private String mailUsername;
+
+  @Value("${spring.mail.password:}")
+  private String mailPassword;
+
+  @Value("${spring.mail.properties.mail.smtp.auth:true}")
+  private boolean mailSmtpAuth;
+
+  @Value("${notifications.base-url:}")
+  private String appBaseUrl;
+
+  @Value("${notifications.domain:}")
+  private String domain;
+
   private boolean validated = false;
 
   @Override
@@ -81,6 +102,19 @@ public class StartupEnvValidator implements ApplicationListener<ContextRefreshed
     requireNotBlank(errors, clinicTelefono, "CLINIC_TELEFONO");
     requireNotBlank(errors, clinicWhatsapp, "CLINIC_WHATSAPP");
     requireNotBlank(errors, clinicEmail, "CLINIC_EMAIL");
+
+    // Emails (F2a): solo si la feature está prendida. Sin auth SMTP (relay propio) no se
+    // exigen credenciales; los links del mail necesitan una URL pública (APP_BASE_URL o DOMAIN).
+    if (emailNotifications) {
+      requireNotBlank(errors, mailHost, "MAIL_HOST");
+      if (mailSmtpAuth) {
+        requireNotBlank(errors, mailUsername, "MAIL_USERNAME");
+        requireNotBlank(errors, mailPassword, "MAIL_PASSWORD");
+      }
+      if (isBlank(appBaseUrl) && isBlank(domain)) {
+        errors.add("APP_BASE_URL or DOMAIN must be set when FEATURE_EMAIL_NOTIFICATIONS=true");
+      }
+    }
 
     if (!errors.isEmpty()) {
       log.error("=== STARTUP FAILED: missing or insecure environment variables ===");

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout.html :: layout(~{::contenido})}">
+<body>
+<div th:fragment="contenido">
+  <p style="margin:0 0 16px;">Hola, <span th:text="${pacienteNombre}">Ana</span>:</p>
+  <p style="margin:0 0 16px;">Te recordamos tu turno en <strong th:text="${clinica}">la clínica</strong>.</p>
+  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px;background-color:#f3f4f6;border-radius:6px;width:100%;">
+    <tr><td style="padding:12px 16px;">
+      <strong>Fecha:</strong> <span th:text="${fecha}">20/10/2026</span><br>
+      <strong>Hora:</strong> <span th:text="${hora}">10:30</span>
+      <th:block th:if="${servicio}"><br><strong>Servicio:</strong> <span th:text="${servicio}">Consulta</span></th:block>
+      <th:block th:if="${direccion}"><br><strong>Dirección:</strong> <span th:text="${direccion}">Calle 123</span></th:block>
+    </td></tr>
+  </table>
+  <p style="margin:0 0 16px;">Si no podés venir, avisanos cuanto antes respondiendo este correo<th:block th:if="${whatsappUrl}"> o por
+    <a th:href="${whatsappUrl}" th:style="'color:' + ${color} + ';'">WhatsApp</a></th:block>, así le damos el lugar a otra persona.</p>
+  <p style="margin:0;font-size:12px;color:#6b7280;">¿No querés recibir más recordatorios?
+    <a th:href="${bajaUrl}" style="color:#6b7280;">Darme de baja de los recordatorios</a>.
+    Vas a seguir recibiendo las confirmaciones y cambios de tus turnos.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--/* Layout común de los mails. Cada plantilla lo usa con
+       th:replace="~{layout.html :: layout(~{::contenido})}" y define th:fragment="contenido".
+       Estilos en línea y tablas: es lo que respetan los clientes de correo. */-->
+<html xmlns:th="http://www.thymeleaf.org" lang="es" th:fragment="layout(contenido)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${asunto}">Turno</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f5f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f5f7;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+               style="max-width:560px;background-color:#ffffff;border-radius:8px;overflow:hidden;">
+          <tr>
+            <td th:style="'background-color:' + ${color} + ';padding:20px 24px;'" style="padding:20px 24px;">
+              <img th:if="${logoUrl}" th:src="${logoUrl}" th:alt="${clinica}" height="40"
+                   style="display:block;height:40px;max-width:200px;border:0;">
+              <span th:unless="${logoUrl}" th:text="${clinica}"
+                    style="font-size:20px;font-weight:bold;color:#ffffff;">Clínica</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px;font-size:15px;line-height:1.5;">
+              <div th:replace="${contenido}"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px;background-color:#f9fafb;font-size:13px;line-height:1.5;color:#6b7280;">
+              <strong th:text="${clinica}">Clínica</strong><br>
+              <span th:if="${direccion}" th:text="${direccion}">Dirección</span><br th:if="${direccion}">
+              <span th:if="${telefono}" th:text="'Tel. ' + ${telefono}">Teléfono</span>
+              <span th:if="${whatsappUrl}"> &middot; <a th:href="${whatsappUrl}" th:style="'color:' + ${color} + ';'">WhatsApp</a></span>
+            </td>
+          </tr>
+        </table>
+        <p style="font-size:12px;color:#9ca3af;margin:12px 0 0;">
+          Este correo se envió automáticamente. Si respondés, le llega a <span th:text="${clinica}">la clínica</span>.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

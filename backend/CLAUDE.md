@@ -77,6 +77,12 @@ backend/src/main/java/com/consultorio/
 - `pagos` — FK a `pacientes`
 - `disponibilidad_semanal` — `UNIQUE (dia_semana)`: una sola agenda por instancia, sin profesionales (V7)
 - `fechas_bloqueadas` (V7)
+- `notificaciones` (V11) — outbox de emails: `clave_dedupe UNIQUE`, `cita_id` FK `ON DELETE SET NULL` (excepción justificada: `DELETE /citas/{id}` es borrado real y se conserva la auditoría), `referencia_id` sin FK (reset de contraseña). `pacientes.recordatorios_email` (V11)
+
+### Notificaciones (F2a, `service/notificacion/`)
+- `NotificacionService.encolar(tipo, cita)` dentro de la transacción del caller; apagado si `FEATURE_EMAIL_NOTIFICATIONS=false`. Duplicados: `existsByClaveDedupe` + `INSERT ... ON DUPLICATE KEY UPDATE id = id` (nunca `save()` + catch: deja la transacción rollback-only).
+- `NotificacionDispatcher` cada 60 s: `FOR UPDATE SKIP LOCKED` + lease de 15 min, envío fuera de transacción, backoff 1/5/30 min/2 h, `FALLIDA` al 5.º fallo + `Sentry.captureException`. Logs y `ultimo_error` sin emails.
+- "Ahora" sale del bean `Clock` (zona `CLINIC_TIMEZONE`), nunca de `now()` sin argumentos.
 
 ### Normalización
 - Esquema en 3NF — verificado, no requiere cambios.

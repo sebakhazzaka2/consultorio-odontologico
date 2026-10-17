@@ -1,0 +1,9 @@
+Hola, [(${pacienteNombre})]:
+
+Tu turno en [(${clinica})] del [(${fecha})] a las [(${hora})][# th:if="${servicio}"] ([(${servicio})])[/] fue cancelado.
+
+Cuando quieras, podés reservar un turno nuevo: [(${reservarUrl})]
+
+¿Dudas? Respondé este correo[# th:if="${whatsappUrl}"] o escribinos por WhatsApp: [(${whatsappUrl})][/].
+
+[# th:insert="~{pie.txt}" /]

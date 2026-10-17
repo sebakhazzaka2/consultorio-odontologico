@@ -1,0 +1,12 @@
+Hola, [(${pacienteNombre})]:
+
+Tu turno en [(${clinica})] cambió de fecha u horario. Estos son los datos nuevos:
+
+Fecha: [(${fecha})]
+Hora: [(${hora})]
+[# th:if="${servicio}"]Servicio: [(${servicio})]
+[/][# th:if="${direccion}"]Dirección: [(${direccion})]
+[/]
+Si el nuevo horario no te queda bien, respondé este correo[# th:if="${whatsappUrl}"] o escribinos por WhatsApp: [(${whatsappUrl})][/].
+
+[# th:insert="~{pie.txt}" /]
