@@ -1,11 +1,14 @@
 package com.consultorio.controller;
 
+import com.consultorio.dto.ImportacionResultado;
 import com.consultorio.dto.PacienteRequest;
 import com.consultorio.dto.PacienteResponse;
 import com.consultorio.service.PacienteService;
+import com.consultorio.service.importacion.PacienteImportService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,16 +17,33 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/pacientes")
 public class PacienteController {
 
   private final PacienteService pacienteService;
+  private final PacienteImportService pacienteImportService;
 
-  public PacienteController(PacienteService pacienteService) {
+  public PacienteController(
+      PacienteService pacienteService, PacienteImportService pacienteImportService) {
     this.pacienteService = pacienteService;
+    this.pacienteImportService = pacienteImportService;
+  }
+
+  /**
+   * Importa pacientes desde un CSV (campo multipart {@code archivo}). Por defecto es una
+   * simulación que no escribe nada; con {@code confirmar=true} inserta las filas OK.
+   * Ver docs/IMPORTACION_PACIENTES.md.
+   */
+  @PostMapping(value = "/importar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ImportacionResultado> importar(
+      @RequestParam("archivo") MultipartFile archivo,
+      @RequestParam(name = "confirmar", defaultValue = "false") boolean confirmar) {
+    return ResponseEntity.ok(pacienteImportService.importar(archivo, confirmar));
   }
 
   @GetMapping
