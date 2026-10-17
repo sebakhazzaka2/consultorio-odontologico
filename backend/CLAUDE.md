@@ -40,7 +40,7 @@ backend/src/main/java/com/consultorio/
 ## Estado MVP1 (✅ mergeado a main)
 
 - **Auth:** login JWT, `JwtAuthFilter` stateless, rol único `ADMIN`. `/auth/register` cerrado al público desde S3 (PR #26). Login fallido hoy responde 500 (fix en F0)
-- **Pacientes:** CRUD completo. Unicidad de email solo en la aplicación (`existsByEmail`), sin índice único en la base hasta `V10` (F1). Email, teléfono (7–15 dígitos, sin código de país) y apellido son `NOT NULL`
+- **Pacientes:** CRUD completo. Email opcional y único desde `V10` (`uk_pacientes_email`; MySQL admite varios `NULL`), guardado normalizado con `util/EmailNormalizer` (trim + minúsculas, blanco → `NULL`); duplicado → 409 "El email ya está registrado". Teléfono (7–15 dígitos, sin código de país) y apellido son `NOT NULL`
 - **Reserva pública:** crea el paciente si el email no existe (`creado_por = AGENDA`); lock `FOR UPDATE` sobre `disponibilidad_semanal` como primera sentencia de la transacción (PR #35)
 - **Citas:** CRUD + `PATCH /cancelar` + `PATCH /confirmar` + `GET /disponibilidad?fecha&duracion`
   - `fechaHoraInicio` como `LocalDateTime` (columna migrada desde `fecha`+`hora` separados)
@@ -69,7 +69,7 @@ backend/src/main/java/com/consultorio/
 
 ### Tablas
 - `users` — admin hardcodeado (MVP2 agrega pacientes)
-- `pacientes` — FK nullable `user_id` a `users` (reservado MVP2); `creado_por ENUM('ADMIN','AGENDA')` (V8)
+- `pacientes` — FK nullable `user_id` a `users` (reservado MVP2); `creado_por ENUM('ADMIN','AGENDA','IMPORT')` (V8, `IMPORT` en V10); `email` NULL-able + `UNIQUE` (V10)
 - `citas` — `fecha_hora_inicio DATETIME`, FK a `pacientes`, `google_event_id` nullable (V9)
 - `historial_clinico` — FK a `pacientes`, FK nullable a `citas`, FK nullable a `servicios`
 - `servicios` (ex `tratamientos`, V6)

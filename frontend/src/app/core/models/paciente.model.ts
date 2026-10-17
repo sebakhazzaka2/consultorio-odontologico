@@ -6,7 +6,8 @@ export interface Paciente {
   nombre: string;
   apellido: string;
   telefono: string;
-  email: string;
+  /** Opcional desde V10: null si el paciente no tiene email. */
+  email: string | null;
   fecha_nacimiento: string | null;
   created_at?: string;
 }
@@ -18,6 +19,6 @@ export interface PacientePayload {
   nombre: string;
   apellido: string;
   telefono: string;
-  email: string;
+  email: string | null;
   fecha_nacimiento?: string | null;
 }

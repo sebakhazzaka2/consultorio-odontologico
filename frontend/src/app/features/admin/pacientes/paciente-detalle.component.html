@@ -7,7 +7,9 @@
     @if (paciente) {
       <h1 class="page-title">{{ paciente.nombre }} {{ paciente.apellido }}</h1>
       <div class="paciente-meta">
-        <span><mat-icon inline>email</mat-icon> {{ paciente.email }}</span>
+        @if (paciente.email) {
+          <span><mat-icon inline>email</mat-icon> {{ paciente.email }}</span>
+        }
         <span><mat-icon inline>phone</mat-icon> {{ paciente.telefono }}</span>
         @if (paciente.fecha_nacimiento) {
           <span><mat-icon inline>cake</mat-icon> {{ paciente.fecha_nacimiento | date:'dd/MM/yyyy' }}</span>

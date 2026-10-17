@@ -11,7 +11,7 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.MySQLContainer;
 
 /**
- * Base para tests contra MySQL 8 real (Testcontainers) con Flyway V1..V9 y
+ * Base para tests contra MySQL 8 real (Testcontainers) con Flyway V1..V10 y
  * {@code ddl-auto=validate}, igual que prod. NO es transaccional: los tests commitean
  * de verdad (necesario para probar concurrencia entre threads), así que cada subclase
  * limpia lo que crea.

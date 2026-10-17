@@ -11,7 +11,9 @@ import static org.mockito.Mockito.when;
 
 import com.consultorio.dto.PublicReservaRequest;
 import com.consultorio.dto.PublicReservaResponse;
+import com.consultorio.model.Cita;
 import com.consultorio.model.Paciente;
+import com.consultorio.model.PacienteOrigen;
 import com.consultorio.model.Servicio;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.PacienteRepository;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Tests unitarios con mocks — no levantan Spring ni tocan H2. El lock real
@@ -100,6 +103,35 @@ class PublicReservaServiceTest {
     // La respuesta sigue sin filtrar el nombre real guardado de Ana.
     assertThat(response.nombrePaciente()).isEqualTo("Alguien Distinto");
     assertThat(response.apellidoPaciente()).isEqualTo("Otro Apellido");
+  }
+
+  @Test
+  void reservar_emailConOtroCaseYEspacios_reutilizaPacienteExistente() {
+    Paciente existente = new Paciente();
+    existente.setId(7L);
+    existente.setEmail("foo@bar.com");
+    when(pacienteRepository.findByEmail("foo@bar.com")).thenReturn(Optional.of(existente));
+
+    service.reservar(request("Foo", "Bar", "FOO@bar.com "));
+
+    verify(pacienteRepository).findByEmail("foo@bar.com");
+    verify(pacienteRepository, never()).save(any());
+    ArgumentCaptor<Cita> cita = ArgumentCaptor.forClass(Cita.class);
+    verify(citaRepository).save(cita.capture());
+    assertThat(cita.getValue().getPaciente().getId()).isEqualTo(7L);
+  }
+
+  @Test
+  void reservar_emailNuevo_guardaElPacienteConEmailNormalizado() {
+    when(pacienteRepository.findByEmail("nueva@test.com")).thenReturn(Optional.empty());
+    when(pacienteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+    service.reservar(request("Nueva", "Paciente", "  Nueva@Test.com"));
+
+    ArgumentCaptor<Paciente> paciente = ArgumentCaptor.forClass(Paciente.class);
+    verify(pacienteRepository).save(paciente.capture());
+    assertThat(paciente.getValue().getEmail()).isEqualTo("nueva@test.com");
+    assertThat(paciente.getValue().getCreadoPor()).isEqualTo(PacienteOrigen.AGENDA);
   }
 
   @Test

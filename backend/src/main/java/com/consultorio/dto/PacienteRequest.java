@@ -1,5 +1,6 @@
 package com.consultorio.dto;
 
+import com.consultorio.util.EmailNormalizer;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Email;
@@ -21,7 +22,8 @@ public class PacienteRequest {
   @Pattern(regexp = "^[0-9]{7,15}$", message = "El telefono debe tener entre 7 y 15 digitos")
   private String telefono;
 
-  @NotBlank
+  // Opcional desde V10. Se normaliza al deserializar (ver setEmail), así @Email valida
+  // el valor ya sin espacios y un email en blanco llega como null.
   @Email
   private String email;
 
@@ -59,7 +61,7 @@ public class PacienteRequest {
   }
 
   public void setEmail(String email) {
-    this.email = email;
+    this.email = EmailNormalizer.normalizar(email);
   }
 
   public LocalDate getFechaNacimiento() {

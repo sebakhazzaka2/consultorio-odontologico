@@ -11,6 +11,7 @@ import com.consultorio.model.Servicio;
 import com.consultorio.repository.CitaRepository;
 import com.consultorio.repository.PacienteRepository;
 import com.consultorio.repository.ServicioRepository;
+import com.consultorio.util.EmailNormalizer;
 import java.time.LocalDate;
 import java.util.List;
 import org.slf4j.Logger;
@@ -104,28 +105,28 @@ public class PublicReservaService {
   /**
    * Dedupe por email: reutiliza el paciente existente si el email ya está
    * registrado. Deliberadamente NO exige que el nombre coincida: email es la única
-   * clave de identidad que tenemos en un endpoint público sin login, y
-   * {@code pacientes.email} no tiene constraint único en la base — el resto de la
-   * app (ej. {@code PacienteService}) asume que hay a lo sumo un paciente por email.
-   * Crear un segundo paciente con el mismo email rompe esa asunción: cualquier
-   * {@code findByEmail} posterior para ese email (login futuro, edición de otro
-   * paciente, esta misma reserva) revienta con
-   * {@code IncorrectResultSizeDataAccessException} y bloquea reservas legítimas
-   * (acentos, un padre reservando para su hijo con el mismo mail familiar, etc.).
+   * clave de identidad que tenemos en un endpoint público sin login, y desde V10
+   * {@code pacientes.email} es único en la base (uk_pacientes_email): crear un
+   * segundo paciente con el mismo email fallaría con 409 y bloquearía reservas
+   * legítimas (acentos, un padre reservando para su hijo con el mismo mail
+   * familiar, etc.). El email se normaliza (minúsculas, sin espacios) antes de
+   * buscar y se guarda normalizado, así "Ana@Mail.com " encuentra a "ana@mail.com".
+   * La normalización es Java puro: no agrega SQL antes del lock de {@code reservar}.
    * El nombre/apellido real nunca se expone en la respuesta (ver {@code reservar}),
    * así que no filtramos PII aunque reusemos el paciente.
    */
   private Paciente resolverPaciente(PublicReservaRequest request) {
-    return pacienteRepository.findByEmail(request.getEmail())
-        .orElseGet(() -> crearPacienteDesdeAgenda(request));
+    String email = EmailNormalizer.normalizar(request.getEmail());
+    return pacienteRepository.findByEmail(email)
+        .orElseGet(() -> crearPacienteDesdeAgenda(request, email));
   }
 
-  private Paciente crearPacienteDesdeAgenda(PublicReservaRequest request) {
+  private Paciente crearPacienteDesdeAgenda(PublicReservaRequest request, String emailNormalizado) {
     Paciente paciente = new Paciente();
     paciente.setNombre(request.getNombre());
     paciente.setApellido(request.getApellido());
     paciente.setTelefono(request.getTelefono());
-    paciente.setEmail(request.getEmail());
+    paciente.setEmail(emailNormalizado);
     paciente.setCreadoPor(PacienteOrigen.AGENDA);
     Paciente creado = pacienteRepository.save(paciente);
     log.info("Paciente creado desde agenda pública — id: {}", creado.getId());

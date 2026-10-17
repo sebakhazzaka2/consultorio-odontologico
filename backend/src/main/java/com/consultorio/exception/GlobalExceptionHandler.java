@@ -1,5 +1,7 @@
 package com.consultorio.exception;
 
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+  /** Nombre del constraint único de email creado en V10 (y declarado en Paciente). */
+  static final String UK_PACIENTES_EMAIL = "uk_pacientes_email";
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
@@ -62,9 +67,24 @@ public class GlobalExceptionHandler {
             "Hay otra reserva en proceso para ese día. Intentá de nuevo en unos segundos."));
   }
 
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse("Conflict", ex.getMessage()));
+  }
+
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-    log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+    String causa = ex.getMostSpecificCause().getMessage();
+    // Email duplicado que pasó el chequeo previo del service (alta concurrente).
+    // MySQL: "Duplicate entry 'x' for key 'pacientes.uk_pacientes_email'"; H2 lo
+    // reporta en mayúsculas. No se loguea la causa: incluye el email (PII).
+    if (causa != null && causa.toLowerCase(Locale.ROOT).contains(UK_PACIENTES_EMAIL)) {
+      log.warn("Data integrity violation: email de paciente duplicado ({})", UK_PACIENTES_EMAIL);
+      return ResponseEntity.status(HttpStatus.CONFLICT)
+          .body(new ErrorResponse("Conflict", "El email ya está registrado"));
+    }
+    log.warn("Data integrity violation: {}", causa);
     return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(new ErrorResponse("Conflict", "No se puede eliminar: el registro tiene datos asociados (historial u otros)"));
   }
