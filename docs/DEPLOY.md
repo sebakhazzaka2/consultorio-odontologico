@@ -148,6 +148,24 @@ Las imágenes de la página pública (carrusel del hero y foto de ubicación) **
 
 Las imágenes están **auto-hosteadas** en el volumen `uploads_data` del backend, bajo `/app/uploads/branding/`, y se sirven públicas en `https://<dominio>/api/uploads/branding/<archivo>` (gracias a `GET /uploads/**` permitAll en `SecurityConfig`).
 
+### Colores y logo de la instancia
+
+Se configuran en `.env.prod` (el backend los lee vía `env_file`) y se aplican en runtime, sin rebuild del frontend: el backend los expone en `GET /api/public/config` bajo `branding` y el frontend los inyecta como CSS vars al arrancar.
+
+| Variable | Qué hace | Formato |
+|----------|----------|---------|
+| `BRAND_PRIMARY` | Color primario (sidebar, botones, acciones) | `#RRGGBB` |
+| `BRAND_PRIMARY_HOVER` | Hover del primario (vacío = se deriva) | `#RRGGBB` |
+| `BRAND_ACCENT` | Acento: links, estados activos, gráficos (vacío = igual al primario) | `#RRGGBB` |
+| `BRAND_LOGO_URL` | Logo en el nav público y el sidebar del admin | `https://…` o `/api/uploads/branding/<archivo>` |
+
+- Todas opcionales. Sin ninguna, la instancia se ve como siempre (navy + nombre en texto).
+- Validación al arrancar en **todos** los perfiles: un color que no sea `#RRGGBB` o un logo que no sea `https://` / `/api/uploads/...` (p. ej. `javascript:`) hace fallar el arranque con un mensaje claro.
+- El logo se sube como las fotos del hero (ver abajo) a `/app/uploads/branding/`. Conviene un PNG/SVG con fondo transparente, ~40 px de alto; en el sidebar se muestra sobre una placa blanca.
+- Elegir un primario con buen contraste con texto blanco (o claro: el texto de los botones se ajusta solo, blanco u oscuro según WCAG).
+- Aplicar: editar `.env.prod` y `docker compose -f docker-compose.prod.yml up -d backend` (solo reinicia el backend).
+- El footer "Powered by TurnosUy" y el login (producto) siguen con la marca TurnosUy.
+
 ### Cambiar una foto
 
 1. Optimizá la imagen antes de subir (≤ ~1280px, JPEG q82, ~150 KB). El backend **no** la optimiza al subir.

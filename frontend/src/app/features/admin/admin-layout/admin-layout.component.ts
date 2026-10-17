@@ -38,6 +38,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   isMobile = false;
   businessName = '';
+  logoUrl = '';
   pendientesCount = 0;
   private subs = new Subscription();
 
@@ -52,6 +53,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.businessName = this.clinicConfigService.name;
+    this.logoUrl = this.clinicConfigService.logoUrl;
 
     this.subs.add(
       this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).subscribe(result => {

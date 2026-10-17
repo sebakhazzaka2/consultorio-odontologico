@@ -28,6 +28,16 @@ mat-sidenav.sidenav {
     flex-shrink: 0;
   }
 
+  // Logo de la instancia: placa clara para que se vea sobre cualquier color de sidebar
+  .brand-logo-img {
+    max-height: 40px;
+    max-width: 100%;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px 8px;
+  }
+
   .brand-title {
     font-size: 14px;
     font-weight: 600;

@@ -102,12 +102,12 @@
 
   &:hover {
     border-color: var(--color-primary-light);
-    background: #f0f4ff;
+    background: var(--brand-navy-50, #f0f4ff);
   }
 
   &.selected {
     border-color: var(--color-primary);
-    background: #eef2ff;
+    background: var(--brand-navy-50, #eef2ff);
   }
 }
 
@@ -150,7 +150,7 @@
 
   &:hover {
     border-color: var(--color-primary-light);
-    background: #f0f4ff;
+    background: var(--brand-navy-50, #f0f4ff);
   }
 
   &.selected {

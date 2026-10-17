@@ -1,6 +1,12 @@
 <header class="public-nav">
   <div class="nav-container">
-    <a class="nav-brand" href="#top">{{ clinica().nombre }}</a>
+    <a class="nav-brand" href="#top">
+      @if (clinica().branding?.logo_url) {
+        <img class="nav-logo" [src]="clinica().branding?.logo_url" [alt]="clinica().nombre" />
+      } @else {
+        {{ clinica().nombre }}
+      }
+    </a>
     <nav class="nav-links" [class.is-open]="mobileMenuOpen()" aria-label="Principal">
       <a href="#servicios" (click)="mobileMenuOpen.set(false)">{{ clinica().label_servicio_plural }}</a>
       @if (clinica().reviews_enabled) {

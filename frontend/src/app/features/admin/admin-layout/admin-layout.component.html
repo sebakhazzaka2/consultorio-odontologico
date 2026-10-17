@@ -6,10 +6,14 @@
     class="sidenav">
 
     <a routerLink="/admin" class="sidebar-brand">
-      <mat-icon class="brand-icon">health_and_safety</mat-icon>
-      <div class="brand-text">
-        <span class="brand-title">TurnosUy</span>
-      </div>
+      @if (logoUrl) {
+        <img class="brand-logo-img" [src]="logoUrl" [alt]="businessName" />
+      } @else {
+        <mat-icon class="brand-icon">health_and_safety</mat-icon>
+        <div class="brand-text">
+          <span class="brand-title">TurnosUy</span>
+        </div>
+      }
     </a>
 
     <mat-nav-list>

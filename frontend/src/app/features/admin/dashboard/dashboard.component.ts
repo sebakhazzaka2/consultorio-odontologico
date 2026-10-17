@@ -239,6 +239,11 @@ export class DashboardComponent implements OnInit {
     this.chartOffset.set(0);
   }
 
+  /** Chart.js no entiende var(): se lee el color de marca ya resuelto del documento. */
+  private brandColor(): string {
+    return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-light').trim() || '#3B5BDB';
+  }
+
   private rebuildChart(): void {
     const citas = this.citas();
     if (this.chartVista() === 'semana') {
@@ -278,7 +283,7 @@ export class DashboardComponent implements OnInit {
 
     this.chartData = {
       labels: semanas.map(s => s.label),
-      datasets: [{ data: semanas.map(s => s.count), backgroundColor: '#3B5BDB', borderRadius: 6, borderSkipped: false }]
+      datasets: [{ data: semanas.map(s => s.count), backgroundColor: this.brandColor(), borderRadius: 6, borderSkipped: false }]
     };
 
     if (primerInicio && ultimoFin) {
@@ -314,7 +319,7 @@ export class DashboardComponent implements OnInit {
 
     this.chartData = {
       labels: meses.map(m => m.label),
-      datasets: [{ data: meses.map(m => m.count), backgroundColor: '#3B5BDB', borderRadius: 6, borderSkipped: false }]
+      datasets: [{ data: meses.map(m => m.count), backgroundColor: this.brandColor(), borderRadius: 6, borderSkipped: false }]
     };
 
     if (primerInicio && ultimoFin) {

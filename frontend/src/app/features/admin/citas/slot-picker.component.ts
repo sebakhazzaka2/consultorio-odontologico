@@ -102,8 +102,8 @@ const HORA_FIN    = 17;
         margin-left: auto;
         font-size: 13px;
         font-weight: 700;
-        color: #1976d2;
-        background: #e3f2fd;
+        color: var(--brand-accent, #1976d2);
+        background: var(--brand-navy-100, #e3f2fd);
         padding: 2px 10px;
         border-radius: 12px;
       }
@@ -198,8 +198,8 @@ const HORA_FIN    = 17;
     }
 
     .slot-btn.seleccionado {
-      background: #1976d2;
-      border-color: #1565c0;
+      background: var(--brand-accent, #1976d2);
+      border-color: var(--brand-primary-hover, #1565c0);
       color: #fff;
       box-shadow: 0 2px 6px rgba(25,118,210,0.4);
     }

@@ -4,6 +4,14 @@ export interface ClinicFeature {
   icono: string;
 }
 
+/** Branding por instancia (BRAND_*). Todo opcional; sin él rige el look por defecto. */
+export interface ClinicBranding {
+  primary?: string;
+  primary_hover?: string;
+  accent?: string;
+  logo_url?: string;
+}
+
 export interface ClinicConfig {
   nombre: string;
   tagline: string;
@@ -30,4 +38,5 @@ export interface ClinicConfig {
   label_historial: string;
   features_title: string;
   features_subtitle: string;
+  branding?: ClinicBranding;
 }
