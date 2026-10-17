@@ -1,0 +1,44 @@
+<main class="baja-page">
+  <section class="baja-card" aria-live="polite">
+    @switch (vista) {
+      @case ('cargando') {
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="baja-texto">Verificando el enlace...</p>
+      }
+      @case ('invalido') {
+        <mat-icon class="icono icono-error">error_outline</mat-icon>
+        <h1>El enlace no es válido o expiró</h1>
+        <p class="baja-texto">Revisá que hayas abierto el enlace completo del email.</p>
+      }
+      @case ('error') {
+        <mat-icon class="icono icono-error">error_outline</mat-icon>
+        <h1>Algo salió mal</h1>
+        <p class="baja-texto">No pudimos verificar el enlace. Intentá de nuevo en unos minutos.</p>
+      }
+      @case ('ya-baja') {
+        <mat-icon class="icono icono-ok">check_circle</mat-icon>
+        <h1>Ya no recibís recordatorios de {{ clinica }}</h1>
+      }
+      @case ('confirmar') {
+        <h1>{{ clinica }}</h1>
+        <p class="baja-texto">
+          Vas a dejar de recibir los recordatorios de turnos de {{ clinica }}.
+          Vas a seguir recibiendo las confirmaciones y avisos de cambios de tus turnos.
+        </p>
+        @if (errorEnvio) {
+          <p class="baja-error" role="alert">{{ errorEnvio }}</p>
+        }
+        <button mat-flat-button class="btn-baja" [disabled]="enviando" (click)="confirmar()">
+          Dejar de recibir recordatorios
+        </button>
+      }
+      @case ('listo') {
+        <mat-icon class="icono icono-ok">check_circle</mat-icon>
+        <h1>Listo</h1>
+        <p class="baja-texto">
+          Listo, no vas a recibir más recordatorios. Si cambiás de idea, pedile a {{ clinica }} que los reactive.
+        </p>
+      }
+    }
+  </section>
+</main>

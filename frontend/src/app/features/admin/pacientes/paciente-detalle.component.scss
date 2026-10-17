@@ -155,3 +155,15 @@
   width: 96px;
   text-align: right;
 }
+
+.recordatorios {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.recordatorios-hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
