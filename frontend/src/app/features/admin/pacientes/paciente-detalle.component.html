@@ -15,6 +15,17 @@
           <span><mat-icon inline>cake</mat-icon> {{ paciente.fecha_nacimiento | date:'dd/MM/yyyy' }}</span>
         }
       </div>
+      <div class="recordatorios">
+        <mat-slide-toggle
+          [checked]="paciente.recordatorios_email && !!paciente.email"
+          [disabled]="!paciente.email || guardandoRecordatorios"
+          (change)="cambiarRecordatorios($event)">
+          Recibe recordatorios por email
+        </mat-slide-toggle>
+        @if (!paciente.email) {
+          <span class="recordatorios-hint">Sin email cargado</span>
+        }
+      </div>
     }
   </div>
 </div>

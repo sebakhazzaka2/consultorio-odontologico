@@ -12,12 +12,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule, MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PacienteService } from './paciente.service';
 import { HistorialService } from './historial.service';
 import { PagoService } from './pago.service';
-import { Paciente } from '../../../core/models/paciente.model';
+import { Paciente, PacientePayload } from '../../../core/models/paciente.model';
 import { HistorialProcedimientos, HistorialProcedimientosPayload } from '../../../core/models/historial.model';
 import { Pago, PagoPayload, SaldoPaciente } from '../../../core/models/pago.model';
 import { HistorialFormDialogComponent } from './historial-form-dialog.component';
@@ -164,6 +165,7 @@ export class PagoPromptDialogComponent {
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatTableModule,
+    MatSlideToggleModule,
     MatDialogModule,
     MatSnackBarModule
   ],
@@ -178,6 +180,7 @@ export class PacienteDetalleComponent implements OnInit {
   saldo: SaldoPaciente | null = null;
   cargando = true;
   errorMensaje: string | null = null;
+  guardandoRecordatorios = false;
 
   readonly historialColumnas: string[] = ['fecha_hora', 'procedimiento', 'tratamiento', 'precio_aplicado', 'notas', 'acciones'];
   readonly pagosColumnas: string[] = ['fecha', 'monto', 'concepto', 'acciones'];
@@ -371,6 +374,42 @@ export class PacienteDetalleComponent implements OnInit {
           this.snackBar.open(msg || 'Error al eliminar el pago', 'Cerrar', { duration: 5000 });
         }
       });
+    });
+  }
+
+  cambiarRecordatorios(ev: MatSlideToggleChange): void {
+    const p = this.paciente;
+    if (!p || !p.email || this.guardandoRecordatorios) {
+      ev.source.checked = !!p?.recordatorios_email;
+      return;
+    }
+    const nuevo = ev.checked;
+    const anterior = p.recordatorios_email;
+    const payload: PacientePayload = {
+      nombre: p.nombre,
+      apellido: p.apellido,
+      telefono: p.telefono,
+      email: p.email,
+      fecha_nacimiento: p.fecha_nacimiento,
+      recordatorios_email: nuevo
+    };
+    this.guardandoRecordatorios = true;
+    p.recordatorios_email = nuevo;
+    this.pacienteService.actualizar(p.id, payload).subscribe({
+      next: () => {
+        this.guardandoRecordatorios = false;
+        this.snackBar.open(
+          nuevo ? 'Recordatorios por email activados' : 'Recordatorios por email desactivados',
+          'Cerrar',
+          { duration: 3000 }
+        );
+      },
+      error: (res) => {
+        this.guardandoRecordatorios = false;
+        p.recordatorios_email = anterior;
+        ev.source.checked = anterior;
+        this.snackBar.open(res?.mensaje || 'No se pudo actualizar la preferencia', 'Cerrar', { duration: 5000 });
+      }
     });
   }
 

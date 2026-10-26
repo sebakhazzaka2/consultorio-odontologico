@@ -119,6 +119,10 @@ export class PacienteFormDialogComponent {
       email: v.email?.trim() || null,
       fecha_nacimiento: v.fecha_nacimiento instanceof Date ? (v.fecha_nacimiento as Date).toISOString().slice(0, 10) : null
     };
+    // Al editar se preserva la preferencia; al crear se omite y el backend usa su default.
+    if (this.data.paciente) {
+      payload.recordatorios_email = this.data.paciente.recordatorios_email;
+    }
     this.dialogRef.close(payload);
   }
 }

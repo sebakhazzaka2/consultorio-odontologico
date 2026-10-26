@@ -15,7 +15,8 @@ describe('PacienteService', () => {
     apellido: 'García',
     telefono: '099123456',
     email: 'juan@test.com',
-    fecha_nacimiento: null
+    fecha_nacimiento: null,
+    recordatorios_email: true
   };
 
   beforeEach(() => {

@@ -17,6 +17,9 @@
       </div>
       <h2>¡Solicitud enviada!</h2>
       <p class="exito-mensaje">{{ reservaExitosa.mensaje }}</p>
+      @if (datosForm.value.email) {
+        <p class="exito-mensaje">Te enviamos un email con los datos de tu solicitud.</p>
+      }
       <div class="exito-detalle">
         <div class="detalle-row">
           <span class="detalle-label">Servicio</span>
@@ -148,7 +151,7 @@
               <mat-form-field appearance="outline" class="full-field">
                 <mat-label>Email</mat-label>
                 <input matInput formControlName="email" type="email">
-                <mat-hint>Te enviaremos la confirmación a este email</mat-hint>
+                <mat-hint>Te vamos a escribir a este email cuando recibamos tu solicitud y cuando se confirme tu turno.</mat-hint>
                 @if (datosForm.controls['email'].hasError('email')) {
                   <mat-error>Email inválido</mat-error>
                 }
