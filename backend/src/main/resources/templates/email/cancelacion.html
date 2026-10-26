@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout.html :: layout(~{::contenido})}">
+<body>
+<div th:fragment="contenido">
+  <p style="margin:0 0 16px;">Hola, <span th:text="${pacienteNombre}">Ana</span>:</p>
+  <p style="margin:0 0 16px;">Tu turno en <strong th:text="${clinica}">la clínica</strong> del
+    <strong th:text="${fecha}">20/10/2026</strong> a las <strong th:text="${hora}">10:30</strong>
+    <th:block th:if="${servicio}">(<span th:text="${servicio}">Consulta</span>)</th:block> fue <strong>cancelado</strong>.</p>
+  <p style="margin:0 0 16px;">Cuando quieras, podés reservar un turno nuevo:</p>
+  <p style="margin:0 0 16px;">
+    <a th:href="${reservarUrl}" th:style="'display:inline-block;padding:10px 18px;border-radius:6px;color:#ffffff;text-decoration:none;font-weight:bold;background-color:' + ${color} + ';'"
+       style="display:inline-block;padding:10px 18px;">Reservar un turno</a>
+  </p>
+  <p style="margin:0;">¿Dudas? Respondé este correo<th:block th:if="${whatsappUrl}"> o escribinos por
+    <a th:href="${whatsappUrl}" th:style="'color:' + ${color} + ';'">WhatsApp</a></th:block>.</p>
+</div>
+</body>
+</html>

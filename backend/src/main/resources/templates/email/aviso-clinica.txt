@@ -1,0 +1,13 @@
+Llegó una nueva solicitud de turno desde la página web. Está pendiente de confirmación.
+
+Fecha: [(${fecha})]
+Hora: [(${hora})]
+[# th:if="${servicio}"]Servicio: [(${servicio})]
+[/]
+Paciente: [(${pacienteNombreCompleto})]
+Teléfono: [(${pacienteTelefono})]
+[# th:if="${pacienteEmail}"]Email: [(${pacienteEmail})]
+[/]
+Abrir la agenda: [(${adminUrl})]
+
+[# th:insert="~{pie.txt}" /]

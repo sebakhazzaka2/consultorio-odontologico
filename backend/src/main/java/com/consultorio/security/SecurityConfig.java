@@ -63,6 +63,7 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/public/reservas").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/public/notificaciones/baja").permitAll()
                     .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                     .anyRequest().authenticated())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

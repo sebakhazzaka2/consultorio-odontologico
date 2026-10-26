@@ -1,0 +1,11 @@
+Hola, [(${pacienteNombre})]:
+
+Recibimos tu solicitud de turno en [(${clinica})]. Todavía no está confirmada: te vamos a escribir de nuevo cuando la confirmemos.
+
+Fecha: [(${fecha})]
+Hora: [(${hora})]
+[# th:if="${servicio}"]Servicio: [(${servicio})]
+[/]
+Si necesitás cambiar algo, respondé este correo[# th:if="${whatsappUrl}"] o escribinos por WhatsApp: [(${whatsappUrl})][/].
+
+[# th:insert="~{pie.txt}" /]

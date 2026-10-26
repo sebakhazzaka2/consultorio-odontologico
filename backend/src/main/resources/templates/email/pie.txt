@@ -1,0 +1,7 @@
+--
+[(${clinica})]
+[# th:if="${direccion}"][(${direccion})]
+[/][# th:if="${telefono}"]Tel. [(${telefono})]
+[/][# th:if="${whatsappUrl}"]WhatsApp: [(${whatsappUrl})]
+[/]
+Este correo se envió automáticamente. Si respondés, le llega a [(${clinica})].

@@ -15,4 +15,5 @@ public record PacienteResponse(
     String email,
     LocalDate fechaNacimiento,
     PacienteOrigen creadoPor,
-    Instant createdAt) {}
+    Instant createdAt,
+    boolean recordatoriosEmail) {}
